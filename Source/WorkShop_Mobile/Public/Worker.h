@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/TextRenderComponent.h"
 #include "Worker.generated.h"
 
 UCLASS()
@@ -22,5 +23,25 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void OnConstruction(const FTransform& Transform) override;
+
+	UPROPERTY(EditAnywhere)
+	USceneComponent* MySceneComponent;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UDataTable* MyDataTable;
+
+	UPROPERTY(EditAnywhere)
+	UTextRenderComponent* MyCharacterNameText;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	USkeletalMeshComponent* SkeletalMeshComponent;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	int32 MyIndex;
+
+	UFUNCTION(BlueprintCallable)
+	void SetTable();
 
 };
