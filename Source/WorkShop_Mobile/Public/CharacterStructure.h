@@ -3,35 +3,60 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StructUtils/UserDefinedStruct.h"
+#include "Engine/DataTable.h"
 #include "CharacterStructure.generated.h"
 
-/**
- * 
- */
-USTRUCT()
-struct  WORKSHOP_MOBILE_API FCharacterStructure : public FTableRowBase
+// -------------------- ENUMS --------------------
+
+UENUM(BlueprintType)
+enum class ECharacterRarity : uint8
+{
+	Commun      UMETA(DisplayName = "Commun"),
+	Rare        UMETA(DisplayName = "Rare"),
+	Epique      UMETA(DisplayName = "Epique"),
+	Legendary   UMETA(DisplayName = "Legendary"),
+	Secret      UMETA(DisplayName = "Secret")
+};
+
+UENUM(BlueprintType)
+enum class ECharacterType : uint8
+{
+	Youtube     UMETA(DisplayName = "Youtube"),
+	TikTok      UMETA(DisplayName = "TikTok")
+};
+
+// -------------------- STRUCT --------------------
+
+USTRUCT(BlueprintType)
+struct WORKSHOP_MOBILE_API FCharacterStructure : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
 	FString Name = TEXT("");
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
 	UTexture2D* Photo = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
 	USkeletalMesh* CharacterMesh = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
-	float DropRate = 0.0;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
-	float StatYoutube = 0.0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
+	float DropRate = 0.0f;
+    
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
+	float StatYoutube = 0.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
-	float StatTikTok = 0.0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
+	float StatTikTok = 0.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
-	float StatProduction = 0.0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
+	float StatProduction = 0.0f;
+
+	// ✅ Add enums properly
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
+	ECharacterRarity Rarity = ECharacterRarity::Commun;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
+	ECharacterType Type = ECharacterType::Youtube;
 };
