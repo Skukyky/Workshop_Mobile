@@ -2,6 +2,8 @@
 
 
 #include "Worker.h"
+#include "AIController.h"
+#include "WorkerAIController.h"
 #include "CharacterStructure.h"
 
 // Sets default values
@@ -19,6 +21,9 @@ AWorker::AWorker()
 	MyCharacterNameText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("My Character Name Text"));
 	MyCharacterNameText->SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
 	MyCharacterNameText->SetupAttachment(MySceneComponent);
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AIControllerClass = AWorkerAIController::StaticClass();
 
 }
 
@@ -62,5 +67,10 @@ void AWorker::SetTable()
 			MyCharacterNameText->SetText(FText::FromString(MyRow->Name));
 		}
 	}
+}
+
+void AWorker::Move()
+{
+	
 }
 

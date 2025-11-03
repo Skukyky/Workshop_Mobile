@@ -8,7 +8,7 @@
 #include "Worker.generated.h"
 
 UCLASS()
-class WORKSHOP_MOBILE_API AWorker : public AActor
+class WORKSHOP_MOBILE_API AWorker : public APawn
 {
 	GENERATED_BODY()
 	
@@ -43,5 +43,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetTable();
+
+	UFUNCTION(BlueprintCallable)
+	void Move();
 
 };
