@@ -17,6 +17,7 @@ bool ARoomWorking::CanUpgradeWithMoney()
 	{
 		if (StatPerLevel[LevelRoom].RequiredMoneyForUpgrade <= PlayerActor->GetMoney() && StatPerLevel[LevelRoom].RequiredWorkerForNextUpgrade <= 2 && CanUpgrade)
 		{
+			PlayerActor->SetMoney(-StatPerLevel[LevelRoom].RequiredMoneyForUpgrade);
 			Upgrade();
 			return true;
 		}
@@ -27,7 +28,8 @@ bool ARoomWorking::CanUpgradeWithMoney()
 void ARoomWorking::Upgrade()
 {
 	LevelRoom++;
-
+	WorkMultiplierOnCurrentLevel = StatPerLevel[LevelRoom].WorkMultiplier;
+	
 }
 
 
@@ -37,11 +39,22 @@ bool ARoomWorking::CanUpgradeWithGem()
 	{
 		if (StatPerLevel[LevelRoom].RequiredGemForUpgrade <= PlayerActor->GetGem() && StatPerLevel[LevelRoom].RequiredWorkerForNextUpgrade <= 2 && CanUpgrade)
 		{
+			PlayerActor->SetGem(-StatPerLevel[LevelRoom].RequiredGemForUpgrade);
 			Upgrade();
 			return true;
 		}
 	}
 	return false;
+}
+
+void ARoomWorking::AddMoney(int NewMoney)
+{
+	if (CurrentMoneyInStock + NewMoney <= )
+}
+
+void ARoomWorking::SendMoneyToPlayer()
+{
+	
 }
 
 // Called when the game starts or when spawned

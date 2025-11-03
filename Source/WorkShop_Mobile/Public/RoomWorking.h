@@ -6,6 +6,7 @@
 
 
 class APlayerActor;
+class AWorker;
 
 USTRUCT(BlueprintType)
 struct FStatPerLevel
@@ -26,6 +27,9 @@ struct FStatPerLevel
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
 	int RequiredGemForUpgrade = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
+	int MaxMoneyStorable = 1000;
 };
  
 UCLASS()
@@ -41,25 +45,43 @@ public:
 
 	UFUNCTION()
 	bool CanUpgradeWithGem();
+
+	UFUNCTION()
+	void AddMoney(int NewMoney);
+
+	UFUNCTION()
+	void SendMoneyToPlayer();
+	
+	UPROPERTY()
+	float WorkMultiplierOnCurrentLevel = 0.f;
+
+	UPROPERTY()
+	TArray<AWorker*> Workers;
+
 	
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
-	bool CanUpgrade;
+	UPROPERTY()
+	bool CanUpgrade = true;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
 	TArray<FStatPerLevel> StatPerLevel;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
-	int LevelRoom;
+	UPROPERTY()
+	int LevelRoom = 0;
 
 	UFUNCTION()
 	void Upgrade();
 
 	UPROPERTY()
-	APlayerActor* PlayerActor;
- 
+	APlayerActor* PlayerActor = nullptr;
+
+	UPROPERTY()
+	int CurrentMoneyInStock = 0;
+
+
+
 public:	
 	virtual void Tick(float DeltaTime) override;
 };
