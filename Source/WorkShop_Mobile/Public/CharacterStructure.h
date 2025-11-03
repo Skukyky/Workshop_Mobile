@@ -15,20 +15,23 @@ struct  WORKSHOP_MOBILE_API FCharacterStructure : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
-	FString Name;
+	FString Name = TEXT("");
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
-	UTexture2D* Photo;
+	UTexture2D* Photo = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
-	USkeletalMesh* CharacterMesh;
+	USkeletalMesh* CharacterMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
-	float StatYoutube;
+	float DropRate = 0.0;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
+	float StatYoutube = 0.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
-	float StatTikTok;
+	float StatTikTok = 0.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Character)
-	float StatProduction;
+	float StatProduction = 0.0;
 };
