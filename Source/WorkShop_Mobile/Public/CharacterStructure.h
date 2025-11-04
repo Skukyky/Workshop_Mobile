@@ -58,8 +58,7 @@ struct WORKSHOP_MOBILE_API FCharacterStructure : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
 	float StatProduction = 0.0f;
-
-	// ✅ Add enums properly
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
 	ECharacterRarity Rarity = ECharacterRarity::Commun;
 

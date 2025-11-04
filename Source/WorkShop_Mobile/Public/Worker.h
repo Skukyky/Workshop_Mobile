@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/TextRenderComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "Worker.generated.h"
 
 UCLASS()
@@ -31,6 +32,9 @@ public:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UDataTable* MyDataTable;
+
+	UPROPERTY()
+	UFloatingPawnMovement* MyFloatingPawnMovement;
 
 	UPROPERTY(EditAnywhere)
 	UTextRenderComponent* MyCharacterNameText;
