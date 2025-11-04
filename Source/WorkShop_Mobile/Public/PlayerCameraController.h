@@ -33,12 +33,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	float PanSpeed = 1.5f;
 
+	UPROPERTY(EditAnywhere, Category="Camera")
+	float ZoomSpeed = 300.f;
+
 	// Header
 private:
 	bool bTouchingTwoFingers = false;
 	FVector2D Touch0, Touch1;
 	float LastTouchDistance = 0.f;
-	float ZoomSpeed = 0.01f;
 
 	bool bFirstTouch = false;
 
