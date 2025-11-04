@@ -25,6 +25,8 @@ AWorker::AWorker()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	AIControllerClass = AWorkerAIController::StaticClass();
 
+	MyFloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovement"));
+
 }
 
 // Called when the game starts or when spawned
