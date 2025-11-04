@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/Pawn.h"
+#include "PlayerCameraController.h"
 #include "PlayerActor.generated.h"
 
 UCLASS()
@@ -34,8 +36,14 @@ protected:
 	UPROPERTY()
 	int Money;
 
+	UPROPERTY(EditAnywhere)
+	USceneComponent* RootComp;
+
 	UPROPERTY()
 	int Gem;
+
+	UPROPERTY(EditAnywhere)
+	UCameraComponent* camera;
 	
 
 public:	

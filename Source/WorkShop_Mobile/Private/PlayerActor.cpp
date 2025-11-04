@@ -9,6 +9,16 @@ APlayerActor::APlayerActor()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	SetRootComponent(RootComp);
+	RootComp->SetMobility(EComponentMobility::Movable);
+
+	
+	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
+	camera->SetupAttachment(RootComp);
+
+	AutoPossessPlayer = EAutoReceiveInput::Disabled;
+
 }
 
 void APlayerActor::SetGem(int AddGem)
