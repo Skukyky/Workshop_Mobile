@@ -33,6 +33,10 @@ void UHUDGeneral::NativeConstruct()
 	{
 		OptionButton->OnReleased.AddDynamic(this, &UHUDGeneral::ClickOptionButton);
 	}
+	if (CloseOption)
+	{
+		CloseOption->OnReleased.AddDynamic(this, &UHUDGeneral::ClickCloseOption);
+	}
 }
 
 void UHUDGeneral::ClickReserveButton()
@@ -53,7 +57,32 @@ void UHUDGeneral::ClickUpgradeButton()
 	if (UpgradeWidgetRef) UpgradeWidgetRef->AddToViewport();
 }
 
+void UHUDGeneral::VisiblityChange_Implementation(bool Despawn)
+{
+}
+
+void UHUDGeneral::Despawn()
+{
+	Option->SetVisibility(ESlateVisibility::Hidden);
+}
+
 void UHUDGeneral::ClickOptionButton()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Some debug message!"));	
+	if (!VisibleOption)
+	{
+		VisibleOption = true;
+		Option->SetVisibility(ESlateVisibility::Visible);
+		VisiblityChange(!VisibleOption);
+	}
+	else
+	{
+		VisibleOption = false;
+		VisiblityChange(!VisibleOption);
+	}
+}
+
+void UHUDGeneral::ClickCloseOption()
+{
+	VisibleOption = false;
+	VisiblityChange(!VisibleOption);
 }

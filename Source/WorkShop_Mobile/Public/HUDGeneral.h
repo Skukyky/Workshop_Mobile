@@ -6,6 +6,7 @@
 #include "Employer.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/CanvasPanel.h"
 #include "HUDGeneral.generated.h"
 
 /**
@@ -64,6 +65,24 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UButton* OptionButton;
 
+	UPROPERTY(meta = (BindWidget))
+	UCanvasPanel* Option;
+
+	bool VisibleOption = false;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void VisiblityChange(bool Despawn);
+
+	UFUNCTION(BlueprintCallable)
+	void Despawn();
+	
 	UFUNCTION()
 	void ClickOptionButton();
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* CloseOption;
+
+	UFUNCTION()
+	void ClickCloseOption();
+	
 };
