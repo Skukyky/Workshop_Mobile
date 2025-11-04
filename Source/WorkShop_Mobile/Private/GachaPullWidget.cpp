@@ -4,6 +4,7 @@
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "GachaSaveGame.h" 
+#include "Components/ScrollBox.h"
 
 void UGachaPullWidget::NativeConstruct()
 {
@@ -14,7 +15,48 @@ void UGachaPullWidget::NativeConstruct()
         BTN_Pull->OnClicked.AddDynamic(this, &UGachaPullWidget::OnPullButtonClicked);
     }
 
+    if (ScrollBoxBanner)
+    {
+        ScrollBoxBanner->OnUserScrolled.AddDynamic(this, &UGachaPullWidget::OnUserScrolled);
+    }
+
     LoadProgress();
+}
+
+void UGachaPullWidget::NativePreConstruct()
+{
+    Super::NativePreConstruct();
+
+    ScrollBoxBanner->SetScrollOffset(200);
+    
+}
+
+void UGachaPullWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+    Super::NativeTick(MyGeometry, InDeltaTime);
+
+    if (!ScrollBoxBanner->HasMouseCapture() && ScrollBoxBanner->GetScrollOffset() != ScrollLocation)
+    {
+        if (FMath::Abs(ScrollBoxBanner->GetScrollOffset() - ScrollLocation) > 200 )
+        {
+            ScrollDirection = FMath::Sign(ScrollBoxBanner->GetScrollOffset() - ScrollLocation);
+            ScrollLocation = ScrollLocation + ( ScrollDirection * -2000);
+        }
+
+        ScrollBoxBanner->EndInertialScrolling();
+        
+        // Interpolation
+        float InterpScrollOffset = FMath::FInterpTo(
+            ScrollBoxBanner->GetScrollOffset(),  // current
+            ScrollLocation,                      // target
+            InDeltaTime,                      // deltaTime (à confirmer, normalement TimeBetweenFrames)
+            50.f                               // interp speed
+        );
+
+        ScrollBoxBanner->SetScrollOffset(InterpScrollOffset);
+        
+    }
+    
 }
 
 void UGachaPullWidget::OnPullButtonClicked()
@@ -110,6 +152,11 @@ void UGachaPullWidget::OnPullButtonClicked()
     RarityText->SetText(FText::FromString(RarityString));
 }
 
+void UGachaPullWidget::OnPullMultiButtonClicked()
+{
+    
+}
+
 void UGachaPullWidget::SaveProgress()
 {
     UGachaSaveGame* SaveGameInstance = Cast<UGachaSaveGame>(UGameplayStatics::CreateSaveGameObject(UGachaSaveGame::StaticClass()));
@@ -132,4 +179,9 @@ void UGachaPullWidget::LoadProgress()
             CharactersProgress = LoadedGame->SavedCharacters;
         }
     }
+}
+
+void UGachaPullWidget::OnUserScrolled(float CurrentOffset)
+{
+
 }

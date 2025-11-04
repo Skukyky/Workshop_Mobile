@@ -8,6 +8,7 @@
 #include "CharacterProgress.h"
 #include "GachaPullWidget.generated.h"
 
+class UScrollBox;
 class UButton;
 class UTextBlock;
 
@@ -18,6 +19,12 @@ class WORKSHOP_MOBILE_API UGachaPullWidget : public UUserWidget
 
 public:
 
+	UPROPERTY(meta = (BindWidget))
+	UScrollBox* ScrollBoxBanner;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* BTN_PullMulti;
+	
 	UPROPERTY(meta = (BindWidget))
 	UButton* BTN_Pull;
 
@@ -45,16 +52,32 @@ public:
 	UPROPERTY()
 	TMap<FName, FCharacterProgress> CharactersProgress;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+	float ScrollLocation = 0.0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+	float ScrollDirection = 0.0;
+
 protected:
 
 	virtual void NativeConstruct() override;
+
+	virtual void NativePreConstruct() override;
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 
 	UFUNCTION(BlueprintCallable)
 	void OnPullButtonClicked();
 
+	UFUNCTION(BlueprintCallable)
+	void OnPullMultiButtonClicked();
+
 	void SaveProgress();
 
 	void LoadProgress();
+
+	UFUNCTION()
+	void OnUserScrolled(float CurrentOffset);
 };
