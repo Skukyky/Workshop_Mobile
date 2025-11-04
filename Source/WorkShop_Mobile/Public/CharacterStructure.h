@@ -43,6 +43,12 @@ struct WORKSHOP_MOBILE_API FCharacterStructure : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
 	float DropRate = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
+	int Star = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
+	int StarMax = 5;
     
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
 	float StatYoutube = 0.0f;

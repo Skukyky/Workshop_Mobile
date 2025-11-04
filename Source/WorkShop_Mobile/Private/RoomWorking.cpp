@@ -47,10 +47,10 @@ bool ARoomWorking::CanUpgradeWithGem()
 	return false;
 }
 
-void ARoomWorking::AddMoney(int NewMoney)
-{
-	if (CurrentMoneyInStock + NewMoney <= )
-}
+// void ARoomWorking::AddMoney(int NewMoney)
+// {
+// 	if (CurrentMoneyInStock + NewMoney <= )
+// }
 
 void ARoomWorking::SendMoneyToPlayer()
 {

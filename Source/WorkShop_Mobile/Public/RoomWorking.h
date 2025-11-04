@@ -46,8 +46,8 @@ public:
 	UFUNCTION()
 	bool CanUpgradeWithGem();
 
-	UFUNCTION()
-	void AddMoney(int NewMoney);
+	// UFUNCTION()
+	// void AddMoney(int NewMoney);
 
 	UFUNCTION()
 	void SendMoneyToPlayer();
