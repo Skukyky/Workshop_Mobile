@@ -5,6 +5,8 @@
 #include "AIController.h"
 #include "WorkerAIController.h"
 #include "CharacterStructure.h"
+#include "PlayerActor.h"
+#include "RoomWorking.h"
 
 // Sets default values
 AWorker::AWorker()
@@ -34,6 +36,65 @@ void AWorker::BeginPlay()
 {
 	Super::BeginPlay();
 	SetTable();
+	if (RoomWorking)
+	{
+		RoomWorking->AddWorker(0,this);
+		StartWorking();
+	}
+}
+
+void AWorker::Working()
+{
+	if (RoomWorking)
+	{
+		RoomWorking->AddMoney(MoneyPerWorkBase);
+	}
+}
+
+void AWorker::StartWorking()
+{
+	if (!TimerHandle.IsValid())
+	{
+		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, "StartWorking");
+		GetWorldTimerManager().SetTimer(TimerHandle,this,&AWorker::Working,WorkingTimeBase,true);
+	}
+}
+
+void AWorker::StopWorking()
+{
+	if (TimerHandle.IsValid())
+	{
+		TimerHandle.Invalidate();
+	}
+}
+
+void AWorker::AssignWork(ARoomWorking* Working)
+{
+	RoomWorking = Working;
+	if (RoomWorking)
+	{
+		StartWorking();
+	}
+}
+
+void AWorker::UnassignWork()
+{
+	StopWorking();
+	RoomWorking = nullptr;
+}
+
+void AWorker::AddBonusPerRoom()
+{
+	if (RoomWorking)
+	{
+		MoneyPerWorkWithBonus = MoneyPerWorkBase * RoomWorking->WorkMultiplierOnCurrentLevel;
+	}
+}
+
+void AWorker::AddBonusPerStars()
+{
+	//JSP Comment le gerer
+	return;
 }
 
 // Called every frame
@@ -58,7 +119,7 @@ void AWorker::SetTable()
 		MyIndex = FMath::Clamp(MyIndex, 0, Rows.Num() - 1);
 		static const FString ContextString(TEXT("Finding Row in Character Data Table"));
 	
-		FCharacterStructure* MyRow = MyDataTable->FindRow<FCharacterStructure>(Rows[MyIndex], ContextString);
+		MyRow = MyDataTable->FindRow<FCharacterStructure>(Rows[MyIndex], ContextString);
 		if (MyRow != nullptr)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Loaded row: %s | Mesh: %s | Name: %s"),
@@ -67,12 +128,10 @@ void AWorker::SetTable()
 		*MyRow->Name);
 			SkeletalMeshComponent->SetSkeletalMesh(MyRow->CharacterMesh);
 			MyCharacterNameText->SetText(FText::FromString(MyRow->Name));
+			WorkingTimeBase = MyRow->StatProductionSpeed;
+			MoneyPerWorkBase = MyRow->StatProductionMoney;
 		}
 	}
 }
 
-void AWorker::Move()
-{
-	
-}
 

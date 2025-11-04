@@ -3,6 +3,8 @@
 
 #include "PlayerActor.h"
 
+#include <string>
+
 // Sets default values
 APlayerActor::APlayerActor()
 {
@@ -41,6 +43,26 @@ int APlayerActor::GetMoney() const
 	return Money;
 }
 
+void APlayerActor::SetPoolResource(int AddPool)
+{
+	PoolResource = PoolResource + AddPool;
+}
+
+int APlayerActor::GetPoolResource() const
+{
+	return PoolResource;
+}
+
+TArray<AWorker*> APlayerActor::GetInventory()
+{
+	return Workers;
+}
+
+void APlayerActor::SetInventory()
+{
+	//Pas de code pour l'instant mais c le seteur
+}
+
 // Called when the game starts or when spawned
 void APlayerActor::BeginPlay()
 {
@@ -52,7 +74,10 @@ void APlayerActor::BeginPlay()
 void APlayerActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	FString Message = FString::Printf(TEXT("Valeur : %d"), GetMoney());
+ 
+	// Afficher le message à l'écran
+	GEngine->AddOnScreenDebugMessage(-1,0.0f, FColor::Yellow, Message);
 }
 
 // Called to bind functionality to input

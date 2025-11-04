@@ -17,7 +17,7 @@ struct FStatPerLevel
 	int MaxNbrWorker = 0;
  
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
-	float WorkMultiplier = 0.f;
+	float WorkMultiplier = 0.5f;
  
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
 	int RequiredWorkerForNextUpgrade = 0;
@@ -30,6 +30,7 @@ struct FStatPerLevel
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
 	int MaxMoneyStorable = 1000;
+	
 };
  
 UCLASS()
@@ -46,8 +47,8 @@ public:
 	UFUNCTION()
 	bool CanUpgradeWithGem();
 
-	// UFUNCTION()
-	// void AddMoney(int NewMoney);
+	UFUNCTION()
+	void AddMoney(int NewMoney);
 
 	UFUNCTION()
 	void SendMoneyToPlayer();
@@ -56,9 +57,11 @@ public:
 	float WorkMultiplierOnCurrentLevel = 0.f;
 
 	UPROPERTY()
-	TArray<AWorker*> Workers;
+	TArray<AWorker*> Workers = {nullptr,nullptr};
 
-	
+	UFUNCTION()
+	void AddWorker(int position, AWorker* worker);
+
 protected:
 	virtual void BeginPlay() override;
 

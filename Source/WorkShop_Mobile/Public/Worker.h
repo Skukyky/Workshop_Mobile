@@ -3,10 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CharacterStructure.h"
 #include "GameFramework/Actor.h"
 #include "Components/TextRenderComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Worker.generated.h"
+
+class APlayerActor;
+class ARoomWorking;
 
 UCLASS()
 class WORKSHOP_MOBILE_API AWorker : public APawn
@@ -21,6 +25,31 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void Working();
+	
+	FTimerHandle TimerHandle;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	ARoomWorking* RoomWorking;
+
+	UPROPERTY()
+	float WorkingTimeBase;
+
+	UPROPERTY()
+	float WorkingTimeWithBonus;
+
+	UPROPERTY()
+	float MoneyPerWorkBase;
+
+	UPROPERTY()
+	float MoneyPerWorkWithBonus;
+
+	FCharacterStructure* MyRow;
+
+	UPROPERTY()
+	APlayerActor* PlayerActor;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -48,7 +77,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetTable();
 
-	UFUNCTION(BlueprintCallable)
-	void Move();
+	UFUNCTION()
+	void StartWorking();
+
+	UFUNCTION()
+	void StopWorking();
+
+	UFUNCTION()
+	void AssignWork(ARoomWorking* Working);
+
+	UFUNCTION()
+	void UnassignWork();
+
+	UFUNCTION()
+	void AddBonusPerRoom();
+
+	UFUNCTION()
+	void AddBonusPerStars();
 
 };

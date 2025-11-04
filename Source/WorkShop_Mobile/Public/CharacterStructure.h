@@ -57,11 +57,14 @@ struct WORKSHOP_MOBILE_API FCharacterStructure : public FTableRowBase
 	float StatTikTok = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
-	float StatProduction = 0.0f;
+	float StatProductionMoney = 0.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
 	ECharacterRarity Rarity = ECharacterRarity::Commun;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
 	ECharacterType Type = ECharacterType::Youtube;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
+	float StatProductionSpeed = 0.0f;
 };

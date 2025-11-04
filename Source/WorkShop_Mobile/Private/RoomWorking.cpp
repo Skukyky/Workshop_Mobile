@@ -2,6 +2,7 @@
 
 #include "RoomWorking.h"
 #include "PlayerActor.h"
+#include "Worker.h"
 
 // Sets default values
 ARoomWorking::ARoomWorking()
@@ -29,7 +30,19 @@ void ARoomWorking::Upgrade()
 {
 	LevelRoom++;
 	WorkMultiplierOnCurrentLevel = StatPerLevel[LevelRoom].WorkMultiplier;
-	
+	if (PlayerActor)
+	{
+		PlayerActor->SetPoolResource(117);
+	}
+	for (AWorker* Worker : Workers)
+	{
+		Worker->AddBonusPerRoom();
+	}
+	int Num = (StatPerLevel[LevelRoom].MaxNbrWorker - 1) - Workers.Num() ;
+	for (int i = 0; i<Num - 1; i++)
+	{
+		Workers.Add(nullptr);
+	}
 }
 
 
@@ -47,14 +60,49 @@ bool ARoomWorking::CanUpgradeWithGem()
 	return false;
 }
 
-// void ARoomWorking::AddMoney(int NewMoney)
-// {
-// 	if (CurrentMoneyInStock + NewMoney <= )
-// }
+void ARoomWorking::AddMoney(int NewMoney)
+{
+	int MoneyTemp = CurrentMoneyInStock + NewMoney;
+	int MaxMoney = StatPerLevel[LevelRoom].MaxMoneyStorable;
+	CurrentMoneyInStock = FMath::Clamp(MoneyTemp, 0, MaxMoney);
+ 
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
+			FString::Printf(TEXT("MoneyTemp: %d, Clamp: [0, %d], Result: %d"), MoneyTemp, MaxMoney, CurrentMoneyInStock));
+	}
+	if (CurrentMoneyInStock >= MaxMoney)
+	{
+		for (AWorker* Worker : Workers)
+		{
+			if (Worker)
+			{
+				Worker->StopWorking();
+			}
+		}
+		SendMoneyToPlayer();
+	}
+}
 
 void ARoomWorking::SendMoneyToPlayer()
 {
-	
+	if (PlayerActor)
+	{
+		PlayerActor->SetMoney(CurrentMoneyInStock);
+		CurrentMoneyInStock = 0;
+		for (AWorker* Worker : Workers)
+		{
+			if (Worker)
+			{
+				Worker->StartWorking();
+			}
+		}
+	}
+}
+
+void ARoomWorking::AddWorker(int position, AWorker* worker)
+{
+	Workers[position] = worker;
 }
 
 // Called when the game starts or when spawned

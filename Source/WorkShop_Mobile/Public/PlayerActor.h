@@ -8,6 +8,8 @@
 #include "PlayerCameraController.h"
 #include "PlayerActor.generated.h"
 
+class AWorker;
+
 UCLASS()
 class WORKSHOP_MOBILE_API APlayerActor : public APawn
 {
@@ -29,6 +31,18 @@ public:
 	UFUNCTION()
 	int GetMoney() const;
 
+	UFUNCTION()
+	void SetPoolResource(int AddPool);
+
+	UFUNCTION()
+	int GetPoolResource() const;
+
+	UFUNCTION()
+	TArray<AWorker*> GetInventory();
+
+	UFUNCTION()
+	void SetInventory();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -45,7 +59,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* camera;
 	
+	UPROPERTY()
+	int PoolResource;
 
+	TArray<AWorker*> Workers;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
