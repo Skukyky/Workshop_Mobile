@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Employer.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
 #include "HUDGeneral.generated.h"
 
 /**
@@ -13,5 +15,55 @@ UCLASS()
 class WORKSHOP_MOBILE_API UHUDGeneral : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	void NativeConstruct();
 	
+	UPROPERTY(meta = (BindWidget))
+	UButton* OptionAchat;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void CloseOpenPanel();
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* ReserveButton;
+
+	UPROPERTY()
+	UUserWidget* EmployerWidgetRef;
+	
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
+	TSubclassOf<UUserWidget> WidgetEmployerReference;
+	
+	UFUNCTION()
+	void ClickReserveButton();
+		
+	UPROPERTY(meta = (BindWidget))
+	UButton* ShopButton;
+
+	UPROPERTY()
+	UUserWidget* ShopWidgetRef;
+	
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
+	TSubclassOf<UUserWidget> WidgetShopReference;
+	
+	UFUNCTION()
+	void ClickShopButton();
+	
+	UPROPERTY(meta = (BindWidget))
+	UButton* UpgradeButton;
+
+	UPROPERTY()
+	UUserWidget* UpgradeWidgetRef;
+	
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
+	TSubclassOf<UUserWidget> WidgetUpgradeReference;
+	
+	UFUNCTION()
+	void ClickUpgradeButton();
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* OptionButton;
+
+	UFUNCTION()
+	void ClickOptionButton();
 };
