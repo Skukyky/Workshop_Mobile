@@ -37,13 +37,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnCustomButtonClicked OnCustomButtonClicked;
-
-protected:
-	virtual void NativePreConstruct() override;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* BackgroundTexture = nullptr;
 	UFUNCTION()
 	void OnBTNCustomClicked();
-
-	
+	virtual void NativePreConstruct() override;
 	
 };
