@@ -104,7 +104,13 @@ void ARoomWorking::SendMoneyToPlayer()
 
 void ARoomWorking::AddWorker(int position, AWorker* worker)
 {
-	Workers[position]= {worker, FVector2D::ZeroVector};
+	//FIX
+	if (Workers.Num() <= position)
+	{
+		Workers.SetNum(position + 1);
+	}
+
+	Workers[position] = {worker, FVector2D::ZeroVector};
 }
 
 void ARoomWorking::SpawnWidget()

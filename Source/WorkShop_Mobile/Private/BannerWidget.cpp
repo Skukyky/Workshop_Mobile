@@ -1,6 +1,17 @@
 #include "BannerWidget.h"
 #include "GachaSaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "GachaPullWidget.h" // nécessaire pour UGachaPullWidget
+#include "Engine/Engine.h"   // pour GEngine
+
+void UBannerWidget::SetParentGachaWidget(UGachaPullWidget* Parent)
+{
+    ParentGachaWidget = Parent;
+    if (GEngine && !Parent)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ParentGachaWidget est null dans BannerWidget"));
+    }
+}
 
 void UBannerWidget::NativeConstruct()
 {
@@ -9,20 +20,32 @@ void UBannerWidget::NativeConstruct()
     if (BTN_Pull)
     {
        BTN_Pull->OnCustomButtonClicked.AddDynamic(this, &UBannerWidget::HandlePullClicked);
+       GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Bouton Pull bindé"));
     }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Erreur : BTN_Pull non bindé"));
+    }
+
     if (BTN_PullMulti)
     {
        BTN_PullMulti->OnCustomButtonClicked.AddDynamic(this, &UBannerWidget::HandlePullMultiClicked);
+       GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Bouton PullMulti bindé"));
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Erreur : BTN_PullMulti non bindé"));
     }
 }
 
 void UBannerWidget::HandlePullClicked()
 {
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("HandlePullClicked appelé"));
+
     FName PulledCharacter = PerformSinglePull();
     if (PulledCharacter == NAME_None)
     {
-        if (GEngine)
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Aucun personnage sélectionné."));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Aucun personnage sélectionné lors du pull."));
         return;
     }
 
@@ -32,23 +55,32 @@ void UBannerWidget::HandlePullClicked()
     MergePullResults(PullResults);
     SaveProgress();
 
-    if (GEngine)
+    if (ParentGachaWidget)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
-            FString::Printf(TEXT("Personnage tiré : %s"), *PulledCharacter.ToString()));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Appel ShowPullHistory depuis BannerWidget"));
+        ParentGachaWidget->ShowPullHistory(PullResults);
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ParentGachaWidget est null !"));
+    }
 
-        for (const FCharacterProgress& Elem : CharactersInventory)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
-                FString::Printf(TEXT("%s - Etoiles: %d"), *Elem.CharacterID.ToString(), Elem.StarCount));
-        }
+    for (const FCharacterProgress& Elem : CharactersInventory)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
+            FString::Printf(TEXT("%s - Etoiles: %d"), *Elem.CharacterID.ToString(), Elem.StarCount));
     }
 }
 
 void UBannerWidget::HandlePullMultiClicked()
 {
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("HandlePullMultiClicked appelé"));
+
     if (!CharacterDataTable)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("CharacterDataTable est null"));
         return;
+    }
 
     TArray<FName> PullResults;
     for (int i = 0; i < 10; i++)
@@ -61,15 +93,22 @@ void UBannerWidget::HandlePullMultiClicked()
     MergePullResults(PullResults);
     SaveProgress();
 
-    if (GEngine)
+    if (ParentGachaWidget)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Pull multi effectué."));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Appel ShowPullHistory depuis BannerWidget (multi)"));
+        ParentGachaWidget->ShowPullHistory(PullResults);
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ParentGachaWidget est null (multi) !"));
+    }
 
-        for (const FCharacterProgress& Elem : CharactersInventory)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
-                FString::Printf(TEXT("%s - Etoiles: %d"), *Elem.CharacterID.ToString(), Elem.StarCount));
-        }
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Pull multi effectué."));
+
+    for (const FCharacterProgress& Elem : CharactersInventory)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
+            FString::Printf(TEXT("%s - Etoiles: %d"), *Elem.CharacterID.ToString(), Elem.StarCount));
     }
 }
 

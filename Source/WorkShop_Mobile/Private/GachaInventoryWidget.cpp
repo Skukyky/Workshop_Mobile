@@ -46,16 +46,26 @@ void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& 
         return;
     }
 
-    for (const FCharacterProgress& Progress : CharactersInventory)
+    // Copie locale pour tri
+    TArray<FCharacterProgress> SortedInventory = CharactersInventory;
+
+    // Tri par rareté décroissante (du plus rare au moins rare)
+    SortedInventory.Sort([this](const FCharacterProgress& A, const FCharacterProgress& B)
+    {
+        FCharacterStructure* DataA = CharacterDataTable->FindRow<FCharacterStructure>(A.CharacterID, TEXT(""));
+        FCharacterStructure* DataB = CharacterDataTable->FindRow<FCharacterStructure>(B.CharacterID, TEXT(""));
+
+        int32 RarityA = DataA ? static_cast<int32>(DataA->Rarity) : 0;
+        int32 RarityB = DataB ? static_cast<int32>(DataB->Rarity) : 0;
+
+        // Plus grand = plus rare, on veut ordre décroissant (rareté plus haute d'abord)
+        return RarityA > RarityB;
+    });
+
+    // Affichage des personnages triés
+    for (const FCharacterProgress& Progress : SortedInventory)
     {
         const FName& CharacterRowName = Progress.CharacterID;
-
-        UE_LOG(LogTemp, Log, TEXT("Personnage débloqué : %s, étoiles : %d"), *CharacterRowName.ToString(), Progress.StarCount);
-        if (GEngine)
-        {
-            FString DebugMsg = FString::Printf(TEXT("Personnage débloqué : %s, étoiles : %d"), *CharacterRowName.ToString(), Progress.StarCount);
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, DebugMsg);
-        }
 
         FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT("GachaInventoryWidget::PopulateInventory"));
         if (!CharacterData)
@@ -79,9 +89,11 @@ void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& 
 
         EntryWidget->InitializeWithData(*CharacterData, Progress);
         InventoryScrollBox->AddChild(EntryWidget);
+
         if (GEngine)
         {
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Ajouté %s dans la ScrollBox"), *CharacterRowName.ToString()));
         }
     }
 }
+

@@ -8,6 +8,9 @@
 #include "CharacterProgress.h"
 #include "BannerWidget.generated.h"
 
+class UGachaPullWidget;
+
+
 USTRUCT(BlueprintType)
 struct FDropRateByRarity
 {
@@ -27,9 +30,14 @@ class WORKSHOP_MOBILE_API UBannerWidget : public UUserWidget
 
 public:
 
+    UPROPERTY()
+    UGachaPullWidget* ParentGachaWidget;
+
+    void SetParentGachaWidget(UGachaPullWidget* Parent);
+
     UPROPERTY(meta = (BindWidget))
     UBTNCustomWidget* BTN_Pull;
-
+    
     UPROPERTY(meta = (BindWidget))
     UBTNCustomWidget* BTN_PullMulti;
 
