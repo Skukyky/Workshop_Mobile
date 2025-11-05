@@ -49,6 +49,10 @@ void UGachaPullWidget::NativeConstruct()
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("UnitBanner is null"));
         }
     }
+    if (BTN_BackToBanner)
+    {
+        BTN_BackToBanner->OnCustomButtonClicked.AddDynamic(this, &UGachaPullWidget::HandleBackToBannerClicked);
+    }
 }
 
 
@@ -189,4 +193,17 @@ void UGachaPullWidget::ShowPullHistory(const TArray<FName>& PulledCharacters)
     }
 
     WS_GachaPull->SetActiveWidgetIndex(1);
+}
+
+void UGachaPullWidget::HandleBackToBannerClicked()
+{
+    if (WS_GachaPull)
+    {
+        WS_GachaPull->SetActiveWidgetIndex(0);  // Revenir au premier canvas
+    }
+
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, TEXT("Bouton retour appuyé, revient au premier onglet"));
+    }
 }

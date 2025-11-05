@@ -6,6 +6,7 @@
 #include "CharacterProgress.h"
 #include "GachaPullWidget.generated.h"
 
+class UBTNCustomWidget;
 class UBannerWidget;
 class UWidgetSwitcher;
 class UUniformGridPanel;
@@ -20,6 +21,9 @@ class WORKSHOP_MOBILE_API UGachaPullWidget : public UUserWidget
 
 public:
 
+	UPROPERTY(meta = (BindWidget))
+	UBTNCustomWidget* BTN_BackToBanner;
+	
 	UPROPERTY(meta = (BindWidget))
 	UBannerWidget* GoldBanner;
 
@@ -66,6 +70,9 @@ public:
 
 	// Affiche l'historique des tirages et active le widget switcher sur l'onglet concerné
 	void ShowPullHistory(const TArray<FName>& PulledCharacters);
+
+	UFUNCTION()
+	void HandleBackToBannerClicked();
 
 protected:
 

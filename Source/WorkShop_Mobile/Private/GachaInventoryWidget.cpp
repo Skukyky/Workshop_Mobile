@@ -58,8 +58,20 @@ void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& 
         int32 RarityA = DataA ? static_cast<int32>(DataA->Rarity) : 0;
         int32 RarityB = DataB ? static_cast<int32>(DataB->Rarity) : 0;
 
-        // Plus grand = plus rare, on veut ordre décroissant (rareté plus haute d'abord)
-        return RarityA > RarityB;
+        // 1. Trier par rareté décroissante
+        if (RarityA != RarityB)
+        {
+            return RarityA > RarityB;
+        }
+
+        // 2. Puis par nombre d’étoiles décroissant
+        if (A.StarCount != B.StarCount)
+        {
+            return A.StarCount > B.StarCount;
+        }
+
+        // 3. Enfin par nom croissant alphabétique
+        return A.CharacterID.ToString() < B.CharacterID.ToString();
     });
 
     // Affichage des personnages triés
