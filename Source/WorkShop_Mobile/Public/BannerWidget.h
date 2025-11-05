@@ -46,6 +46,9 @@ public:
     UPROPERTY()
     TMap<FName, FCharacterProgress> CharactersProgress;
 
+    UPROPERTY(BlueprintReadWrite)
+    TArray<FCharacterProgress> CharactersInventory;
+
 protected:
 
     virtual void NativeConstruct() override;

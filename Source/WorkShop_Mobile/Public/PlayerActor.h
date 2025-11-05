@@ -79,8 +79,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadInventory();
 
-	UPROPERTY()
-	TMap<FName, FCharacterProgress> CharactersProgress;
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FCharacterProgress> CharactersInventory;
 
 	
 

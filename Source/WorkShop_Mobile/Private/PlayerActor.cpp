@@ -70,7 +70,24 @@ void APlayerActor::SetInventory()
 void APlayerActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	LoadInventory();
+
+	if (GEngine)
+	{
+		if (CharactersInventory.Num() == 0)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Inventaire vide au début du jeu."));
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Inventaire personnages chargés :"));
+			for (const FCharacterProgress& Elem : CharactersInventory)
+			{
+				FString Msg = FString::Printf(TEXT("- %s : Etoiles %d"), *Elem.CharacterID.ToString(), Elem.StarCount);
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Msg);
+			}
+		}
+	}
 }
 
 // Called every frame
@@ -92,15 +109,24 @@ void APlayerActor::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void APlayerActor::SaveInventory()
 {
-	UGachaSaveGame* SaveGameInstance = Cast<UGachaSaveGame>(
-		UGameplayStatics::CreateSaveGameObject(UGachaSaveGame::StaticClass())
-	);
+	UGachaSaveGame* SaveGameInstance = nullptr;
+
+	if (UGameplayStatics::DoesSaveGameExist(TEXT("GachaSaveSlot"), 0))
+	{
+		SaveGameInstance = Cast<UGachaSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("GachaSaveSlot"), 0));
+	}
+
+	if (!SaveGameInstance)
+	{
+		SaveGameInstance = Cast<UGachaSaveGame>(UGameplayStatics::CreateSaveGameObject(UGachaSaveGame::StaticClass()));
+	}
 
 	if (SaveGameInstance)
 	{
-		SaveGameInstance->SavedCharacters = CharactersProgress;
+		SaveGameInstance->SavedCharactersArray = CharactersInventory; // utiliser le tableau dans la classe de save
 
-		if (UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("GachaSaveSlot"), 0))
+		bool bSuccess = UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("GachaSaveSlot"), 0);
+		if (bSuccess)
 		{
 			UE_LOG(LogTemp, Log, TEXT("Inventaire personnages sauvegardé."));
 		}
@@ -108,6 +134,10 @@ void APlayerActor::SaveInventory()
 		{
 			UE_LOG(LogTemp, Error, TEXT("Erreur lors de la sauvegarde de l'inventaire personnages."));
 		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Impossible de créer ou charger la sauvegarde."));
 	}
 }
 
@@ -117,12 +147,12 @@ void APlayerActor::LoadInventory()
 		return;
 
 	UGachaSaveGame* LoadedGame = Cast<UGachaSaveGame>(
-		UGameplayStatics::LoadGameFromSlot(TEXT("GachaSaveSlot"), 0)
+	   UGameplayStatics::LoadGameFromSlot(TEXT("GachaSaveSlot"), 0)
 	);
 
 	if (LoadedGame)
 	{
-		CharactersProgress = LoadedGame->SavedCharacters;
+		CharactersInventory = LoadedGame->SavedCharactersArray;
 		UE_LOG(LogTemp, Log, TEXT("Inventaire personnages chargé."));
 	}
 }

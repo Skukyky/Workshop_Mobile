@@ -18,7 +18,7 @@ void UGachaInventoryWidget::NativeConstruct()
 
     if (LoadedGame && InventoryScrollBox && CharacterDataTable)
     {
-        PopulateInventory(LoadedGame->SavedCharacters);
+        PopulateInventory(LoadedGame->SavedCharactersArray);  // Tableau à la place de TMap
     }
     else if (InventoryScrollBox)
     {
@@ -26,7 +26,7 @@ void UGachaInventoryWidget::NativeConstruct()
     }
 }
 
-void UGachaInventoryWidget::PopulateInventory(const TMap<FName, FCharacterProgress>& CharactersProgress)
+void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& CharactersInventory)
 {
     if (!InventoryScrollBox || !CharacterDataTable)
     {
@@ -36,7 +36,7 @@ void UGachaInventoryWidget::PopulateInventory(const TMap<FName, FCharacterProgre
 
     InventoryScrollBox->ClearChildren();
 
-    if (CharactersProgress.Num() == 0)
+    if (CharactersInventory.Num() == 0)
     {
         UE_LOG(LogTemp, Warning, TEXT("Aucun personnage débloqué dans l'inventaire."));
         if (GEngine)
@@ -46,10 +46,9 @@ void UGachaInventoryWidget::PopulateInventory(const TMap<FName, FCharacterProgre
         return;
     }
 
-    for (const TPair<FName, FCharacterProgress>& Pair : CharactersProgress)
+    for (const FCharacterProgress& Progress : CharactersInventory)
     {
-        const FName& CharacterRowName = Pair.Key;
-        const FCharacterProgress& Progress = Pair.Value;
+        const FName& CharacterRowName = Progress.CharacterID;
 
         UE_LOG(LogTemp, Log, TEXT("Personnage débloqué : %s, étoiles : %d"), *CharacterRowName.ToString(), Progress.StarCount);
         if (GEngine)
