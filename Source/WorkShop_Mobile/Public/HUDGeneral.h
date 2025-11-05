@@ -84,5 +84,16 @@ public:
 
 	UFUNCTION()
 	void ClickCloseOption();
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* CreditButton;
+
+	UPROPERTY()
+	UUserWidget* CreditWidgetRef;
 	
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
+	TSubclassOf<UUserWidget> WidgetCreditReference;
+	
+	UFUNCTION()
+	void ClickCreditButton();
 };
