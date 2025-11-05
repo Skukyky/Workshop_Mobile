@@ -1,5 +1,6 @@
 #include "BTNCustomWidget.h"
 #include "Components/Button.h"
+#include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 
 void UBTNCustomWidget::NativePreConstruct()
@@ -28,9 +29,12 @@ void UBTNCustomWidget::NativePreConstruct()
 
 			ButtonStyle.SetNormal(NewBrush);
 			ButtonStyle.SetHovered(NewBrush);  
-			ButtonStyle.SetPressed(NewBrush);  
-
+			ButtonStyle.SetPressed(NewBrush);
+			
 			BTN_Custom->SetStyle(ButtonStyle);
+			
+			DesiredSize->SetHeightOverride(BackgroundTexture->GetSizeX());
+			DesiredSize->SetWidthOverride(BackgroundTexture->GetSizeY());
 		}
 	}
 }

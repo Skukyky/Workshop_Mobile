@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "BTNCustomWidget.generated.h"
 
+class USizeBox;
 class UButton;
 class UTextBlock;
 
@@ -22,11 +23,17 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TextBTN;
 
+	UPROPERTY(meta = (BindWidget))
+	USizeBox* DesiredSize;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLinearColor BackgroundColor = FLinearColor::White;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Text = FText::FromString("");
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector2D CustomHeight = FVector2D::ZeroVector;
 
 	/** Événement déclenché lorsque le bouton est cliqué */
 	UPROPERTY(BlueprintAssignable, Category = "Events")
