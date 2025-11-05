@@ -6,7 +6,7 @@ struct FCharacterProgress
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite)
-	FName CharacterRowName;
+	FName CharacterRowName = "";
 
 	UPROPERTY(BlueprintReadWrite)
 	int StarCount = 0;

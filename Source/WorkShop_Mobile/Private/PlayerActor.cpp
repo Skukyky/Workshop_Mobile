@@ -5,6 +5,9 @@
 
 #include <string>
 
+#include "GachaSaveGame.h"
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 APlayerActor::APlayerActor()
 {
@@ -87,3 +90,39 @@ void APlayerActor::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+void APlayerActor::SaveInventory()
+{
+	UGachaSaveGame* SaveGameInstance = Cast<UGachaSaveGame>(
+		UGameplayStatics::CreateSaveGameObject(UGachaSaveGame::StaticClass())
+	);
+
+	if (SaveGameInstance)
+	{
+		SaveGameInstance->SavedCharacters = CharactersProgress;
+
+		if (UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("GachaSaveSlot"), 0))
+		{
+			UE_LOG(LogTemp, Log, TEXT("Inventaire personnages sauvegardé."));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Erreur lors de la sauvegarde de l'inventaire personnages."));
+		}
+	}
+}
+
+void APlayerActor::LoadInventory()
+{
+	if (!UGameplayStatics::DoesSaveGameExist(TEXT("GachaSaveSlot"), 0))
+		return;
+
+	UGachaSaveGame* LoadedGame = Cast<UGachaSaveGame>(
+		UGameplayStatics::LoadGameFromSlot(TEXT("GachaSaveSlot"), 0)
+	);
+
+	if (LoadedGame)
+	{
+		CharactersProgress = LoadedGame->SavedCharacters;
+		UE_LOG(LogTemp, Log, TEXT("Inventaire personnages chargé."));
+	}
+}

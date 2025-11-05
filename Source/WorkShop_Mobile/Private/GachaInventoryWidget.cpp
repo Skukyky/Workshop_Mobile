@@ -46,9 +46,9 @@ void UGachaInventoryWidget::PopulateInventory(const TMap<FName, FCharacterProgre
         return;
     }
 
-    for (const auto& Pair : CharactersProgress)
+    for (const TPair<FName, FCharacterProgress>& Pair : CharactersProgress)
     {
-        FName CharacterRowName = Pair.Key;
+        const FName& CharacterRowName = Pair.Key;
         const FCharacterProgress& Progress = Pair.Value;
 
         UE_LOG(LogTemp, Log, TEXT("Personnage débloqué : %s, étoiles : %d"), *CharacterRowName.ToString(), Progress.StarCount);
@@ -58,26 +58,31 @@ void UGachaInventoryWidget::PopulateInventory(const TMap<FName, FCharacterProgre
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, DebugMsg);
         }
 
-        FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT(""));
+        FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT("GachaInventoryWidget::PopulateInventory"));
         if (!CharacterData)
         {
             UE_LOG(LogTemp, Warning, TEXT("CharacterData introuvable pour %s"), *CharacterRowName.ToString());
             continue;
         }
 
-        if (ItemWidgetClass)
-        {
-            UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
-            if (EntryWidget)
-            {
-                EntryWidget->InitializeWithData(*CharacterData, Progress);
-                InventoryScrollBox->AddChild(EntryWidget);
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Ajouté un widget BP dans la ScrollBox"));
-            }
-        }
-        else
+        if (!ItemWidgetClass)
         {
             UE_LOG(LogTemp, Error, TEXT("ItemWidgetClass n'est pas assigné !"));
+            continue;
+        }
+
+        UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
+        if (!EntryWidget)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Echec de création du widget pour %s"), *CharacterRowName.ToString());
+            continue;
+        }
+
+        EntryWidget->InitializeWithData(*CharacterData, Progress);
+        InventoryScrollBox->AddChild(EntryWidget);
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Ajouté %s dans la ScrollBox"), *CharacterRowName.ToString()));
         }
     }
 }

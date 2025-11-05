@@ -21,13 +21,7 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UScrollBox* ScrollBoxBanner;
-
-	UPROPERTY(meta = (BindWidget))
-	UButton* BTN_PullMulti;
 	
-	UPROPERTY(meta = (BindWidget))
-	UButton* BTN_Pull;
-
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TypeText;
 
@@ -58,6 +52,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
 	float ScrollDirection = 0.0;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+	bool SnappingToMenu = false;
+
 protected:
 
 	virtual void NativeConstruct() override;
@@ -65,19 +62,5 @@ protected:
 	virtual void NativePreConstruct() override;
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
-private:
-
-	UFUNCTION(BlueprintCallable)
-	void OnPullButtonClicked();
-
-	UFUNCTION(BlueprintCallable)
-	void OnPullMultiButtonClicked();
-
-	void SaveProgress();
-
-	void LoadProgress();
-
-	UFUNCTION()
-	void OnUserScrolled(float CurrentOffset);
+	
 };
