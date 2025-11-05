@@ -80,11 +80,11 @@ void APlayerActor::BeginPlay()
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Inventaire personnages chargés :"));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Inventaire personnages chargés :"));
 			for (const FCharacterProgress& Elem : CharactersInventory)
 			{
 				FString Msg = FString::Printf(TEXT("- %s : Etoiles %d"), *Elem.CharacterID.ToString(), Elem.StarCount);
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Msg);
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, Msg);
 			}
 		}
 	}

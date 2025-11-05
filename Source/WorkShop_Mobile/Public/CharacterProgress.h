@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "CharacterProgress.generated.h"
 
+class AWorker;
+
 USTRUCT(BlueprintType)
 struct FCharacterProgress
 {
@@ -20,6 +22,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SaveData")
 	float StatTikTok = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SaveData")
+	AWorker* WorkerSpawnRef = nullptr;
 
 	// Constructeur par défaut
 	FCharacterProgress()

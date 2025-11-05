@@ -4,8 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/ScrollBox.h"
+#include "Components/UniformGridPanel.h"
 #include "WorkRoomSettingWidget.generated.h"
 
+class ARoomWorking;
+class AWorker;
+class UBTNCustomWidget;
+class APlayerActor;
 /**
  * 
  */
@@ -14,4 +20,31 @@ class WORKSHOP_MOBILE_API UWorkRoomSettingWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	
+	UPROPERTY(Meta = (BindWidget))
+	UScrollBox* ScrollBox;
+
+	UPROPERTY(Meta = (BindWidget))
+	UUniformGridPanel* GridPanel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	APlayerActor* PlayerActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ARoomWorking* RoomWorking;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UBTNCustomWidget> Button;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UBTNCustomWidget*> CustomButtonForWorker;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AWorker* Worker;
+
+	virtual void NativePreConstruct() override;
+
+	virtual void NativeConstruct() override;
 };

@@ -2,9 +2,11 @@
  
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "tuple"
 #include "RoomWorking.generated.h"
 
 
+class UWorkRoomSettingWidget;
 class APlayerActor;
 class AWorker;
 
@@ -32,7 +34,16 @@ struct FStatPerLevel
 	int MaxMoneyStorable = 1000;
 	
 };
- 
+
+USTRUCT(BlueprintType)
+struct FWorkerAssigned
+{
+	GENERATED_BODY()
+	UPROPERTY()
+	AWorker* Worker;
+	UPROPERTY()
+	FVector2D Location;
+};
 UCLASS()
 class WORKSHOP_MOBILE_API ARoomWorking : public AActor
 {
@@ -48,7 +59,7 @@ public:
 	bool CanUpgradeWithGem();
 
 	UFUNCTION()
-	void AddMoney(int NewMoney);
+	void AddMoney(float NewMoney);
 
 	UFUNCTION()
 	void SendMoneyToPlayer();
@@ -57,10 +68,13 @@ public:
 	float WorkMultiplierOnCurrentLevel = 0.f;
 
 	UPROPERTY()
-	TArray<AWorker*> Workers = {nullptr,nullptr};
+	TArray<FWorkerAssigned> Workers;
 
 	UFUNCTION()
 	void AddWorker(int position, AWorker* worker);
+
+	UFUNCTION()
+	void SpawnWidget();
 
 protected:
 	virtual void BeginPlay() override;
@@ -81,9 +95,13 @@ protected:
 	APlayerActor* PlayerActor = nullptr;
 
 	UPROPERTY()
-	int CurrentMoneyInStock = 0;
+	float CurrentMoneyInStock = 0;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UWorkRoomSettingWidget> Widget;
+	
+	UPROPERTY()
+	UWorkRoomSettingWidget* RoomSettingWidget = nullptr;
 
 public:	
 	virtual void Tick(float DeltaTime) override;

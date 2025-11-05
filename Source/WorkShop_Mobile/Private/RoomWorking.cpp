@@ -2,7 +2,9 @@
 
 #include "RoomWorking.h"
 #include "PlayerActor.h"
+#include "WorkRoomSettingWidget.h"
 #include "Worker.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 ARoomWorking::ARoomWorking()
@@ -34,14 +36,14 @@ void ARoomWorking::Upgrade()
 	{
 		PlayerActor->SetPoolResource(117);
 	}
-	for (AWorker* Worker : Workers)
+	for (FWorkerAssigned Worker : Workers)
 	{
-		Worker->AddBonusPerRoom();
+		Worker.Worker->AddBonusPerRoom();
 	}
 	int Num = (StatPerLevel[LevelRoom].MaxNbrWorker - 1) - Workers.Num() ;
 	for (int i = 0; i<Num - 1; i++)
 	{
-		Workers.Add(nullptr);
+		Workers.Add({nullptr, FVector2D::ZeroVector});
 	}
 }
 
@@ -60,24 +62,24 @@ bool ARoomWorking::CanUpgradeWithGem()
 	return false;
 }
 
-void ARoomWorking::AddMoney(int NewMoney)
+void ARoomWorking::AddMoney(float NewMoney)
 {
-	int MoneyTemp = CurrentMoneyInStock + NewMoney;
-	int MaxMoney = StatPerLevel[LevelRoom].MaxMoneyStorable;
+	float MoneyTemp = CurrentMoneyInStock + NewMoney;
+	float MaxMoney = StatPerLevel[LevelRoom].MaxMoneyStorable;
 	CurrentMoneyInStock = FMath::Clamp(MoneyTemp, 0, MaxMoney);
  
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
-			FString::Printf(TEXT("MoneyTemp: %d, Clamp: [0, %d], Result: %d"), MoneyTemp, MaxMoney, CurrentMoneyInStock));
+			FString::Printf(TEXT("MoneyTemp: %f, Clamp: [0, %f], Result: %f"), NewMoney, MaxMoney, CurrentMoneyInStock));
 	}
 	if (CurrentMoneyInStock >= MaxMoney)
 	{
-		for (AWorker* Worker : Workers)
+		for (FWorkerAssigned Worker : Workers)
 		{
-			if (Worker)
+			if (Worker.Worker == nullptr)
 			{
-				Worker->StopWorking();
+				Worker.Worker->StopWorking();
 			}
 		}
 		SendMoneyToPlayer();
@@ -90,11 +92,11 @@ void ARoomWorking::SendMoneyToPlayer()
 	{
 		PlayerActor->SetMoney(CurrentMoneyInStock);
 		CurrentMoneyInStock = 0;
-		for (AWorker* Worker : Workers)
+		for (FWorkerAssigned Worker : Workers)
 		{
-			if (Worker)
+			if (Worker.Worker != nullptr)
 			{
-				Worker->StartWorking();
+				Worker.Worker->StartWorking();
 			}
 		}
 	}
@@ -102,7 +104,28 @@ void ARoomWorking::SendMoneyToPlayer()
 
 void ARoomWorking::AddWorker(int position, AWorker* worker)
 {
-	Workers[position] = worker;
+	Workers[position]= {worker, FVector2D::ZeroVector};
+}
+
+void ARoomWorking::SpawnWidget()
+{
+	if (Widget)
+	{
+		if (RoomSettingWidget)
+		{
+			return;
+		}
+		else
+		{
+			RoomSettingWidget = CreateWidget<UWorkRoomSettingWidget>(GetWorld(), Widget);
+			if (RoomSettingWidget)
+			{
+				RoomSettingWidget->RoomWorking = this;
+				RoomSettingWidget->AddToViewport();
+			}
+		}
+	}
+	
 }
 
 // Called when the game starts or when spawned
@@ -111,6 +134,7 @@ void ARoomWorking::BeginPlay()
 	Super::BeginPlay();
 	
 	PlayerActor = Cast<APlayerActor>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	SpawnWidget();
 }
 
 // Called every frame
