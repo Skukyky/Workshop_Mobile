@@ -24,36 +24,51 @@ void UGachaPullWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    if (!ScrollBoxBanner)  // Vérification de sécurité
-    {
+    if (!ScrollBoxBanner)
         return;
-    }
 
-    if (!ScrollBoxBanner->HasMouseCapture() && ScrollBoxBanner->GetScrollOffset() != ScrollLocation)
+    if (!ScrollBoxBanner->HasMouseCapture())
     {
-        if (FMath::Abs(ScrollBoxBanner->GetScrollOffset() - ScrollLocation) > 300 && !SnappingToMenu)
+        float CurrentOffset = ScrollBoxBanner->GetScrollOffset();
+
+        if (!SnappingToMenu && FMath::Abs(CurrentOffset - ScrollLocation) > SnapThreshold)
         {
-            ScrollDirection = FMath::Sign(ScrollBoxBanner->GetScrollOffset() - ScrollLocation);
-            ScrollLocation = ScrollLocation + (ScrollDirection * -2000);
+            ScrollDirection = FMath::Sign(CurrentOffset - ScrollLocation);
+
+            // Par exemple, largeur d'une bannière + marge = BannerWidth
+            const float BannerWidth = 600.f;
+
+            // Calculer la nouvelle cible en ajoutant un pas BannerWidth selon direction
+            ScrollLocation += ScrollDirection * BannerWidth;
+
+            // Clamp ScrollLocation dans les limites scroll (0 à max scroll)
+            ScrollLocation = FMath::Clamp(ScrollLocation, 0.f, ScrollBoxBanner->GetScrollOffsetOfEnd());
+
+            ScrollBoxBanner->EndInertialScrolling();
+
+            SnappingToMenu = true;
         }
 
-        ScrollBoxBanner->EndInertialScrolling();
+        if (SnappingToMenu)
+        {
+            float InterpScrollOffset = FMath::FInterpTo(CurrentOffset, ScrollLocation, InDeltaTime, SnapInterpSpeed);
 
-        // Interpolation
-        float InterpScrollOffset = FMath::FInterpTo(
-            ScrollBoxBanner->GetScrollOffset(),  // current
-            ScrollLocation,                      // target
-            InDeltaTime,                        // deltaTime
-            50.f                               // interp speed
-        );
+            ScrollBoxBanner->SetScrollOffset(InterpScrollOffset);
 
-        ScrollBoxBanner->SetScrollOffset(InterpScrollOffset);
-        SnappingToMenu = true;
-    }else
+            // Lorsque proche de la cible
+            if (FMath::IsNearlyEqual(InterpScrollOffset, ScrollLocation, 1.f))
+            {
+                ScrollBoxBanner->SetScrollOffset(ScrollLocation);
+                SnappingToMenu = false;
+            }
+        }
+    }
+    else
     {
         SnappingToMenu = false;
     }
 }
+
 
 
 

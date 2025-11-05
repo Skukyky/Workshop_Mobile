@@ -8,7 +8,6 @@
 #include "CharacterProgress.h"
 #include "BannerWidget.generated.h"
 
-
 USTRUCT(BlueprintType)
 struct FDropRateByRarity
 {
@@ -42,11 +41,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
     UDataTable* CharacterDataTable;
 
-    
+    /** Map pour suivi (peut-être temporaire) */
     UPROPERTY()
     TMap<FName, FCharacterProgress> CharactersProgress;
 
-    UPROPERTY(BlueprintReadWrite)
+    /** Inventaire principal sous forme de tableau, supporte doublons et fusion */
+    UPROPERTY(BlueprintReadWrite, Category="Inventory")
     TArray<FCharacterProgress> CharactersInventory;
 
 protected:
@@ -61,4 +61,7 @@ protected:
 
 private:
     void SaveProgress();
+
+    FName PerformSinglePull();
+    void MergePullResults(const TArray<FName>& PullResults);
 };
