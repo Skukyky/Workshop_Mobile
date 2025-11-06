@@ -10,7 +10,6 @@
 
 class UGachaPullWidget;
 
-
 USTRUCT(BlueprintType)
 struct FDropRateByRarity
 {

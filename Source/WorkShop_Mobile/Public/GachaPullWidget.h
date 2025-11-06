@@ -6,82 +6,96 @@
 #include "CharacterProgress.h"
 #include "GachaPullWidget.generated.h"
 
+class AGachaCharacterShowcase;
+class UImage;
 class UBTNCustomWidget;
 class UBannerWidget;
 class UWidgetSwitcher;
 class UUniformGridPanel;
 class UScrollBox;
-class UButton;
-class UTextBlock;
 
 UCLASS()
 class WORKSHOP_MOBILE_API UGachaPullWidget : public UUserWidget
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
+    
+    bool bSinglePullWithPlaceholders = false;
+    
+    TArray<FName> CurrentPulledCharacters;
+    int32 CurrentShowcaseIndex = 0;
 
-	UPROPERTY(meta = (BindWidget))
-	UBTNCustomWidget* BTN_BackToBanner;
-	
-	UPROPERTY(meta = (BindWidget))
-	UBannerWidget* GoldBanner;
+    UPROPERTY()
+    AGachaCharacterShowcase* CharacterShowcaseActor = nullptr;
 
-	UPROPERTY(meta = (BindWidget))
-	UBannerWidget* UnitBanner;
+    UPROPERTY(EditAnywhere, Category="Showcase")
+    TSubclassOf<AGachaCharacterShowcase> CharacterShowcaseActorClass = nullptr;
 
-	// ScrollBox contenant les bannières
-	UPROPERTY(meta = (BindWidget))
-	UScrollBox* ScrollBoxBanner;
+    UPROPERTY(meta = (BindWidget))
+    UBTNCustomWidget* BTN_BackToBanner;
 
-	UPROPERTY(meta = (BindWidget))
-	UWidgetSwitcher* WS_GachaPull;
+    UPROPERTY(meta = (BindWidget))
+    UBTNCustomWidget* BTN_CharacterNext;
 
-	UPROPERTY(meta = (BindWidget))
-	UUniformGridPanel* UGP_GachaHistory;
-	// Table des données pour les personnages
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
-	UDataTable* CharacterDataTable;
+    UPROPERTY(meta = (BindWidget))
+    UImage* CharacterImage;
+    
+    UPROPERTY(meta = (BindWidget))
+    UBannerWidget* GoldBanner;
 
-	// Map de progression des personnages
-	UPROPERTY()
-	TMap<FName, FCharacterProgress> CharactersProgress;
+    UPROPERTY(meta = (BindWidget))
+    UBannerWidget* UnitBanner;
 
-	// Valeur du scroll actuel ciblé (pour le snap)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
-	float ScrollLocation = 0.0f;
+    UPROPERTY(meta = (BindWidget))
+    UScrollBox* ScrollBoxBanner;
 
-	// Direction du scroll (-1 ou 1)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
-	float ScrollDirection = 0.0f;
+    UPROPERTY(meta = (BindWidget))
+    UWidgetSwitcher* WS_GachaPull;
 
-	// Bool indiquant si on est en train de snapper
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
-	bool SnappingToMenu = false;
+    UPROPERTY(meta = (BindWidget))
+    UUniformGridPanel* UGP_GachaHistory;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
-	float SnapThreshold = 50.f;  // seuil en pixels pour déclencher le snap
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+    UDataTable* CharacterDataTable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
-	float SnapInterpSpeed = 10.f;  // vitesse d'interpolation du snap
+    UPROPERTY()
+    TMap<FName, FCharacterProgress> CharactersProgress;
 
-	// Ajoute une image à l'historique pour un personnage donné
-	void AddHistoryItem(FName CharacterID);
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+    float ScrollLocation = 0.0f;
 
-	// Affiche l'historique des tirages et active le widget switcher sur l'onglet concerné
-	void ShowPullHistory(const TArray<FName>& PulledCharacters);
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+    float ScrollDirection = 0.0f;
 
-	UFUNCTION()
-	void HandleBackToBannerClicked();
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+    bool SnappingToMenu = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+    float SnapThreshold = 50.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+    float SnapInterpSpeed = 10.f;
+
+    void AddHistoryItem(FName CharacterID);
+
+    void ShowPullHistory(const TArray<FName>& PulledCharacters);
+
+    void ShowPullResultsWithShowcase(const TArray<FName>& PulledCharacters); // nouvelle méthode pour showcase
+
+    void UpdateShowcaseCharacter();
+
+    UFUNCTION()
+    void HandleBackToBannerClicked();
+
+    UFUNCTION()
+    void OnCharacterNextClicked();
 
 protected:
 
-	virtual void NativeConstruct() override;
+    virtual void NativeConstruct() override;
 
-	virtual void NativePreConstruct() override;
+    virtual void NativePreConstruct() override;
 
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
-	
-    
+    virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };
