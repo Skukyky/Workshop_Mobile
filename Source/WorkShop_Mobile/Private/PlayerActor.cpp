@@ -35,23 +35,20 @@ static TArray<FVector2D> ConvertTo2D(const TArray<FVector>& Vec3Array)
 	return Vec2Array;
 }
 
-// Sets default values
 APlayerActor::APlayerActor()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	SetRootComponent(RootComp);
 	RootComp->SetMobility(EComponentMobility::Movable);
-
-	// Créer et attacher le SpringArm
+	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComp);
-	SpringArm->TargetArmLength = 300.f; // Longueur initiale modifiable en BP
-	SpringArm->bUsePawnControlRotation = false; // si tu veux contrôler la rotation du springarm via controller
-
-	// Attacher la caméra au bout du SpringArm
+	SpringArm->TargetArmLength = 300.f;
+	SpringArm->bUsePawnControlRotation = false; 
+	
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
@@ -94,23 +91,7 @@ void APlayerActor::BeginPlay()
 {
 	Super::BeginPlay();
 	LoadInventory();
-
-	if (GEngine)
-	{
-		if (CharactersInventory.Num() == 0)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Inventaire vide au début du jeu."));
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Inventaire personnages chargés :"));
-			for (const FCharacterProgress& Elem : CharactersInventory)
-			{
-				FString Msg = FString::Printf(TEXT("- %s : Etoiles %d"), *Elem.CharacterID.ToString(), Elem.StarCount);
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Msg);
-			}
-		}
-	}
+	
 }
 
 // Called every frame

@@ -3,6 +3,24 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "PlayerActor.h"
+#include "Worker.h"
+
+bool APlayerCameraController::GetHitUnderFingerByChannel(FVector2D ScreenPosition, ECollisionChannel TraceChannel, FHitResult& OutHit)
+{
+	FVector WorldLocation, WorldDirection;
+	if (DeprojectScreenPositionToWorld(ScreenPosition.X, ScreenPosition.Y, WorldLocation, WorldDirection))
+	{
+		FVector Start = WorldLocation;
+		FVector End = Start + (WorldDirection * 10000.f);
+
+		FCollisionQueryParams Params;
+		Params.bReturnPhysicalMaterial = false;
+		Params.AddIgnoredActor(GetPawn());
+
+		return GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, TraceChannel, Params);
+	}
+	return false;
+}
 
 void APlayerCameraController::BeginPlay()
 {
@@ -53,8 +71,7 @@ void APlayerCameraController::Tick(float DeltaSeconds)
 
 		float Delta = Distance - LastTouchDistance;
 		LastTouchDistance = Distance;
-
-		// ----- NEW: Zoom with SpringArm -----
+		
 		if (FMath::Abs(Delta) > KINDA_SMALL_NUMBER)
 		{
 			APawn* ControlledPawn = GetPawn();
@@ -101,18 +118,30 @@ void APlayerCameraController::SetupInputComponent()
 		{
 			EIC->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &APlayerCameraController::OnZoomTriggered);
 		}
+		if (TouchSelectAction)
+		{
+			EIC->BindAction(TouchSelectAction, ETriggerEvent::Started, this, &APlayerCameraController::OnTouchSelect);
+		}
 	}
 }
+
 
 void APlayerCameraController::OnTouchPressed(const FInputActionValue& Value)
 {
 	bTouching = true;
 	bFirstTouch = true;
-	LastTouchPosition = Value.Get<FVector2D>();
+	bHasMoved = false;
+	InitialTouchPosition = Value.Get<FVector2D>();
+	LastTouchPosition = InitialTouchPosition;
 }
 
 void APlayerCameraController::OnTouchReleased(const FInputActionValue& Value)
 {
+	if (!bHasMoved)
+	{
+		OnTouchSelect(FInputActionValue(InitialTouchPosition));
+	}
+
 	bTouching = false;
 }
 
@@ -121,6 +150,7 @@ void APlayerCameraController::OnTouchPosition(const FInputActionValue& Value)
 	if (!bTouching) return;
 
 	FVector2D CurrentPosition = Value.Get<FVector2D>();
+
 	if (bFirstTouch)
 	{
 		LastTouchPosition = CurrentPosition;
@@ -128,15 +158,22 @@ void APlayerCameraController::OnTouchPosition(const FInputActionValue& Value)
 		return;
 	}
 
-	FVector2D Delta = CurrentPosition - LastTouchPosition;
-	if (Delta.SizeSquared() < KINDA_SMALL_NUMBER) return;
+	FVector2D TotalDelta = CurrentPosition - InitialTouchPosition;
+	if (!bHasMoved && TotalDelta.Size() > TouchMoveThreshold)
+	{
+		bHasMoved = true;
+	}
 
+	FVector2D Delta = CurrentPosition - LastTouchPosition;
 	LastTouchPosition = CurrentPosition;
 
-	if (APawn* ControlledPawn = GetPawn())
+	if (bHasMoved)
 	{
-		FVector MoveDirection(Delta.Y * PanSpeed, -Delta.X * PanSpeed, 0.f);
-		ControlledPawn->AddActorWorldOffset(MoveDirection, true);
+		if (APawn* ControlledPawn = GetPawn())
+		{
+			FVector MoveDirection(Delta.Y * PanSpeed, -Delta.X * PanSpeed, 0.f);
+			ControlledPawn->AddActorWorldOffset(MoveDirection, true);
+		}
 	}
 }
 
@@ -160,6 +197,52 @@ void APlayerCameraController::OnZoomTriggered(const FInputActionValue& Value)
 
 				UE_LOG(LogTemp, Warning, TEXT("Adjusted SpringArm Length: %f"), NewLength);
 			}
+		}
+	}
+}
+
+void APlayerCameraController::OnTouchSelect(const FInputActionValue& Value)
+{
+	FVector2D ScreenPosition = Value.Get<FVector2D>();
+
+	FHitResult HitResult;
+	if (GetHitUnderFingerByChannel(ScreenPosition, ECC_Visibility, HitResult))
+	{
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Touched Actor: %s"), *HitActor->GetName());
+			if (AWorker* Worker = Cast<AWorker>(HitActor))
+			{
+				int32 Index = Worker->MyIndex;
+				if (Worker->MyDataTable)
+				{
+					TArray<FName> RowNames = Worker->MyDataTable->GetRowNames();
+					if (RowNames.IsValidIndex(Index))
+					{
+						static const FString ContextString(TEXT("DataTable Row Lookup"));
+						FCharacterStructure* Row = Worker->MyDataTable->FindRow<FCharacterStructure>(RowNames[Index], ContextString);
+						if (Row)
+						{
+							UE_LOG(LogTemp, Log, TEXT("Touched Worker: %s (Index %d)"), *Row->Name, Index);
+							if (GEngine)
+							{
+								GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
+									FString::Printf(TEXT("Touched Worker: %s (Index %d)"), *Row->Name, Index));
+							}
+						}
+					}
+				}
+			}
+			else if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan,
+					FString::Printf(TEXT("Touched Actor: %s"), *HitActor->GetName()));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("No actor hit under finger"));
 		}
 	}
 }

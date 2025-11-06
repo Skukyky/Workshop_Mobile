@@ -21,6 +21,8 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupInputComponent() override;
 
+	bool GetHitUnderFingerByChannel(FVector2D ScreenPosition, ECollisionChannel TraceChannel, FHitResult& OutHit);
+
 	// Reference to the Input Mapping Context asset
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputMappingContext* InputMappingContext;
@@ -33,6 +35,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* ZoomAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* TouchSelectAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	float PanSpeed = 1.5f;
@@ -51,6 +56,9 @@ protected:
 
 	// Header
 private:
+	bool bHasMoved = false;
+    float TouchMoveThreshold = 10.f;
+    FVector2D InitialTouchPosition;
 	float LastTouchDistance = 0.f;
 	FVector OriginPosition;
 
@@ -60,6 +68,7 @@ private:
 	void OnTouchReleased(const FInputActionValue& Value);
 	void OnTouchPosition(const FInputActionValue& Value);
 	void OnZoomTriggered(const FInputActionValue& Value);
+	void OnTouchSelect(const FInputActionValue& Value);
 
 	bool bTouching = false;
 	FVector2D LastTouchPosition;
