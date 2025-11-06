@@ -1,8 +1,13 @@
 #include "GachaInventoryItemWidget.h"
+
+#include "BTNCustomWidget.h"
 #include "Components/TextBlock.h"
 
-void UGachaInventoryItemWidget::InitializeWithData(const FCharacterStructure& CharacterData, const FCharacterProgress& Progress)
+void UGachaInventoryItemWidget::InitializeWithData(const FCharacterStructure& CharacterData, const FCharacterProgress& Progress, FName InCharacterID)
 {
+	CharacterID = InCharacterID;
+
+	// Ton code existant d'initialisation
 	if (NameText)
 	{
 		NameText->SetText(FText::FromString(CharacterData.Name));
@@ -56,5 +61,23 @@ void UGachaInventoryItemWidget::InitializeWithData(const FCharacterStructure& Ch
 	if (StatTikTokText)
 	{
 		StatTikTokText->SetText(FText::AsNumber(Progress.StatTikTok));
+	}
+}
+
+void UGachaInventoryItemWidget::OnItemClicked()
+{
+	if (OnItemSelected.IsBound())
+	{
+		OnItemSelected.Broadcast(this);
+	}
+}
+
+void UGachaInventoryItemWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (BTN_SelectionItem)
+	{
+		BTN_SelectionItem->OnCustomButtonClicked.AddDynamic(this, &UGachaInventoryItemWidget::OnItemClicked);
 	}
 }

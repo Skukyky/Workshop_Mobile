@@ -1,9 +1,11 @@
 #include "GachaInventoryWidget.h"
-#include "CharacterStructure.h"
+#include "BTNCustomWidget.h"
+#include "GachaCharacterShowcase.h"
 #include "GachaInventoryItemWidget.h"
 #include "Components/ScrollBox.h"
 #include "Kismet/GameplayStatics.h"
 #include "GachaSaveGame.h"
+#include "Components/Image.h"
 
 void UGachaInventoryWidget::NativeConstruct()
 {
@@ -22,6 +24,16 @@ void UGachaInventoryWidget::NativeConstruct()
     else if (InventoryScrollBox)
     {
         InventoryScrollBox->ClearChildren();
+    }
+
+    if (BTN_LostFocus)
+    {
+        BTN_LostFocus->OnCustomButtonClicked.AddDynamic(this, &UGachaInventoryWidget::OnLostFocusClicked);
+    }
+
+    if (BTN_Assign)
+    {
+        BTN_Assign->OnCustomButtonClicked.AddDynamic(this, &UGachaInventoryWidget::OnAssignClicked);
     }
 }
 
@@ -42,7 +54,7 @@ void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& 
     // Copie locale pour tri
     TArray<FCharacterProgress> SortedInventory = CharactersInventory;
 
-    // Tri par rareté décroissante, puis étoiles décroissantes, puis nom croissant
+    // Tri par rareté descendante, étoiles descendantes, puis nom ascendante
     SortedInventory.Sort([this](const FCharacterProgress& A, const FCharacterProgress& B)
     {
         FCharacterStructure* DataA = CharacterDataTable->FindRow<FCharacterStructure>(A.CharacterID, TEXT(""));
@@ -85,7 +97,89 @@ void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& 
             continue;
         }
 
-        EntryWidget->InitializeWithData(*CharacterData, Progress);
+        EntryWidget->InitializeWithData(*CharacterData, Progress, Progress.CharacterID);
+
+        // Bind event selection
+        EntryWidget->OnItemSelected.AddDynamic(this, &UGachaInventoryWidget::OnItemSelected);
+
         InventoryScrollBox->AddChild(EntryWidget);
     }
+}
+
+void UGachaInventoryWidget::OnItemSelected(UGachaInventoryItemWidget* ClickedItem)
+{
+    SelectedItemWidget = ClickedItem;
+
+    if (CharacterImage)
+    {
+        CharacterImage->SetIsEnabled(false);
+        CharacterImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+    }
+
+    if (StatImage)
+    {
+        StatImage->SetIsEnabled(false);
+        StatImage->SetVisibility(ESlateVisibility::Visible);
+    }
+
+    if (BTN_Assign)
+    {
+        BTN_Assign->SetVisibility(ESlateVisibility::Visible);
+    }
+
+    // Détruire l'ancien showcase
+    if (CurrentCharacterShowcase)
+    {
+        CurrentCharacterShowcase->Destroy();
+        CurrentCharacterShowcase = nullptr;
+    }
+
+    // Spawn nouveau showcase en utilisant la hauteur configurable
+    if (CharacterShowcaseActorClass && GetWorld())
+    {
+        FVector SpawnLocation = FVector(0.f, 0.f, 100000);
+        FRotator SpawnRotation = FRotator::ZeroRotator;
+        FTransform SpawnTransform(SpawnRotation, SpawnLocation);
+
+        CurrentCharacterShowcase = GetWorld()->SpawnActor<AGachaCharacterShowcase>(CharacterShowcaseActorClass, SpawnTransform);
+
+        if (CurrentCharacterShowcase && SelectedItemWidget)
+        {
+            FName CharacterID = SelectedItemWidget->GetCharacterID();
+            CurrentCharacterShowcase->CharacterDataTable = CharacterDataTable; 
+            CurrentCharacterShowcase->SetCharacterByRowName(CharacterID);
+        }
+    }
+}
+
+
+void UGachaInventoryWidget::OnLostFocusClicked()
+{
+    if (CharacterImage)
+    {
+        CharacterImage->SetVisibility(ESlateVisibility::Collapsed);
+    }
+
+    if (StatImage)
+    {
+        StatImage->SetVisibility(ESlateVisibility::Collapsed);
+    }
+
+    if (BTN_Assign)
+    {
+        BTN_Assign->SetVisibility(ESlateVisibility::Collapsed);
+    }
+
+    if (CurrentCharacterShowcase)
+    {
+        CurrentCharacterShowcase->Destroy();
+        CurrentCharacterShowcase = nullptr;
+    }
+
+    SelectedItemWidget = nullptr;
+}
+
+void UGachaInventoryWidget::OnAssignClicked()
+{
+    // CODE MAXIME
 }
