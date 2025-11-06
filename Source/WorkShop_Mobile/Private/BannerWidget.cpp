@@ -2,15 +2,10 @@
 #include "GachaSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "GachaPullWidget.h"
-#include "Engine/Engine.h" // Pour GEngine
 
 void UBannerWidget::SetParentGachaWidget(UGachaPullWidget* Parent)
 {
     ParentGachaWidget = Parent;
-    if (GEngine && !Parent)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ParentGachaWidget est null dans BannerWidget"));
-    }
 }
 
 void UBannerWidget::NativeConstruct()
@@ -20,32 +15,19 @@ void UBannerWidget::NativeConstruct()
     if (BTN_Pull)
     {
         BTN_Pull->OnCustomButtonClicked.AddDynamic(this, &UBannerWidget::HandlePullClicked);
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Bouton Pull bindé"));
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Erreur : BTN_Pull non bindé"));
     }
 
     if (BTN_PullMulti)
     {
         BTN_PullMulti->OnCustomButtonClicked.AddDynamic(this, &UBannerWidget::HandlePullMultiClicked);
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Bouton PullMulti bindé"));
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Erreur : BTN_PullMulti non bindé"));
     }
 }
 
 void UBannerWidget::HandlePullClicked()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("HandlePullClicked appelé"));
-
     FName PulledCharacter = PerformSinglePull();
     if (PulledCharacter == NAME_None)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Aucun personnage sélectionné lors du pull."));
         return;
     }
 
@@ -57,22 +39,14 @@ void UBannerWidget::HandlePullClicked()
 
     if (ParentGachaWidget)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Appel ShowPullResultsWithShowcase depuis BannerWidget"));
         ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ParentGachaWidget est null !"));
     }
 }
 
 void UBannerWidget::HandlePullMultiClicked()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("HandlePullMultiClicked appelé"));
-
     if (!CharacterDataTable)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("CharacterDataTable est null"));
         return;
     }
 
@@ -81,7 +55,9 @@ void UBannerWidget::HandlePullMultiClicked()
     {
         FName PulledCharacter = PerformSinglePull();
         if (PulledCharacter != NAME_None)
+        {
             PullResults.Add(PulledCharacter);
+        }
     }
 
     MergePullResults(PullResults);
@@ -89,15 +65,8 @@ void UBannerWidget::HandlePullMultiClicked()
 
     if (ParentGachaWidget)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Appel ShowPullResultsWithShowcase depuis BannerWidget (multi)"));
         ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
     }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ParentGachaWidget est null (multi) !"));
-    }
-
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Pull multi effectué."));
 }
 
 void UBannerWidget::SaveProgress()
@@ -152,18 +121,7 @@ void UBannerWidget::SaveProgress()
 
         CharactersInventory.Empty();
 
-        if (UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("GachaSaveSlot"), 0))
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Progression sauvegardée avec succès."));
-        }
-        else
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Erreur lors de la sauvegarde de la progression."));
-        }
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Impossible de créer ou charger la sauvegarde."));
+        UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("GachaSaveSlot"), 0);
     }
 }
 
@@ -181,7 +139,9 @@ FName UBannerWidget::PerformSinglePull()
     {
         FCharacterStructure* Data = CharacterDataTable->FindRow<FCharacterStructure>(RowName, TEXT(""));
         if (!Data)
+        {
             continue;
+        }
 
         float* RarityDropRate = DropRatesByRarity.Find(Data->Rarity);
         float Weight = RarityDropRate ? *RarityDropRate : 0.f;
@@ -203,7 +163,9 @@ FName UBannerWidget::PerformSinglePull()
     {
         FCharacterStructure* CharData = CharacterDataTable->FindRow<FCharacterStructure>(RowName, TEXT(""));
         if (!CharData)
+        {
             continue;
+        }
 
         float* RarityDropRate = DropRatesByRarity.Find(CharData->Rarity);
         float Weight = RarityDropRate ? *RarityDropRate : 0.f;
