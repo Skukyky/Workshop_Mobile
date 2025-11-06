@@ -65,7 +65,7 @@ void APlayerCameraController::Tick(float DeltaSeconds)
 				{
 					// This is equivalent to your scroll zoom:
 					float NewLength = FMath::Clamp(
-						PlayerREF->SpringArm->TargetArmLength + Delta * ZoomSpeed,
+						PlayerREF->SpringArm->TargetArmLength - Delta * ZoomSpeed * PinchZoomSensitivity,
 						ZoomMin,
 						ZoomMax
 					);

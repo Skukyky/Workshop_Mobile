@@ -41,6 +41,9 @@ protected:
 	float ZoomSpeed = 300.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+	float PinchZoomSensitivity = 0.01f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	float ZoomMax = 800.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
