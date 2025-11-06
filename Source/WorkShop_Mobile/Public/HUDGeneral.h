@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Employer.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanel.h"
@@ -96,4 +95,12 @@ public:
 	
 	UFUNCTION()
 	void ClickCreditButton();
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* BoolVibrationButton;
+
+	bool Vibration = true;
+	
+	UFUNCTION()
+	void ClickBoolVibrationButton();
 };

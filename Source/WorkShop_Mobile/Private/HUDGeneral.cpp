@@ -41,6 +41,10 @@ void UHUDGeneral::NativeConstruct()
 	{
 		CreditButton->OnReleased.AddDynamic(this, &UHUDGeneral::ClickCreditButton);
 	}
+	if (BoolVibrationButton)
+	{
+		BoolVibrationButton->OnReleased.AddDynamic(this, &UHUDGeneral::ClickBoolVibrationButton);
+	}
 }
 
 void UHUDGeneral::ClickReserveButton()
@@ -95,4 +99,36 @@ void UHUDGeneral::ClickCreditButton()
 {
 	CreditWidgetRef = CreateWidget<UUserWidget>(GetWorld(), WidgetCreditReference);
 	if (CreditWidgetRef) CreditWidgetRef->AddToViewport();
+}
+
+void UHUDGeneral::ClickBoolVibrationButton()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	if (PlayerController)
+	{
+		if (Vibration)
+		{
+			Vibration = false;
+			PlayerController->bForceFeedbackEnabled = false;
+
+			FButtonStyle ButtonStyle = BoolVibrationButton->WidgetStyle;
+			FLinearColor NewColor(1.0f, 0.0f, 0.0f, 1.0f);
+			FSlateColor NewSlateColor(NewColor);
+
+			ButtonStyle.Normal.TintColor = NewSlateColor;
+			BoolVibrationButton->SetStyle(ButtonStyle);
+		}
+		else
+		{
+			Vibration = true;
+			PlayerController->bForceFeedbackEnabled = true;
+			FButtonStyle ButtonStyle = BoolVibrationButton->WidgetStyle;
+			FLinearColor NewColor(0.0f, 1.0f, 0.0f, 1.0f);
+			FSlateColor NewSlateColor(NewColor);
+
+			ButtonStyle.Normal.TintColor = NewSlateColor;
+			BoolVibrationButton->SetStyle(ButtonStyle);
+		}
+	}
 }
