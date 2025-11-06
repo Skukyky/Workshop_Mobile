@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "CharacterProgress.h"
 #include "PlayerCameraController.h"
 #include "PlayerActor.generated.h"
@@ -38,12 +39,6 @@ public:
 	UFUNCTION()
 	int GetPoolResource() const;
 
-	UFUNCTION()
-	TArray<AWorker*> GetInventory();
-
-	UFUNCTION()
-	void SetInventory();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -62,8 +57,7 @@ protected:
 	
 	UPROPERTY()
 	int PoolResource;
-
-	TArray<AWorker*> Workers;
+	
 	
 public:	
 	// Called every frame
@@ -76,12 +70,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SaveInventory();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	USpringArmComponent* SpringArm;
+	
 	UFUNCTION(BlueprintCallable)
 	void LoadInventory();
+	void ClampCameraWithinBoundary();
+	void OnConstruction(const FTransform& Transform);
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Camera Boundary", meta=(MakeEditWidget=true))
+	TArray<FVector> CameraBoundaryPoints;
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FCharacterProgress> CharactersInventory;
-
 	
-
 };

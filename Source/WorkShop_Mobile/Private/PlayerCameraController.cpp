@@ -2,6 +2,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "PlayerActor.h"
 
 void APlayerCameraController::BeginPlay()
 {
@@ -16,7 +17,6 @@ void APlayerCameraController::BeginPlay()
 		}
 	}
 
-	// Enable input features
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
@@ -54,21 +54,25 @@ void APlayerCameraController::Tick(float DeltaSeconds)
 		float Delta = Distance - LastTouchDistance;
 		LastTouchDistance = Distance;
 
+		// ----- NEW: Zoom with SpringArm -----
 		if (FMath::Abs(Delta) > KINDA_SMALL_NUMBER)
 		{
-			if (APawn* ControlledPawn = GetPawn())
+			APawn* ControlledPawn = GetPawn();
+			if (ControlledPawn)
 			{
-				FVector Move = ControlledPawn->GetActorForwardVector() * Delta * (ZoomSpeed / 100.f);
-				ControlledPawn->AddActorWorldOffset(Move, true);
+				APlayerActor* PlayerREF = Cast<APlayerActor>(ControlledPawn);
+				if (PlayerREF && PlayerREF->SpringArm)
+				{
+					// This is equivalent to your scroll zoom:
+					float NewLength = FMath::Clamp(
+						PlayerREF->SpringArm->TargetArmLength + Delta * ZoomSpeed,
+						ZoomMin,
+						ZoomMax
+					);
+					PlayerREF->SpringArm->TargetArmLength = NewLength;
 
-				// Clamp camera position
-				FVector CurrentLocation = ControlledPawn->GetActorLocation();
-				CurrentLocation.X = FMath::Clamp(CurrentLocation.X, OriginPosition.X - 200.f, OriginPosition.X + 200.f);
-				CurrentLocation.Y = FMath::Clamp(CurrentLocation.Y, OriginPosition.Y - 200.f, OriginPosition.Y + 200.f);
-				CurrentLocation.Z = FMath::Clamp(CurrentLocation.Z, OriginPosition.Z - 200.f, OriginPosition.Z + 200.f);
-				ControlledPawn->SetActorLocation(CurrentLocation);
-
-				UE_LOG(LogTemp, Warning, TEXT("PinchZoom Delta=%.2f | Loc=%s"), Delta, *CurrentLocation.ToString());
+					UE_LOG(LogTemp, Warning, TEXT("PinchZoom Adjusted SpringArm Length: %f"), NewLength);
+				}
 			}
 		}
 	}
@@ -133,12 +137,6 @@ void APlayerCameraController::OnTouchPosition(const FInputActionValue& Value)
 	{
 		FVector MoveDirection(Delta.Y * PanSpeed, -Delta.X * PanSpeed, 0.f);
 		ControlledPawn->AddActorWorldOffset(MoveDirection, true);
-
-		// Clamp after pan too
-		FVector CurrentLocation = ControlledPawn->GetActorLocation();
-		CurrentLocation.X = FMath::Clamp(CurrentLocation.X, OriginPosition.X - ZoomMin, OriginPosition.X + ZoomMax);
-		CurrentLocation.Y = FMath::Clamp(CurrentLocation.Y, OriginPosition.Y - ZoomMin, OriginPosition.Y + ZoomMax);
-		ControlledPawn->SetActorLocation(CurrentLocation);
 	}
 }
 
@@ -147,19 +145,21 @@ void APlayerCameraController::OnZoomTriggered(const FInputActionValue& Value)
 	float ZoomValue = Value.Get<float>();
 	if (FMath::Abs(ZoomValue) > KINDA_SMALL_NUMBER)
 	{
-		if (APawn* ControlledPawn = GetPawn())
+		APawn* ControlledPawn = GetPawn();
+		if (ControlledPawn)
 		{
-			FVector Move = ControlledPawn->GetActorForwardVector() * ZoomValue * ZoomSpeed;
-			ControlledPawn->AddActorWorldOffset(Move, true);
+			APlayerActor* PlayerREF = Cast<APlayerActor>(ControlledPawn);
+			if (PlayerREF && PlayerREF->SpringArm)
+			{
+				float NewLength = FMath::Clamp(
+					PlayerREF->SpringArm->TargetArmLength + ZoomValue * ZoomSpeed,
+					ZoomMin,
+					ZoomMax
+				);
+				PlayerREF->SpringArm->TargetArmLength = NewLength;
 
-			// Clamp
-			FVector CurrentLocation = ControlledPawn->GetActorLocation();
-			CurrentLocation.X = FMath::Clamp(CurrentLocation.X, OriginPosition.X - ZoomMin, OriginPosition.X + ZoomMax);
-			CurrentLocation.Y = FMath::Clamp(CurrentLocation.Y, OriginPosition.Y - ZoomMin, OriginPosition.Y + ZoomMax);
-			CurrentLocation.Z = FMath::Clamp(CurrentLocation.Z, OriginPosition.Z - ZoomMin, OriginPosition.Z + ZoomMax);
-			ControlledPawn->SetActorLocation(CurrentLocation);
-
-			UE_LOG(LogTemp, Warning, TEXT("Zoom Move=%s | Loc=%s"), *Move.ToString(), *CurrentLocation.ToString());
+				UE_LOG(LogTemp, Warning, TEXT("Adjusted SpringArm Length: %f"), NewLength);
+			}
 		}
 	}
 }

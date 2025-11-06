@@ -44,7 +44,7 @@ protected:
 	float ZoomMax = 800.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
-	float ZoomMin = 800.0f;
+	float ZoomMin = 100.0f;
 
 	// Header
 private:
