@@ -17,10 +17,10 @@ struct FDropRateByRarity
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Drop Rate")
-    ECharacterRarity Rarity;
+    ECharacterRarity Rarity = ECharacterRarity::Commun;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Drop Rate")
-    float DropRate;
+    float DropRate = 0.f;
 };
 
 UCLASS()

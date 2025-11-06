@@ -40,9 +40,9 @@ struct FWorkerAssigned
 {
 	GENERATED_BODY()
 	UPROPERTY()
-	AWorker* Worker;
+	AWorker* Worker = nullptr;
 	UPROPERTY()
-	FVector2D Location;
+	FVector2D Location = FVector2D::ZeroVector;
 };
 UCLASS()
 class WORKSHOP_MOBILE_API ARoomWorking : public AActor

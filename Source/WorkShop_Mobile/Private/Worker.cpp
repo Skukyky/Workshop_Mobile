@@ -35,12 +35,12 @@ AWorker::AWorker()
 void AWorker::BeginPlay()
 {
 	Super::BeginPlay();
-	SetTable();
+	SetTable();/*
 	if (RoomWorking)
 	{
 		RoomWorking->AddWorker(0,this);
 		StartWorking();
-	}
+	}*/
 }
 
 void AWorker::Working()

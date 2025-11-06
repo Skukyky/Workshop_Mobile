@@ -40,11 +40,7 @@ void ARoomWorking::Upgrade()
 	{
 		Worker.Worker->AddBonusPerRoom();
 	}
-	int Num = (StatPerLevel[LevelRoom].MaxNbrWorker - 1) - Workers.Num() ;
-	for (int i = 0; i<Num - 1; i++)
-	{
-		Workers.Add({nullptr, FVector2D::ZeroVector});
-	}
+	Workers.SetNum(StatPerLevel[LevelRoom].MaxNbrWorker);
 }
 
 
@@ -105,12 +101,10 @@ void ARoomWorking::SendMoneyToPlayer()
 void ARoomWorking::AddWorker(int position, AWorker* worker)
 {
 	//FIX
-	if (Workers.Num() <= position)
+	if (Workers.Num() - 1 >= position)
 	{
-		Workers.SetNum(position + 1);
+		Workers[position] = {worker, FVector2D::ZeroVector};
 	}
-
-	Workers[position] = {worker, FVector2D::ZeroVector};
 }
 
 void ARoomWorking::SpawnWidget()
