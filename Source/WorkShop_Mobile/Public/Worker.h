@@ -27,7 +27,7 @@ protected:
 
 	UFUNCTION()
 	void Working();
-	
+
 	FTimerHandle TimerHandle;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
@@ -41,6 +41,9 @@ protected:
 
 	UPROPERTY()
 	float MoneyPerWorkBase;
+
+	UPROPERTY()
+	float MoneyPerWork;
 
 	UPROPERTY()
 	float MoneyPerWorkWithBonus;
@@ -58,6 +61,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	USceneComponent* MySceneComponent;
+
+	UFUNCTION()
+	FCharacterStructure GetMyCharacterStructure() const;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UDataTable* MyDataTable;

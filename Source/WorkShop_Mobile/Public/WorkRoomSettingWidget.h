@@ -28,6 +28,15 @@ public:
 	UPROPERTY(Meta = (BindWidget))
 	UUniformGridPanel* GridPanel;
 
+	UPROPERTY(Meta = (BindWidget))
+	UBTNCustomWidget* GetGold;
+
+	UPROPERTY(Meta = (BindWidget))
+	UBTNCustomWidget* UpgradeGold;
+	
+	UPROPERTY(Meta = (BindWidget))
+	UBTNCustomWidget* UpgradeGem;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlayerActor* PlayerActor;
 
@@ -42,7 +51,19 @@ protected:
 	TArray<UBTNCustomWidget*> CustomButtonForWorker;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* BackgroundTextureIsEmpty;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AWorker* Worker;
+
+	UFUNCTION()
+	void OnGoldClicked();
+
+	UFUNCTION()
+	void OnGemClicked();
+	
+	UFUNCTION()
+	void OnUpgradeCliqued();
 
 	virtual void NativePreConstruct() override;
 

@@ -35,12 +35,7 @@ AWorker::AWorker()
 void AWorker::BeginPlay()
 {
 	Super::BeginPlay();
-	SetTable();/*
-	if (RoomWorking)
-	{
-		RoomWorking->AddWorker(0,this);
-		StartWorking();
-	}*/
+	SetTable();
 }
 
 void AWorker::Working()
@@ -64,7 +59,8 @@ void AWorker::StopWorking()
 {
 	if (TimerHandle.IsValid())
 	{
-		TimerHandle.Invalidate();
+		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, "StopWorking");
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 	}
 }
 
@@ -73,6 +69,7 @@ void AWorker::AssignWork(ARoomWorking* Working)
 	RoomWorking = Working;
 	if (RoomWorking)
 	{
+		AddBonusPerRoom();
 		StartWorking();
 	}
 }
@@ -87,20 +84,25 @@ void AWorker::AddBonusPerRoom()
 {
 	if (RoomWorking)
 	{
-		MoneyPerWorkWithBonus = MoneyPerWorkBase * RoomWorking->WorkMultiplierOnCurrentLevel;
+		MoneyPerWorkWithBonus = MoneyPerWork * RoomWorking->WorkMultiplierOnCurrentLevel;
 	}
 }
 
 void AWorker::AddBonusPerStars()
 {
-	//JSP Comment le gerer
-	return;
+	MoneyPerWork = MoneyPerWorkBase * MyRow->Star;
+	AddBonusPerRoom();
 }
 
 // Called every frame
 void AWorker::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (MyRow)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, "Tick");
+	}
 
 }
 
@@ -109,6 +111,17 @@ void AWorker::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 
 	SetTable();
+}
+
+FCharacterStructure AWorker::GetMyCharacterStructure() const
+{
+	if (MyRow != nullptr)
+	{
+		return *MyRow;
+	}
+	
+	UE_LOG(LogTemp, Error, TEXT("Tentative d'accès à MyRow alors qu'il est nullptr dans AWorker!"));
+	return FCharacterStructure(); 
 }
 
 void AWorker::SetTable()
@@ -130,7 +143,9 @@ void AWorker::SetTable()
 			MyCharacterNameText->SetText(FText::FromString(MyRow->Name));
 			WorkingTimeBase = MyRow->StatProductionSpeed;
 			MoneyPerWorkBase = MyRow->StatProductionMoney;
+			AddBonusPerStars();
 		}
+		
 	}
 }
 

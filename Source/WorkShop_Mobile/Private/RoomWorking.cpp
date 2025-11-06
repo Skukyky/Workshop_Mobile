@@ -14,18 +14,18 @@ ARoomWorking::ARoomWorking()
 
 }
 
-bool ARoomWorking::CanUpgradeWithMoney()
+
+void ARoomWorking::SetUp()
 {
-	if (PlayerActor)
+	Workers.SetNum(StatPerLevel[LevelRoom].MaxNbrWorker);
+	for (FWorkerAssigned Worker : Workers)
 	{
-		if (StatPerLevel[LevelRoom].RequiredMoneyForUpgrade <= PlayerActor->GetMoney() && StatPerLevel[LevelRoom].RequiredWorkerForNextUpgrade <= 2 && CanUpgrade)
+		if (Worker.Worker != nullptr)
 		{
-			PlayerActor->SetMoney(-StatPerLevel[LevelRoom].RequiredMoneyForUpgrade);
-			Upgrade();
-			return true;
+			Worker.Worker->AssignWork(this);
 		}
 	}
-	return false;
+	SpawnWidget();
 }
 
 void ARoomWorking::Upgrade()
@@ -41,6 +41,7 @@ void ARoomWorking::Upgrade()
 		Worker.Worker->AddBonusPerRoom();
 	}
 	Workers.SetNum(StatPerLevel[LevelRoom].MaxNbrWorker);
+	SpawnWidget();
 }
 
 
@@ -48,9 +49,23 @@ bool ARoomWorking::CanUpgradeWithGem()
 {
 	if (PlayerActor)
 	{
-		if (StatPerLevel[LevelRoom].RequiredGemForUpgrade <= PlayerActor->GetGem() && StatPerLevel[LevelRoom].RequiredWorkerForNextUpgrade <= 2 && CanUpgrade)
+		if (StatPerLevel[LevelRoom].RequiredGemForUpgrade <= PlayerActor->GetGem() && StatPerLevel[LevelRoom].RequiredFollowerForNextUpgrade <= 2 && CanUpgrade)
 		{
 			PlayerActor->SetGem(-StatPerLevel[LevelRoom].RequiredGemForUpgrade);
+			Upgrade();
+			return true;
+		}
+	}
+	return false;
+}
+
+bool ARoomWorking::CanUpgradeWithMoney()
+{
+	if (PlayerActor)
+	{
+		if (StatPerLevel[LevelRoom].RequiredMoneyForUpgrade <= PlayerActor->GetMoney() && StatPerLevel[LevelRoom].RequiredFollowerForNextUpgrade <= 2 && CanUpgrade)
+		{
+			PlayerActor->SetMoney(-StatPerLevel[LevelRoom].RequiredMoneyForUpgrade);
 			Upgrade();
 			return true;
 		}
@@ -63,24 +78,20 @@ void ARoomWorking::AddMoney(float NewMoney)
 	float MoneyTemp = CurrentMoneyInStock + NewMoney;
 	float MaxMoney = StatPerLevel[LevelRoom].MaxMoneyStorable;
 	CurrentMoneyInStock = FMath::Clamp(MoneyTemp, 0, MaxMoney);
- 
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
-			FString::Printf(TEXT("MoneyTemp: %f, Clamp: [0, %f], Result: %f"), NewMoney, MaxMoney, CurrentMoneyInStock));
-	}
+	
 	if (CurrentMoneyInStock >= MaxMoney)
 	{
 		for (FWorkerAssigned Worker : Workers)
 		{
-			if (Worker.Worker == nullptr)
+			if (Worker.Worker != nullptr)
 			{
 				Worker.Worker->StopWorking();
 			}
 		}
-		SendMoneyToPlayer();
 	}
 }
+
+
 
 void ARoomWorking::SendMoneyToPlayer()
 {
@@ -105,6 +116,7 @@ void ARoomWorking::AddWorker(int position, AWorker* worker)
 	{
 		Workers[position] = {worker, FVector2D::ZeroVector};
 	}
+
 }
 
 void ARoomWorking::SpawnWidget()
@@ -113,17 +125,15 @@ void ARoomWorking::SpawnWidget()
 	{
 		if (RoomSettingWidget)
 		{
-			return;
+			RoomSettingWidget->RemoveFromParent();
 		}
-		else
+		RoomSettingWidget = CreateWidget<UWorkRoomSettingWidget>(GetWorld(), Widget);
+		if (RoomSettingWidget)
 		{
-			RoomSettingWidget = CreateWidget<UWorkRoomSettingWidget>(GetWorld(), Widget);
-			if (RoomSettingWidget)
-			{
-				RoomSettingWidget->RoomWorking = this;
-				RoomSettingWidget->AddToViewport();
-			}
+			RoomSettingWidget->RoomWorking = this;
+			RoomSettingWidget->AddToViewport();
 		}
+		
 	}
 	
 }
@@ -134,13 +144,26 @@ void ARoomWorking::BeginPlay()
 	Super::BeginPlay();
 	
 	PlayerActor = Cast<APlayerActor>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	SpawnWidget();
+	SetUp();
+
 }
 
 // Called every frame
 void ARoomWorking::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	for (FWorkerAssigned Worker : Workers)
+	{
+		if (Worker.Worker != nullptr)
+		{
+			FString Message = FString::Format(TEXT("Working Time: {0}"), { Worker.Worker->GetName() });
+			GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, Message);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, TEXT("Nullptr"));
+		}
+	}
+	
 }
 

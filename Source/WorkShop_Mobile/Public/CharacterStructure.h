@@ -63,5 +63,5 @@ struct WORKSHOP_MOBILE_API FCharacterStructure : public FTableRowBase
 	ECharacterType Type = ECharacterType::Youtube;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
-	float StatProductionSpeed = 0.0f;
+	float StatProductionSpeed = 1.0f;
 };

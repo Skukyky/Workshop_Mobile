@@ -22,7 +22,7 @@ struct FStatPerLevel
 	float WorkMultiplier = 0.5f;
  
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
-	int RequiredWorkerForNextUpgrade = 0;
+	int RequiredFollowerForNextUpgrade = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
 	int RequiredMoneyForUpgrade = 0;
@@ -39,10 +39,13 @@ USTRUCT(BlueprintType)
 struct FWorkerAssigned
 {
 	GENERATED_BODY()
-	UPROPERTY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
 	AWorker* Worker = nullptr;
-	UPROPERTY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
 	FVector2D Location = FVector2D::ZeroVector;
+	
 };
 UCLASS()
 class WORKSHOP_MOBILE_API ARoomWorking : public AActor
@@ -60,6 +63,7 @@ public:
 
 	UFUNCTION()
 	void AddMoney(float NewMoney);
+	
 
 	UFUNCTION()
 	void SendMoneyToPlayer();
@@ -67,7 +71,7 @@ public:
 	UPROPERTY()
 	float WorkMultiplierOnCurrentLevel = 0.f;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
 	TArray<FWorkerAssigned> Workers;
 
 	UFUNCTION()
@@ -75,6 +79,7 @@ public:
 
 	UFUNCTION()
 	void SpawnWidget();
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -89,6 +94,9 @@ protected:
 	int LevelRoom = 0;
 
 	UFUNCTION()
+	void SetUp();
+
+	UFUNCTION()
 	void Upgrade();
 
 	UPROPERTY()
@@ -97,6 +105,9 @@ protected:
 	UPROPERTY()
 	float CurrentMoneyInStock = 0;
 
+	UPROPERTY()
+	float CurrentFollowerInStock = 0;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UWorkRoomSettingWidget> Widget;
 	
