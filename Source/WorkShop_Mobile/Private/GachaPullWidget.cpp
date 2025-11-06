@@ -75,44 +75,7 @@ void UGachaPullWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    if (!ScrollBoxBanner)
-        return;
 
-    if (!ScrollBoxBanner->HasMouseCapture())
-    {
-        float CurrentOffset = ScrollBoxBanner->GetScrollOffset();
-
-        if (!SnappingToMenu && FMath::Abs(CurrentOffset - ScrollLocation) > SnapThreshold)
-        {
-            ScrollDirection = FMath::Sign(CurrentOffset - ScrollLocation);
-
-            const float BannerWidth = 600.f;
-
-            ScrollLocation += ScrollDirection * BannerWidth;
-
-            ScrollLocation = FMath::Clamp(ScrollLocation, 0.f, ScrollBoxBanner->GetScrollOffsetOfEnd());
-
-            ScrollBoxBanner->EndInertialScrolling();
-
-            SnappingToMenu = true;
-        }
-
-        if (SnappingToMenu)
-        {
-            float InterpScrollOffset = FMath::FInterpTo(CurrentOffset, ScrollLocation, InDeltaTime, SnapInterpSpeed);
-            ScrollBoxBanner->SetScrollOffset(InterpScrollOffset);
-
-            if (FMath::IsNearlyEqual(InterpScrollOffset, ScrollLocation, 1.f))
-            {
-                ScrollBoxBanner->SetScrollOffset(ScrollLocation);
-                SnappingToMenu = false;
-            }
-        }
-    }
-    else
-    {
-        SnappingToMenu = false;
-    }
 }
 
 void UGachaPullWidget::AddHistoryItem(FName CharacterID)
@@ -182,9 +145,43 @@ void UGachaPullWidget::ShowPullHistory(const TArray<FName>& PulledCharacters)
 
     UGP_GachaHistory->ClearChildren();
 
-    for (const FName& CharID : PulledCharacters)
+    if (PulledCharacters.Num() == 1)
     {
-        AddHistoryItem(CharID);
+        // Cas pull classique : afficher 1 image visible + 9 images invisibles
+        AddHistoryItem(PulledCharacters[0]);  // La vraie carte visible
+
+        // Ajouter 9 images invisibles
+        for (int i = 1; i < 10; i++)
+        {
+            // Créer une image "dummy" invisible avec opacity à 0
+            UImage* InvisibleImage = NewObject<UImage>(this);
+            if (InvisibleImage)
+            {
+                InvisibleImage->SetOpacity(0.f);
+                // Fixer une taille similaire aux vraies cartes
+                InvisibleImage->SetDesiredSizeOverride(FVector2D(512.f, 512.f));
+
+                int32 NewIndex = UGP_GachaHistory->GetChildrenCount();
+                UUniformGridSlot* NewSlot = UGP_GachaHistory->AddChildToUniformGrid(InvisibleImage);
+                if (NewSlot)
+                {
+                    int32 Col = NewIndex % 5;
+                    int32 Row = NewIndex / 5;
+                    NewSlot->SetRow(Row);
+                    NewSlot->SetColumn(Col);
+                    NewSlot->SetHorizontalAlignment(HAlign_Fill);
+                    NewSlot->SetVerticalAlignment(VAlign_Fill);
+                }
+            }
+        }
+    }
+    else
+    {
+        // Cas pull multiple classique : afficher toutes les images visibles
+        for (const FName& CharID : PulledCharacters)
+        {
+            AddHistoryItem(CharID);
+        }
     }
 
     if (GEngine)
