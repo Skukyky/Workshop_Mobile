@@ -3,3 +3,16 @@
 
 #include "Employer.h"
 
+void UEmployer::NativeConstruct()
+{
+	Super::NativeConstruct();
+	if (Close)
+	{
+		Close->OnReleased.AddDynamic(this, &UEmployer::ClickClose);
+	}
+}
+
+void UEmployer::ClickClose()
+{
+	RemoveFromParent();
+}

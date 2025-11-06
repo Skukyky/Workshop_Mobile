@@ -3,3 +3,16 @@
 
 #include "Shop.h"
 
+void UShop::NativeConstruct()
+{
+	Super::NativeConstruct();
+	if (Close)
+	{
+		Close->OnReleased.AddDynamic(this, &UShop::ClickClose);
+	}
+}
+
+void UShop::ClickClose()
+{
+	RemoveFromParent();
+}

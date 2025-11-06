@@ -1,187 +1,209 @@
 #include "GachaPullWidget.h"
+
+#include "BannerWidget.h"
 #include "CharacterStructure.h"
-#include "Components/Button.h"
-#include "Components/TextBlock.h"
-#include "Kismet/GameplayStatics.h"
-#include "GachaSaveGame.h" 
+#include "Components/Image.h"
 #include "Components/ScrollBox.h"
+#include "Components/UniformGridPanel.h"
+#include "Components/UniformGridSlot.h"
+#include "Components/WidgetSwitcher.h"
+#include "Engine/Engine.h"  // Pour GEngine
 
 void UGachaPullWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    if (BTN_Pull)
+    if (GEngine)
     {
-        BTN_Pull->OnClicked.AddDynamic(this, &UGachaPullWidget::OnPullButtonClicked);
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("GachaPullWidget::NativeConstruct called"));
     }
 
-    if (ScrollBoxBanner)
+    if (GoldBanner)
     {
-        ScrollBoxBanner->OnUserScrolled.AddDynamic(this, &UGachaPullWidget::OnUserScrolled);
+        GoldBanner->SetParentGachaWidget(this);
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("ParentGachaWidget assigned to GoldBanner"));
+        }
+    }
+    else
+    {
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GoldBanner is null"));
+        }
     }
 
-    LoadProgress();
+    if (UnitBanner)
+    {
+        UnitBanner->SetParentGachaWidget(this);
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("ParentGachaWidget assigned to UnitBanner"));
+        }
+    }
+    else
+    {
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("UnitBanner is null"));
+        }
+    }
+    if (BTN_BackToBanner)
+    {
+        BTN_BackToBanner->OnCustomButtonClicked.AddDynamic(this, &UGachaPullWidget::HandleBackToBannerClicked);
+    }
 }
+
 
 void UGachaPullWidget::NativePreConstruct()
 {
     Super::NativePreConstruct();
 
-    ScrollBoxBanner->SetScrollOffset(200);
-    
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("GachaPullWidget::NativePreConstruct called"));
+    }
+
+    if (ScrollBoxBanner)
+    {
+        ScrollBoxBanner->SetScrollOffset(200);
+    }
 }
 
 void UGachaPullWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    if (!ScrollBoxBanner->HasMouseCapture() && ScrollBoxBanner->GetScrollOffset() != ScrollLocation)
+    if (!ScrollBoxBanner)
+        return;
+
+    if (!ScrollBoxBanner->HasMouseCapture())
     {
-        if (FMath::Abs(ScrollBoxBanner->GetScrollOffset() - ScrollLocation) > 200 )
+        float CurrentOffset = ScrollBoxBanner->GetScrollOffset();
+
+        if (!SnappingToMenu && FMath::Abs(CurrentOffset - ScrollLocation) > SnapThreshold)
         {
-            ScrollDirection = FMath::Sign(ScrollBoxBanner->GetScrollOffset() - ScrollLocation);
-            ScrollLocation = ScrollLocation + ( ScrollDirection * -2000);
+            ScrollDirection = FMath::Sign(CurrentOffset - ScrollLocation);
+
+            const float BannerWidth = 600.f;
+
+            ScrollLocation += ScrollDirection * BannerWidth;
+
+            ScrollLocation = FMath::Clamp(ScrollLocation, 0.f, ScrollBoxBanner->GetScrollOffsetOfEnd());
+
+            ScrollBoxBanner->EndInertialScrolling();
+
+            SnappingToMenu = true;
         }
 
-        ScrollBoxBanner->EndInertialScrolling();
-        
-        // Interpolation
-        float InterpScrollOffset = FMath::FInterpTo(
-            ScrollBoxBanner->GetScrollOffset(),  // current
-            ScrollLocation,                      // target
-            InDeltaTime,                      // deltaTime (à confirmer, normalement TimeBetweenFrames)
-            50.f                               // interp speed
-        );
-
-        ScrollBoxBanner->SetScrollOffset(InterpScrollOffset);
-        
-    }
-    
-}
-
-void UGachaPullWidget::OnPullButtonClicked()
-{
-    if (!CharacterDataTable) return;
-
-    TArray<FName> RowNames = CharacterDataTable->GetRowNames();
-
-    // Calculer la somme totale des DropRate
-    float TotalDropRate = 0.f;
-    TArray<FCharacterStructure*> CharactersData;
-
-    for (const FName& RowName : RowNames)
-    {
-        FCharacterStructure* Data = CharacterDataTable->FindRow<FCharacterStructure>(RowName, TEXT(""));
-        if (Data)
+        if (SnappingToMenu)
         {
-            CharactersData.Add(Data);
-            TotalDropRate += Data->DropRate;
+            float InterpScrollOffset = FMath::FInterpTo(CurrentOffset, ScrollLocation, InDeltaTime, SnapInterpSpeed);
+            ScrollBoxBanner->SetScrollOffset(InterpScrollOffset);
+
+            if (FMath::IsNearlyEqual(InterpScrollOffset, ScrollLocation, 1.f))
+            {
+                ScrollBoxBanner->SetScrollOffset(ScrollLocation);
+                SnappingToMenu = false;
+            }
         }
-    }
-
-    if (TotalDropRate <= 0.f || CharactersData.Num() == 0) return;
-
-    // Tirage pondéré
-    float RandomPoint = FMath::FRandRange(0.f, TotalDropRate);
-    float Accumulated = 0.f;
-    FCharacterStructure* SelectedCharacter = nullptr;
-    FName SelectedRowName; // Pour la clé dans la map
-
-    for (int32 i = 0; i < CharactersData.Num(); i++)
-    {
-        Accumulated += CharactersData[i]->DropRate;
-        if (RandomPoint <= Accumulated)
-        {
-            SelectedCharacter = CharactersData[i];
-            SelectedRowName = RowNames[i];
-            break;
-        }
-    }
-
-    if (!SelectedCharacter) return;
-
-    if (CharactersProgress.Contains(SelectedRowName))
-    {
-        FCharacterProgress& Progress = CharactersProgress[SelectedRowName];
-        if (Progress.StarCount < SelectedCharacter->StarMax)
-        {
-            Progress.StarCount++;
-        }
-        Progress.StatYoutube += SelectedCharacter->StatYoutube;
-        Progress.StatTikTok += SelectedCharacter->StatTikTok;
     }
     else
     {
-        FCharacterProgress NewProgress;
-        NewProgress.CharacterRowName = SelectedRowName;
-        NewProgress.StarCount = 1;
-        NewProgress.StatYoutube = SelectedCharacter->StatYoutube;
-        NewProgress.StatTikTok = SelectedCharacter->StatTikTok;
-        CharactersProgress.Add(SelectedRowName, NewProgress);
-    }
-
-    SaveProgress();
-
-    const FCharacterProgress& CurrentProgress = CharactersProgress[SelectedRowName];
-
-    NameText->SetText(FText::FromString(SelectedCharacter->Name));
-    StatYoutubeText->SetText(FText::AsNumber(CurrentProgress.StatYoutube));
-    StatTikTokText->SetText(FText::AsNumber(CurrentProgress.StatTikTok));
-
-    // Affiche étoiles dans StarText
-    FString StarsText = FString::Printf(TEXT("%d / %d ★"), CurrentProgress.StarCount, SelectedCharacter->StarMax);
-    if (StarText)
-    {
-        StarText->SetText(FText::FromString(StarsText));
-    }
-
-    FString TypeString = (SelectedCharacter->Type == ECharacterType::Youtube) ? TEXT("Youtube") : TEXT("TikTok");
-    TypeText->SetText(FText::FromString(TypeString));
-
-    // Garde RarityText pour afficher la rareté vraie
-    FString RarityString;
-    switch (SelectedCharacter->Rarity)
-    {
-        case ECharacterRarity::Commun:    RarityString = TEXT("Commun"); break;
-        case ECharacterRarity::Rare:      RarityString = TEXT("Rare"); break;
-        case ECharacterRarity::Epique:    RarityString = TEXT("Epique"); break;
-        case ECharacterRarity::Legendary: RarityString = TEXT("Legendary"); break;
-        case ECharacterRarity::Secret:    RarityString = TEXT("Secret"); break;
-        default:                         RarityString = TEXT("Inconnu"); break;
-    }
-    RarityText->SetText(FText::FromString(RarityString));
-}
-
-void UGachaPullWidget::OnPullMultiButtonClicked()
-{
-    
-}
-
-void UGachaPullWidget::SaveProgress()
-{
-    UGachaSaveGame* SaveGameInstance = Cast<UGachaSaveGame>(UGameplayStatics::CreateSaveGameObject(UGachaSaveGame::StaticClass()));
-
-    if (SaveGameInstance)
-    {
-        SaveGameInstance->SavedCharacters = CharactersProgress;
-        UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("GachaSaveSlot"), 0);
+        SnappingToMenu = false;
     }
 }
 
-void UGachaPullWidget::LoadProgress()
+void UGachaPullWidget::AddHistoryItem(FName CharacterID)
 {
-    if (UGameplayStatics::DoesSaveGameExist(TEXT("GachaSaveSlot"), 0))
+    if (!CharacterDataTable || !UGP_GachaHistory)
     {
-        UGachaSaveGame* LoadedGame = Cast<UGachaSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("GachaSaveSlot"), 0));
+        if (GEngine)
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AddHistoryItem: Missing DataTable or GachaHistory panel"));
+        return;
+    }
 
-        if (LoadedGame)
+    FCharacterStructure* Data = CharacterDataTable->FindRow<FCharacterStructure>(CharacterID, TEXT(""));
+    if (!Data)
+    {
+        if (GEngine)
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("AddHistoryItem: Character %s not found in DataTable"), *CharacterID.ToString()));
+        return;
+    }
+
+    UImage* NewImage = NewObject<UImage>(this);
+    if (!NewImage)
+    {
+        if (GEngine)
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AddHistoryItem: Failed to create UImage"));
+        return;
+    }
+
+    if (Data->Photo)
+    {
+        NewImage->SetBrushFromTexture(Data->Photo);
+    }
+
+    // Taille souhaitée
+    NewImage->SetDesiredSizeOverride(FVector2D(512.f, 512.f));
+
+    int32 NewIndex = UGP_GachaHistory->GetChildrenCount();
+    UUniformGridSlot* NewSlot = UGP_GachaHistory->AddChildToUniformGrid(NewImage);
+    if (NewSlot)
+    {
+        int32 Col = NewIndex % 5;
+        int32 Row = NewIndex / 5;
+        NewSlot->SetRow(Row);
+        NewSlot->SetColumn(Col);
+
+        NewSlot->SetHorizontalAlignment(HAlign_Fill);
+        NewSlot->SetVerticalAlignment(VAlign_Fill);
+    }
+}
+
+
+void UGachaPullWidget::ShowPullHistory(const TArray<FName>& PulledCharacters)
+{
+    if (!UGP_GachaHistory || !WS_GachaPull)
+    {
+        if (GEngine)
         {
-            CharactersProgress = LoadedGame->SavedCharacters;
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ShowPullHistory: Missing GachaHistory panel or WidgetSwitcher"));
         }
+        return;
     }
+
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
+            FString::Printf(TEXT("ShowPullHistory called with %d pulled characters"), PulledCharacters.Num()));
+    }
+
+    UGP_GachaHistory->ClearChildren();
+
+    for (const FName& CharID : PulledCharacters)
+    {
+        AddHistoryItem(CharID);
+    }
+
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Switching WidgetSwitcher to index 1 (history)"));
+    }
+
+    WS_GachaPull->SetActiveWidgetIndex(1);
 }
 
-void UGachaPullWidget::OnUserScrolled(float CurrentOffset)
+void UGachaPullWidget::HandleBackToBannerClicked()
 {
+    if (WS_GachaPull)
+    {
+        WS_GachaPull->SetActiveWidgetIndex(0);  // Revenir au premier canvas
+    }
 
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, TEXT("Bouton retour appuyé, revient au premier onglet"));
+    }
 }

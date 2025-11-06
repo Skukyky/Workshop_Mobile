@@ -37,6 +37,10 @@ void UHUDGeneral::NativeConstruct()
 	{
 		CloseOption->OnReleased.AddDynamic(this, &UHUDGeneral::ClickCloseOption);
 	}
+	if (CreditButton)
+	{
+		CreditButton->OnReleased.AddDynamic(this, &UHUDGeneral::ClickCreditButton);
+	}
 }
 
 void UHUDGeneral::ClickReserveButton()
@@ -85,4 +89,10 @@ void UHUDGeneral::ClickCloseOption()
 {
 	VisibleOption = false;
 	VisiblityChange(!VisibleOption);
+}
+
+void UHUDGeneral::ClickCreditButton()
+{
+	CreditWidgetRef = CreateWidget<UUserWidget>(GetWorld(), WidgetCreditReference);
+	if (CreditWidgetRef) CreditWidgetRef->AddToViewport();
 }

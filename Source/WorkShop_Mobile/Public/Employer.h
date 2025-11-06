@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
 #include "Employer.generated.h"
 
 /**
@@ -13,5 +14,13 @@ UCLASS()
 class WORKSHOP_MOBILE_API UEmployer : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	void NativeConstruct();
 	
+	UPROPERTY(meta = (BindWidget))
+	UButton* Close;
+
+	UFUNCTION()
+	void ClickClose();
 };

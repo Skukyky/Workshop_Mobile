@@ -18,7 +18,7 @@ void UGachaInventoryWidget::NativeConstruct()
 
     if (LoadedGame && InventoryScrollBox && CharacterDataTable)
     {
-        PopulateInventory(LoadedGame->SavedCharacters);
+        PopulateInventory(LoadedGame->SavedCharactersArray);  // Tableau à la place de TMap
     }
     else if (InventoryScrollBox)
     {
@@ -26,7 +26,7 @@ void UGachaInventoryWidget::NativeConstruct()
     }
 }
 
-void UGachaInventoryWidget::PopulateInventory(const TMap<FName, FCharacterProgress>& CharactersProgress)
+void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& CharactersInventory)
 {
     if (!InventoryScrollBox || !CharacterDataTable)
     {
@@ -36,7 +36,7 @@ void UGachaInventoryWidget::PopulateInventory(const TMap<FName, FCharacterProgre
 
     InventoryScrollBox->ClearChildren();
 
-    if (CharactersProgress.Num() == 0)
+    if (CharactersInventory.Num() == 0)
     {
         UE_LOG(LogTemp, Warning, TEXT("Aucun personnage débloqué dans l'inventaire."));
         if (GEngine)
@@ -46,38 +46,66 @@ void UGachaInventoryWidget::PopulateInventory(const TMap<FName, FCharacterProgre
         return;
     }
 
-    for (const auto& Pair : CharactersProgress)
-    {
-        FName CharacterRowName = Pair.Key;
-        const FCharacterProgress& Progress = Pair.Value;
+    // Copie locale pour tri
+    TArray<FCharacterProgress> SortedInventory = CharactersInventory;
 
-        UE_LOG(LogTemp, Log, TEXT("Personnage débloqué : %s, étoiles : %d"), *CharacterRowName.ToString(), Progress.StarCount);
-        if (GEngine)
+    // Tri par rareté décroissante (du plus rare au moins rare)
+    SortedInventory.Sort([this](const FCharacterProgress& A, const FCharacterProgress& B)
+    {
+        FCharacterStructure* DataA = CharacterDataTable->FindRow<FCharacterStructure>(A.CharacterID, TEXT(""));
+        FCharacterStructure* DataB = CharacterDataTable->FindRow<FCharacterStructure>(B.CharacterID, TEXT(""));
+
+        int32 RarityA = DataA ? static_cast<int32>(DataA->Rarity) : 0;
+        int32 RarityB = DataB ? static_cast<int32>(DataB->Rarity) : 0;
+
+        // 1. Trier par rareté décroissante
+        if (RarityA != RarityB)
         {
-            FString DebugMsg = FString::Printf(TEXT("Personnage débloqué : %s, étoiles : %d"), *CharacterRowName.ToString(), Progress.StarCount);
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, DebugMsg);
+            return RarityA > RarityB;
         }
 
-        FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT(""));
+        // 2. Puis par nombre d’étoiles décroissant
+        if (A.StarCount != B.StarCount)
+        {
+            return A.StarCount > B.StarCount;
+        }
+
+        // 3. Enfin par nom croissant alphabétique
+        return A.CharacterID.ToString() < B.CharacterID.ToString();
+    });
+
+    // Affichage des personnages triés
+    for (const FCharacterProgress& Progress : SortedInventory)
+    {
+        const FName& CharacterRowName = Progress.CharacterID;
+
+        FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT("GachaInventoryWidget::PopulateInventory"));
         if (!CharacterData)
         {
             UE_LOG(LogTemp, Warning, TEXT("CharacterData introuvable pour %s"), *CharacterRowName.ToString());
             continue;
         }
 
-        if (ItemWidgetClass)
-        {
-            UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
-            if (EntryWidget)
-            {
-                EntryWidget->InitializeWithData(*CharacterData, Progress);
-                InventoryScrollBox->AddChild(EntryWidget);
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Ajouté un widget BP dans la ScrollBox"));
-            }
-        }
-        else
+        if (!ItemWidgetClass)
         {
             UE_LOG(LogTemp, Error, TEXT("ItemWidgetClass n'est pas assigné !"));
+            continue;
+        }
+
+        UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
+        if (!EntryWidget)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Echec de création du widget pour %s"), *CharacterRowName.ToString());
+            continue;
+        }
+
+        EntryWidget->InitializeWithData(*CharacterData, Progress);
+        InventoryScrollBox->AddChild(EntryWidget);
+
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Ajouté %s dans la ScrollBox"), *CharacterRowName.ToString()));
         }
     }
 }
+

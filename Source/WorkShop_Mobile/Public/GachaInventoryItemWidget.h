@@ -21,6 +21,9 @@ public:
 	UTextBlock* RarityText;
 
 	UPROPERTY(meta = (BindWidget))
+	UTextBlock* TypeText;
+
+	UPROPERTY(meta = (BindWidget))
 	UTextBlock* StarText;
 
 	UPROPERTY(meta = (BindWidget))

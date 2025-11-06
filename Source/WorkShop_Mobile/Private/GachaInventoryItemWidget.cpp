@@ -22,6 +22,25 @@ void UGachaInventoryItemWidget::InitializeWithData(const FCharacterStructure& Ch
 		}
 		RarityText->SetText(FText::FromString(RarityString));
 	}
+	if (TypeText)
+	{
+		FString TypeString;
+
+		switch (CharacterData.Type)
+		{
+		case ECharacterType::Youtube:
+			TypeString = TEXT("Youtube");
+			break;
+		case ECharacterType::TikTok:
+			TypeString = TEXT("TikTok");
+			break;
+		default:
+			TypeString = TEXT("Inconnu");
+			break;
+		}
+
+		TypeText->SetText(FText::FromString(TypeString));
+	}
 
 	if (StarText)
 	{

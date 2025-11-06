@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Pawn.h"
+#include "CharacterProgress.h"
 #include "PlayerCameraController.h"
 #include "PlayerActor.generated.h"
 
@@ -70,6 +71,16 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	//SAVE
+	UFUNCTION(BlueprintCallable)
+	void SaveInventory();
+
+	UFUNCTION(BlueprintCallable)
+	void LoadInventory();
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FCharacterProgress> CharactersInventory;
 
 	
 
