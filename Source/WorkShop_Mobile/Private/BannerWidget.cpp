@@ -1,16 +1,11 @@
 #include "BannerWidget.h"
 #include "GachaSaveGame.h"
 #include "Kismet/GameplayStatics.h"
-#include "GachaPullWidget.h" // nécessaire pour UGachaPullWidget
-#include "Engine/Engine.h"   // pour GEngine
+#include "GachaPullWidget.h" 
 
 void UBannerWidget::SetParentGachaWidget(UGachaPullWidget* Parent)
 {
     ParentGachaWidget = Parent;
-    if (GEngine && !Parent)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ParentGachaWidget est null dans BannerWidget"));
-    }
 }
 
 void UBannerWidget::NativeConstruct()
@@ -19,33 +14,20 @@ void UBannerWidget::NativeConstruct()
 
     if (BTN_Pull)
     {
-       BTN_Pull->OnCustomButtonClicked.AddDynamic(this, &UBannerWidget::HandlePullClicked);
-       GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Bouton Pull bindé"));
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Erreur : BTN_Pull non bindé"));
+        BTN_Pull->OnCustomButtonClicked.AddDynamic(this, &UBannerWidget::HandlePullClicked);
     }
 
     if (BTN_PullMulti)
     {
-       BTN_PullMulti->OnCustomButtonClicked.AddDynamic(this, &UBannerWidget::HandlePullMultiClicked);
-       GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Bouton PullMulti bindé"));
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Erreur : BTN_PullMulti non bindé"));
+        BTN_PullMulti->OnCustomButtonClicked.AddDynamic(this, &UBannerWidget::HandlePullMultiClicked);
     }
 }
 
 void UBannerWidget::HandlePullClicked()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("HandlePullClicked appelé"));
-
     FName PulledCharacter = PerformSinglePull();
     if (PulledCharacter == NAME_None)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Aucun personnage sélectionné lors du pull."));
         return;
     }
 
@@ -57,28 +39,14 @@ void UBannerWidget::HandlePullClicked()
 
     if (ParentGachaWidget)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Appel ShowPullHistory depuis BannerWidget"));
         ParentGachaWidget->ShowPullHistory(PullResults);
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ParentGachaWidget est null !"));
-    }
-
-    for (const FCharacterProgress& Elem : CharactersInventory)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
-            FString::Printf(TEXT("%s - Etoiles: %d"), *Elem.CharacterID.ToString(), Elem.StarCount));
     }
 }
 
 void UBannerWidget::HandlePullMultiClicked()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("HandlePullMultiClicked appelé"));
-
     if (!CharacterDataTable)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("CharacterDataTable est null"));
         return;
     }
 
@@ -95,20 +63,7 @@ void UBannerWidget::HandlePullMultiClicked()
 
     if (ParentGachaWidget)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Appel ShowPullHistory depuis BannerWidget (multi)"));
         ParentGachaWidget->ShowPullHistory(PullResults);
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ParentGachaWidget est null (multi) !"));
-    }
-
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Pull multi effectué."));
-
-    for (const FCharacterProgress& Elem : CharactersInventory)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
-            FString::Printf(TEXT("%s - Etoiles: %d"), *Elem.CharacterID.ToString(), Elem.StarCount));
     }
 }
 
@@ -116,13 +71,11 @@ void UBannerWidget::SaveProgress()
 {
     UGachaSaveGame* SaveGameInstance = nullptr;
 
-    // Charger sauvegarde existante
     if (UGameplayStatics::DoesSaveGameExist(TEXT("GachaSaveSlot"), 0))
     {
         SaveGameInstance = Cast<UGachaSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("GachaSaveSlot"), 0));
     }
 
-    // Sinon créer une nouvelle sauvegarde
     if (!SaveGameInstance)
     {
         SaveGameInstance = Cast<UGachaSaveGame>(UGameplayStatics::CreateSaveGameObject(UGachaSaveGame::StaticClass()));
@@ -130,25 +83,20 @@ void UBannerWidget::SaveProgress()
 
     if (SaveGameInstance)
     {
-        // Fusionner entre sauvegarde existante & nouvel inventaire accumulé
         TMap<FName, int32> AggregatedStars;
 
-        // 1) ajouter sauvegarde courante
         for (const FCharacterProgress& Progress : SaveGameInstance->SavedCharactersArray)
         {
             AggregatedStars.FindOrAdd(Progress.CharacterID) += Progress.StarCount;
         }
 
-        // 2) ajouter CharactersInventory (nouvel inventaire local)
         for (const FCharacterProgress& Progress : CharactersInventory)
         {
             AggregatedStars.FindOrAdd(Progress.CharacterID) += Progress.StarCount;
         }
 
-        // Limite étoiles max à définir
         const int32 MaxStarCount = 5;
 
-        // Réconstruire inventaire avec fusion et limite
         SaveGameInstance->SavedCharactersArray.Empty();
         for (auto& Elem : AggregatedStars)
         {
@@ -169,30 +117,11 @@ void UBannerWidget::SaveProgress()
             }
         }
 
-        // Vide nouvel inventaire local puisque sauvegarde est mise à jour
         CharactersInventory.Empty();
 
-        // Sauvegarde finale
-        bool bSuccess = UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("GachaSaveSlot"), 0);
-
-        if (bSuccess)
-        {
-            if (GEngine)
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Progression sauvegardée avec succès."));
-        }
-        else
-        {
-            if (GEngine)
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Erreur lors de la sauvegarde de la progression."));
-        }
-    }
-    else
-    {
-        if (GEngine)
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Impossible de créer ou charger la sauvegarde."));
+        UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("GachaSaveSlot"), 0);
     }
 }
-
 
 FName UBannerWidget::PerformSinglePull()
 {
@@ -245,19 +174,15 @@ FName UBannerWidget::PerformSinglePull()
     return NAME_None;
 }
 
-
 void UBannerWidget::MergePullResults(const TArray<FName>& PullResults)
 {
-    // Map temporaire pour fusionner
     TMap<FName, int32> AggregatedStars;
 
-    // Fusion avec inventaire actuel
     for (const FCharacterProgress& Progress : CharactersInventory)
     {
         AggregatedStars.FindOrAdd(Progress.CharacterID) += Progress.StarCount;
     }
 
-    // Ajouter résultats du pull (1 étoile chacun)
     for (const FName& PulledID : PullResults)
     {
         AggregatedStars.FindOrAdd(PulledID) += 1;
@@ -265,7 +190,6 @@ void UBannerWidget::MergePullResults(const TArray<FName>& PullResults)
 
     const int32 MaxStarCount = 5;
 
-    // Reconstruire CharactersInventory fusionné avec max 5 étoiles par entrée
     CharactersInventory.Empty();
     for (auto& Elem : AggregatedStars)
     {
