@@ -152,7 +152,7 @@ void APlayerCameraController::OnZoomTriggered(const FInputActionValue& Value)
 			if (PlayerREF && PlayerREF->SpringArm)
 			{
 				float NewLength = FMath::Clamp(
-					PlayerREF->SpringArm->TargetArmLength + ZoomValue * ZoomSpeed,
+					PlayerREF->SpringArm->TargetArmLength - ZoomValue * ZoomSpeed,
 					ZoomMin,
 					ZoomMax
 				);
