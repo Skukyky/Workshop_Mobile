@@ -33,8 +33,8 @@ void UBTNCustomWidget::NativePreConstruct()
 			
 			BTN_Custom->SetStyle(ButtonStyle);
 			
-			DesiredSize->SetHeightOverride(BackgroundTexture->GetSizeX());
-			DesiredSize->SetWidthOverride(BackgroundTexture->GetSizeY());
+			DesiredSize->SetHeightOverride(BackgroundTexture->GetSizeY() * PourcentSize / 100);
+			DesiredSize->SetWidthOverride(BackgroundTexture->GetSizeX() * PourcentSize / 100);
 		}
 	}
 }

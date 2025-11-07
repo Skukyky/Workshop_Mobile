@@ -35,6 +35,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector2D CustomHeight = FVector2D::ZeroVector;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int PourcentSize = 100;
+
 	/** Événement déclenché lorsque le bouton est cliqué */
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnCustomButtonClicked OnCustomButtonClicked;

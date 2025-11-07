@@ -11,11 +11,6 @@ void UWorkRoomSettingWidget::OnGoldClicked()
 	RoomWorking->SendMoneyToPlayer();
 }
 
-void UWorkRoomSettingWidget::OnGemClicked()
-{
-	RoomWorking->CanUpgradeWithGem();
-}
-
 void UWorkRoomSettingWidget::OnUpgradeCliqued()
 {
 	RoomWorking->CanUpgradeWithMoney();
@@ -29,12 +24,6 @@ void UWorkRoomSettingWidget::OnExitClicked()
 void UWorkRoomSettingWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-}
-
-void UWorkRoomSettingWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-	UE_LOG(LogTemp, Display, TEXT("Work Room"));
 	if (RoomWorking)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Work Room Setting for %d"),RoomWorking->Workers.Num());
@@ -50,12 +39,19 @@ void UWorkRoomSettingWidget::NativeConstruct()
 			NewCustomButton->BackgroundTexture = BackgroundTexture;
 			NewCustomButton->Text = FText::FromString("");
 			//NewCustomButton->ChangeDesiredSize(FVector2D)
+			NewCustomButton->PourcentSize = 80;
 			int Row = i%2;
 			int Column = i/2;
 			GridPanel->AddChildToUniformGrid(NewCustomButton,Row,Column);
 			CustomButtonForWorker.Add(NewCustomButton);
 		}
 	}
+}
+
+void UWorkRoomSettingWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	UE_LOG(LogTemp, Display, TEXT("Work Room"));
 	if (GetGold)
 	{
 		GetGold->OnCustomButtonClicked.AddDynamic(this,&UWorkRoomSettingWidget::OnGoldClicked);
@@ -63,10 +59,6 @@ void UWorkRoomSettingWidget::NativeConstruct()
 	if (UpgradeGold)
 	{
 		UpgradeGold->OnCustomButtonClicked.AddDynamic(this,&UWorkRoomSettingWidget::OnUpgradeCliqued);
-	}
-	if (UpgradeGem)
-	{
-		UpgradeGem->OnCustomButtonClicked.AddDynamic(this,&UWorkRoomSettingWidget::OnGemClicked);
 	}
 	if (Exit)
 	{

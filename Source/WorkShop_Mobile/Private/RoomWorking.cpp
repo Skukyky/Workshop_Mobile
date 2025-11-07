@@ -40,7 +40,11 @@ void ARoomWorking::Upgrade()
 	}
 	for (FWorkerAssigned Worker : Workers)
 	{
-		Worker.Worker->AddBonusPerRoom();
+		if (Worker.Worker != nullptr)
+		{
+			Worker.Worker->AddBonusPerRoom();
+		}
+		
 	}
 	Workers.SetNum(StatPerLevel[LevelRoom].MaxNbrWorker);
 	SpawnWidget();
@@ -70,6 +74,10 @@ bool ARoomWorking::CanUpgradeWithMoney()
 			PlayerActor->SetMoney(-StatPerLevel[LevelRoom].RequiredMoneyForUpgrade);
 			Upgrade();
 			return true;
+		}
+		else
+		{
+			CanUpgradeWithGem();
 		}
 	}
 	return false;

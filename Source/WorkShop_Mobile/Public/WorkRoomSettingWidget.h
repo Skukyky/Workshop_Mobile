@@ -36,9 +36,6 @@ public:
 
 	UPROPERTY(Meta = (BindWidget))
 	UBTNCustomWidget* UpgradeGold;
-	
-	UPROPERTY(Meta = (BindWidget))
-	UBTNCustomWidget* UpgradeGem;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlayerActor* PlayerActor;
@@ -61,9 +58,6 @@ protected:
 
 	UFUNCTION()
 	void OnGoldClicked();
-
-	UFUNCTION()
-	void OnGemClicked();
 	
 	UFUNCTION()
 	void OnUpgradeCliqued();
