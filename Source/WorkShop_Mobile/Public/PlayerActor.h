@@ -40,6 +40,7 @@ public:
 	int GetPoolResource() const;
 
 protected:
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -83,5 +84,17 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FCharacterProgress> CharactersInventory;
+
+	UFUNCTION()
+	void SpawnWorkersFromInventory();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character")
+	UDataTable* MyDataTable;
+
+	UFUNCTION()
+	FVector GetDefaultWorkerSpawnLocation(int32 WorkerIndex) const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector DefaultWorkerSpawnLocation = FVector(0, 0, 0);
 	
 };

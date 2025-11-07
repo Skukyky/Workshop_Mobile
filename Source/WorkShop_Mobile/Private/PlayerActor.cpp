@@ -5,6 +5,7 @@
 #include "DrawDebugHelpers.h"
 #include <string>
 #include "GachaSaveGame.h"
+#include "Worker.h"
 #include "Kismet/GameplayStatics.h"
 
 bool IsPointInPolygon(const FVector2D& Point, const TArray<FVector2D>& Polygon)
@@ -91,7 +92,7 @@ void APlayerActor::BeginPlay()
 {
 	Super::BeginPlay();
 	LoadInventory();
-	
+	SpawnWorkersFromInventory();
 }
 
 // Called every frame
@@ -232,4 +233,40 @@ void APlayerActor::OnConstruction(const FTransform& Transform)
 			5.f
 		);
 	}
+}
+
+void APlayerActor::SpawnWorkersFromInventory()
+{
+	UWorld* World = GetWorld();
+	if (!World || !MyDataTable) return;
+
+	int32 WorkerIndex = 0;
+	for (FCharacterProgress& CharProgress : CharactersInventory)
+	{
+		FCharacterStructure* CharacterRow = MyDataTable->FindRow<FCharacterStructure>(CharProgress.CharacterID, TEXT("SpawnWorkers"));
+		if (!CharacterRow) continue;
+
+		FVector SpawnLocation = GetDefaultWorkerSpawnLocation(WorkerIndex++);
+		FRotator SpawnRotation = FRotator::ZeroRotator;
+
+		AWorker* SpawnedWorker = World->SpawnActor<AWorker>(AWorker::StaticClass(), SpawnLocation, SpawnRotation);
+		if (SpawnedWorker)
+		{
+			SpawnedWorker->MyDataTable = MyDataTable;
+			SpawnedWorker->MyIndex = MyDataTable->GetRowNames().Find(CharProgress.CharacterID);
+			SpawnedWorker->SetTable();
+
+			// Initialise avec les données de progression
+			SpawnedWorker->AddBonusPerStars();
+            
+			CharProgress.WorkerSpawnRef = SpawnedWorker;
+		}
+	}
+}
+
+
+FVector APlayerActor::GetDefaultWorkerSpawnLocation(int32 WorkerIndex) const
+{
+	
+	return DefaultWorkerSpawnLocation;
 }
