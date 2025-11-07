@@ -14,6 +14,7 @@
 void UGachaInventoryWidget::NativeConstruct()
 {
     Super::NativeConstruct();
+    
 /*
     UGachaSaveGame* LoadedGame = nullptr;
     if (UGameplayStatics::DoesSaveGameExist(TEXT("GachaSaveSlot"), 0))
@@ -24,6 +25,7 @@ void UGachaInventoryWidget::NativeConstruct()
     PlayerActor = Cast<APlayerActor>(GetWorld()->GetFirstPlayerController()->GetPawn());
     if (PlayerActor != nullptr)
     {
+        PlayerActor->LoadInventory();
         PopulateInventory(PlayerActor->CharactersInventory);
     }
     else if (InventoryScrollBox)
