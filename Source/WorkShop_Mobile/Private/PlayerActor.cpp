@@ -3,8 +3,8 @@
 
 #include "PlayerActor.h"
 #include "DrawDebugHelpers.h"
-#include <string>
 #include "GachaSaveGame.h"
+#include "HUDGeneral.h"
 #include "Worker.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -60,6 +60,7 @@ APlayerActor::APlayerActor()
 void APlayerActor::SetGem(int AddGem)
 {
 	Gem = Gem + AddGem;
+	HUDRef->UpdateMoneyText(Gem);
 }
 
 int APlayerActor::GetGem() const
@@ -70,6 +71,7 @@ int APlayerActor::GetGem() const
 void APlayerActor::SetMoney(int AddMoney)
 {
 	Money = Money + AddMoney;
+	HUDRef->UpdateMoneyText(Money);
 }
 
 int APlayerActor::GetMoney() const
@@ -93,6 +95,12 @@ void APlayerActor::BeginPlay()
 	Super::BeginPlay();
 	LoadInventory();
 	SpawnWorkersFromInventory();
+	HUDWidgetRef = CreateWidget<UUserWidget>(GetWorld(), WidgetHUDReference);
+	if (HUDWidgetRef)
+	{
+		HUDWidgetRef->AddToViewport();
+		HUDRef = Cast<UHUDGeneral>(HUDWidgetRef);
+	}
 }
 
 // Called every frame

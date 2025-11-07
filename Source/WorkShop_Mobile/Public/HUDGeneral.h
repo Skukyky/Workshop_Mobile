@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 #include "Components/Slider.h"
 #include "Components/CanvasPanel.h"
+#include "Components/TextBlock.h"
 #include "HUDGeneral.generated.h"
 
 
@@ -126,4 +127,19 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Audio")
 	USoundClass* MusicSoundClass;
+	
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* MoneyText;
+
+	void UpdateMoneyText(int Count);
+	
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* AbonnerText;
+
+	void UpdateAbonnerText(int Count);
+	
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* GemText;
+
+	void UpdateGemText(int Count);
 };

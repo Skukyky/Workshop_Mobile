@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Pawn.h"
+#include "Blueprint/UserWidget.h"
+#include "HUDGeneral.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "CharacterProgress.h"
 #include "PlayerCameraController.h"
@@ -85,6 +87,15 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FCharacterProgress> CharactersInventory;
 
+	UPROPERTY()
+	UUserWidget* HUDWidgetRef;
+	
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
+	TSubclassOf<UUserWidget> WidgetHUDReference;
+
+	UPROPERTY()
+	UHUDGeneral* HUDRef;
+	
 	UFUNCTION()
 	void SpawnWorkersFromInventory();
 

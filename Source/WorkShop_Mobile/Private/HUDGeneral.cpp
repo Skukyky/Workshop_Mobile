@@ -2,7 +2,7 @@
 
 
 #include "HUDGeneral.h"
-
+#include <string>
 #include "Kismet/GameplayStatics.h"
 
 
@@ -147,4 +147,28 @@ void UHUDGeneral::OnMusicChanged(float Value)
 		UGameplayStatics::PushSoundMixModifier(GetWorld(), MasterSoundMix);
 		MusicSlider->SetValue(Value);
 	}
+}
+
+void UHUDGeneral::UpdateMoneyText(int Count)
+{
+	/*if (MoneyText)
+	{
+		MoneyText->SetText(FText::AsNumber(Count));
+	}*/
+}
+
+void UHUDGeneral::UpdateAbonnerText(int Count)
+{
+	/*if (AbonnerText)
+	{
+		AbonnerText->SetText(FText::AsNumber(Count));
+	}*/
+}
+
+void UHUDGeneral::UpdateGemText(int Count)
+{
+	/*if (GemText)
+	{
+		GemText->SetText(FText::AsNumber(Count));
+	}*/
 }
