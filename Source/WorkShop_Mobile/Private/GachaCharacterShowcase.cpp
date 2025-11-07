@@ -2,7 +2,7 @@
 
 
 #include "GachaCharacterShowcase.h"
-
+#include "NiagaraComponent.h"
 #include "CharacterStructure.h"
 #include "Components/SceneCaptureComponent2D.h"
 
@@ -24,7 +24,8 @@ AGachaCharacterShowcase::AGachaCharacterShowcase()
 	Name = CreateDefaultSubobject<UTextRenderComponent>(TEXT("Name"));
 	Name->SetupAttachment(RootComp);
 	
-
+	NiagaraStar = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
+	NiagaraStar->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
@@ -32,6 +33,10 @@ void AGachaCharacterShowcase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (NiagaraSystemAsset)
+	{
+		NiagaraStar->SetAsset(NiagaraSystemAsset);
+	}
 	CharacterCapture->ShowOnlyActorComponents(this);
 	
 }

@@ -7,6 +7,9 @@
 #include "GameFramework/Actor.h"
 #include "GachaCharacterShowcase.generated.h"
 
+class UNiagaraComponent;
+class UNiagaraSystem;
+
 UCLASS()
 class WORKSHOP_MOBILE_API AGachaCharacterShowcase : public AActor
 {
@@ -27,6 +30,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	USceneComponent* RootComp = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	UNiagaraComponent* NiagaraStar;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UNiagaraSystem* NiagaraSystemAsset;
 
 protected:
 	// Called when the game starts or when spawned

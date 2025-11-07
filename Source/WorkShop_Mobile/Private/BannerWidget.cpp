@@ -17,6 +17,7 @@ void UBannerWidget::NativePreConstruct()
     {
         FSlateBrush NewBrush;
         NewBrush.SetResourceObject(BackgroundTexture);
+        NewBrush.DrawAs = ESlateBrushDrawType::RoundedBox;
         NewBrush.ImageSize = FVector2D(BackgroundTexture->GetSizeX(), BackgroundTexture->GetSizeY());
 
         ImageBackground->SetBrush(NewBrush);
