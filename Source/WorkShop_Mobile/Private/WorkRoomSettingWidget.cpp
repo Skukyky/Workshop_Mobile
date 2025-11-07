@@ -38,6 +38,9 @@ void UWorkRoomSettingWidget::NativePreConstruct()
 			UBTNCustomWidget* NewCustomButton = CreateWidget<UBTNCustomWidget>(this, Button);
 			NewCustomButton->BackgroundTexture = BackgroundTexture;
 			NewCustomButton->Text = FText::FromString("");
+			NewCustomButton->IsWorkerAssignableButton = true;
+			NewCustomButton->Position = i ;
+			NewCustomButton->WorkRoomSettingWidget = this;
 			//NewCustomButton->ChangeDesiredSize(FVector2D)
 			NewCustomButton->PourcentSize = 80;
 			int Row = i%2;

@@ -6,6 +6,8 @@
 
 class USizeBox;
 class UButton;
+class UGachaInventoryWidget;
+class UWorkRoomSettingWidget;
 class UTextBlock;
 
 /** Délégué multicast dynamique déclenché quand le bouton est cliqué */
@@ -51,5 +53,23 @@ public:
 
 	virtual void NativePreConstruct() override;
 
+	UFUNCTION()
 	void ChangeDesiredSize(FVector2D SizeMax);
+
+	UPROPERTY()
+	bool IsWorkerAssignableButton = false;
+
+	UPROPERTY()
+	UWorkRoomSettingWidget* WorkRoomSettingWidget = nullptr;
+
+	UPROPERTY()
+	int Position;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UGachaInventoryWidget> Inventory;
+
+private:
+	UPROPERTY()
+	UGachaInventoryWidget* GachaInventoryWidget;
 };

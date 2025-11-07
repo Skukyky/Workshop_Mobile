@@ -54,4 +54,9 @@ public:
 	FName CharacterID = FName("");
 
 	virtual void NativeConstruct() override;
+
+	UPROPERTY()
+	FCharacterProgress ProgressRef ;
+
+	
 };

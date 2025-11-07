@@ -124,7 +124,10 @@ void ARoomWorking::AddWorker(int position, AWorker* worker)
 	//FIX
 	if (Workers.Num() - 1 >= position)
 	{
+		if (Workers[position].Worker) Workers[position].Worker->StopWorking();
 		Workers[position] = {worker, FVector2D::ZeroVector};
+		worker->AssignWork(this);
+		SpawnWidget();
 	}
 
 }

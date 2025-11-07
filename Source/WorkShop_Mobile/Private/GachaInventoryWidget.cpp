@@ -5,21 +5,26 @@
 #include "Components/ScrollBox.h"
 #include "Kismet/GameplayStatics.h"
 #include "GachaSaveGame.h"
+#include "PlayerActor.h"
+#include "RoomWorking.h"
+#include "Worker.h"
+#include "WorkRoomSettingWidget.h"
 #include "Components/Image.h"
 
 void UGachaInventoryWidget::NativeConstruct()
 {
     Super::NativeConstruct();
-
+/*
     UGachaSaveGame* LoadedGame = nullptr;
     if (UGameplayStatics::DoesSaveGameExist(TEXT("GachaSaveSlot"), 0))
     {
         LoadedGame = Cast<UGachaSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("GachaSaveSlot"), 0));
-    }
-
-    if (LoadedGame && InventoryScrollBox && CharacterDataTable)
+    }*/
+    
+    PlayerActor = Cast<APlayerActor>(GetWorld()->GetFirstPlayerController()->GetPawn());
+    if (PlayerActor != nullptr)
     {
-        PopulateInventory(LoadedGame->SavedCharactersArray);
+        PopulateInventory(PlayerActor->CharactersInventory);
     }
     else if (InventoryScrollBox)
     {
@@ -78,31 +83,42 @@ void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& 
 
     for (const FCharacterProgress& Progress : SortedInventory)
     {
-        const FName& CharacterRowName = Progress.CharacterID;
-
-        FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT("GachaInventoryWidget::PopulateInventory"));
-        if (!CharacterData)
+        if(AssignButtonReturn->WorkRoomSettingWidget->RoomWorking)
         {
-            continue;
+            IsAllReadyUse = false;
+            for (FWorkerAssigned Worker : AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->Workers)
+            {
+                if (Worker.Worker == Progress.WorkerSpawnRef) IsAllReadyUse = true;
+            }
+            if (!IsAllReadyUse)
+            {
+                const FName& CharacterRowName = Progress.CharacterID;
+                FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT("GachaInventoryWidget::PopulateInventory"));
+                if (!CharacterData)
+                {
+                    continue;
+                }
+
+                if (!ItemWidgetClass)
+                {
+                    continue;
+                }
+
+                UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
+                if (!EntryWidget)
+                {
+                    continue;
+                }
+
+                EntryWidget->InitializeWithData(*CharacterData, Progress, Progress.CharacterID);
+
+                // Bind event selection
+                EntryWidget->OnItemSelected.AddDynamic(this, &UGachaInventoryWidget::OnItemSelected);
+
+                InventoryScrollBox->AddChild(EntryWidget);
+            }
+            
         }
-
-        if (!ItemWidgetClass)
-        {
-            continue;
-        }
-
-        UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
-        if (!EntryWidget)
-        {
-            continue;
-        }
-
-        EntryWidget->InitializeWithData(*CharacterData, Progress, Progress.CharacterID);
-
-        // Bind event selection
-        EntryWidget->OnItemSelected.AddDynamic(this, &UGachaInventoryWidget::OnItemSelected);
-
-        InventoryScrollBox->AddChild(EntryWidget);
     }
 }
 
@@ -181,5 +197,15 @@ void UGachaInventoryWidget::OnLostFocusClicked()
 
 void UGachaInventoryWidget::OnAssignClicked()
 {
-    // CODE MAXIME
+    if (AssignButtonReturn && SelectedItemWidget && PlayerActor)
+    {
+        for (int i = 0;PlayerActor->CharactersInventory.Num() -1 >= i; i++)
+        {
+            if (PlayerActor->CharactersInventory[i].CharacterID == SelectedItemWidget->ProgressRef.CharacterID && PlayerActor->CharactersInventory[i].StarCount == SelectedItemWidget->ProgressRef.StarCount)
+            {
+                AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->AddWorker(AssignButtonReturn->Position,PlayerActor->CharactersInventory[i].WorkerSpawnRef);
+            }
+        }
+        RemoveFromParent();
+    }
 }

@@ -6,6 +6,7 @@
 #include "Engine/DataTable.h"
 #include "GachaInventoryWidget.generated.h"
 
+class APlayerActor;
 class AGachaCharacterShowcase;
 class UImage;
 class UBTNCustomWidget;
@@ -56,14 +57,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
 	TSubclassOf<AGachaCharacterShowcase> CharacterShowcaseActorClass;
 
+	UPROPERTY()
+	UBTNCustomWidget* AssignButtonReturn;
+
 protected:
 	virtual void NativeConstruct() override;
+
+	UPROPERTY()
+	bool IsAllReadyUse;
 
 private:
 	
 	UPROPERTY()
 	UGachaInventoryItemWidget* SelectedItemWidget = nullptr;
 
+	UPROPERTY()
+	APlayerActor* PlayerActor = nullptr;
+	
 	UFUNCTION()
 	void OnItemSelected(UGachaInventoryItemWidget* ClickedItem);
 };

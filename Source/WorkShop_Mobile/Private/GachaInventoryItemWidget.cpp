@@ -6,7 +6,7 @@
 void UGachaInventoryItemWidget::InitializeWithData(const FCharacterStructure& CharacterData, const FCharacterProgress& Progress, FName InCharacterID)
 {
 	CharacterID = InCharacterID;
-
+	ProgressRef = Progress;
 	// Ton code existant d'initialisation
 	if (NameText)
 	{

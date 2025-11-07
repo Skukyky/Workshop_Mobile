@@ -1,6 +1,7 @@
 #include "BTNCustomWidget.h"
 #include "Components/Button.h"
 #include "Components/SizeBox.h"
+#include "GachaInventoryWidget.h"
 #include "Components/TextBlock.h"
 
 void UBTNCustomWidget::NativePreConstruct()
@@ -57,5 +58,20 @@ void UBTNCustomWidget::ChangeDesiredSize(FVector2D SizeMax)
 
 void UBTNCustomWidget::OnCustomButtonClickedHandler()
 {
-	OnCustomButtonClicked.Broadcast();
+	if (IsWorkerAssignableButton)
+	{
+		if (Inventory)
+		{
+			GachaInventoryWidget = CreateWidget<UGachaInventoryWidget>(GetWorld(),Inventory);
+			if (GachaInventoryWidget)
+			{
+				GachaInventoryWidget->AssignButtonReturn = this;
+				GachaInventoryWidget->AddToViewport();
+			}
+		}
+	}
+	else
+	{
+		OnCustomButtonClicked.Broadcast();
+	}
 }
