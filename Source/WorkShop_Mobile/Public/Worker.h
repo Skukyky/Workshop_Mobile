@@ -21,6 +21,9 @@ public:
 	// Sets default values for this actor's properties
 	AWorker();
 
+	UPROPERTY()
+	float MoneyPerWorkWithBonus;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -41,13 +44,19 @@ protected:
 
 	UPROPERTY()
 	float MoneyPerWorkBase;
+
+	UPROPERTY()
+	float MoneyPerWork;
+
+
+
 	
 	FCharacterStructure* MyRow;
 
 	UPROPERTY()
 	APlayerActor* PlayerActor;
 	
-public:
+public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

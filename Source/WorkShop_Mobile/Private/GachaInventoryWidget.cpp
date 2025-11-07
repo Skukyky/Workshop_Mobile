@@ -122,8 +122,6 @@ void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& 
                     InventoryScrollBox->AddChild(EntryWidget);
                 }
             }
-            
-            
         }
         else
         {

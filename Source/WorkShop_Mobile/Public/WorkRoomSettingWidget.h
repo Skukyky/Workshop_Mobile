@@ -41,11 +41,23 @@ public:
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* GoldPerSecond;
 
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* AllGoldStocked;
+
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* NeedGold;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlayerActor* PlayerActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ARoomWorking* RoomWorking;
+
+	UFUNCTION()
+	void Refresh();
+
+	UFUNCTION()
+	void RefreshStat();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -78,4 +90,6 @@ protected:
 	virtual void NativePreConstruct() override;
 
 	virtual void NativeConstruct() override;
+
+	
 };

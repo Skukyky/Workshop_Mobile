@@ -65,6 +65,9 @@ public:
 	UPROPERTY()
 	int Position;
 
+	UFUNCTION()
+	void Refresh();
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UGachaInventoryWidget> Inventory;

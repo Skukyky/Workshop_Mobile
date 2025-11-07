@@ -30,6 +30,7 @@ void UWorkRoomSettingWidget::ActualiseMoney()
 
 
 void UWorkRoomSettingWidget::OnUpgradeCliqued()
+void UWorkRoomSettingWidget::Refresh()
 {
 	RoomWorking->CanUpgradeWithMoney();
 	ActualiseMoney();
@@ -54,6 +55,60 @@ void UWorkRoomSettingWidget::NativePreConstruct()
 			{
 				BackgroundTexture = RoomWorking->Workers[i].Worker->GetMyCharacterStructure().Photo;
 			}
+			if (CustomButtonForWorker.Num() -1 < i)
+			{
+				UBTNCustomWidget* NewCustomButton = CreateWidget<UBTNCustomWidget>(this, Button);
+				NewCustomButton->BackgroundTexture = BackgroundTexture;
+				NewCustomButton->Text = FText::FromString("");
+				NewCustomButton->IsWorkerAssignableButton = true;
+				NewCustomButton->Position = i ;
+				NewCustomButton->WorkRoomSettingWidget = this;
+				//NewCustomButton->ChangeDesiredSize(FVector2D)
+				NewCustomButton->PourcentSize = 80;
+				int Row = i%2;
+				int Column = i/2;
+				GridPanel->AddChildToUniformGrid(NewCustomButton,Row,Column);
+				CustomButtonForWorker.Add(NewCustomButton);
+			}
+			else
+			{
+				CustomButtonForWorker[i]->BackgroundTexture = BackgroundTexture;
+				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,"zqdqzzdqzdqzdqzdqzdqzdqdqzdqzdqzdqzd");
+				CustomButtonForWorker[i]->Refresh();
+				RefreshStat();
+			}
+		}
+	}
+}
+
+void UWorkRoomSettingWidget::RefreshStat()
+{
+	if (RoomWorking)
+	{/*
+		FString Convert = FString::FromInt(RoomWorking.);
+		AllGoldStocked->SetText(FText::FromString(Convert));*/
+	}
+}
+
+void UWorkRoomSettingWidget::OnGoldClicked()
+{
+	RoomWorking->SendMoneyToPlayer();
+}
+
+void UWorkRoomSettingWidget::OnUpgradeCliqued()
+{
+	RoomWorking->CanUpgradeWithMoney();
+}
+
+void UWorkRoomSettingWidget::OnExitClicked()
+{
+	RemoveFromParent();
+}
+
+void UWorkRoomSettingWidget::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+	Refresh();
 			UE_LOG(LogTemp, Display, TEXT("Work Room Setting n°%d"), i);
 			UBTNCustomWidget* NewCustomButton = CreateWidget<UBTNCustomWidget>(this, Button);
 			NewCustomButton->BackgroundTexture = BackgroundTexture;
@@ -88,5 +143,4 @@ void UWorkRoomSettingWidget::NativeConstruct()
 	{
 		Exit->OnCustomButtonClicked.AddDynamic(this,&UWorkRoomSettingWidget::OnExitClicked);
 	}
-	ActualiseMoney();
 }

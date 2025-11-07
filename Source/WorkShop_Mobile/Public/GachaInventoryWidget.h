@@ -58,7 +58,7 @@ public:
 	TSubclassOf<AGachaCharacterShowcase> CharacterShowcaseActorClass;
 
 	UPROPERTY()
-	UBTNCustomWidget* AssignButtonReturn;
+	UBTNCustomWidget* AssignButtonReturn = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
 	UTexture2D* CV_Texture = nullptr;

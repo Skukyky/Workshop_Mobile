@@ -8,6 +8,26 @@ void UBTNCustomWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
+	Refresh();
+}
+
+void UBTNCustomWidget::ChangeDesiredSize(FVector2D SizeMax)
+{
+	float SizeToScale = FMath::Min(SizeMax.X, SizeMax.Y);
+	if (BackgroundTexture)
+	{
+		float Scaling = BackgroundTexture->GetSizeY() / SizeToScale;
+		if (SizeMax.X < SizeMax.Y)
+		{
+			Scaling = BackgroundTexture->GetSizeX() / SizeToScale;
+		}
+		DesiredSize->SetHeightOverride(BackgroundTexture->GetSizeX()/Scaling);
+		DesiredSize->SetWidthOverride(BackgroundTexture->GetSizeY()/Scaling);
+	}
+}
+
+void UBTNCustomWidget::Refresh()
+{
 	if (BTN_Custom)
 	{
 		// Utilise AddUniqueDynamic pour éviter d'ajouter plusieurs fois la même liaison
@@ -37,21 +57,6 @@ void UBTNCustomWidget::NativePreConstruct()
 			DesiredSize->SetHeightOverride(BackgroundTexture->GetSizeY() * PourcentSize / 100);
 			DesiredSize->SetWidthOverride(BackgroundTexture->GetSizeX() * PourcentSize / 100);
 		}
-	}
-}
-
-void UBTNCustomWidget::ChangeDesiredSize(FVector2D SizeMax)
-{
-	float SizeToScale = FMath::Min(SizeMax.X, SizeMax.Y);
-	if (BackgroundTexture)
-	{
-		float Scaling = BackgroundTexture->GetSizeY() / SizeToScale;
-		if (SizeMax.X < SizeMax.Y)
-		{
-			Scaling = BackgroundTexture->GetSizeX() / SizeToScale;
-		}
-		DesiredSize->SetHeightOverride(BackgroundTexture->GetSizeX()/Scaling);
-		DesiredSize->SetWidthOverride(BackgroundTexture->GetSizeY()/Scaling);
 	}
 }
 
