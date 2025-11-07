@@ -161,14 +161,31 @@ void UGachaInventoryWidget::OnItemSelected(UGachaInventoryItemWidget* ClickedIte
 
     if (CharacterImage)
     {
-        CharacterImage->SetIsEnabled(false);
         CharacterImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
     }
 
     if (StatImage)
     {
-        StatImage->SetIsEnabled(false);
         StatImage->SetVisibility(ESlateVisibility::Visible);
+
+        // Récupération du CharacterID depuis le widget sélectionné
+        FName SelectedCharacterID = SelectedItemWidget ? SelectedItemWidget->GetCharacterID() : NAME_None;
+        if (SelectedCharacterID != NAME_None && CharacterDataTable)
+        {
+            const FCharacterStructure* CharacterRow = CharacterDataTable->FindRow<FCharacterStructure>(SelectedCharacterID, TEXT("OnItemSelected"));
+            if (CharacterRow && CharacterRow->CV_Character)
+            {
+                FSlateBrush NewBrush;
+                NewBrush.SetResourceObject(CharacterRow->CV_Character);
+                NewBrush.ImageSize = FVector2D(CharacterRow->CV_Character->GetSizeX(), CharacterRow->CV_Character->GetSizeY());
+
+                StatImage->SetBrush(NewBrush);
+            }
+            else
+            {
+                StatImage->SetBrush(FSlateNoResource());
+            }
+        }
     }
 
     if (BTN_Assign)

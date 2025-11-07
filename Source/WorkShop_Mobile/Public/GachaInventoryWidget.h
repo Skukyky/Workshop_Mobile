@@ -60,6 +60,9 @@ public:
 	UPROPERTY()
 	UBTNCustomWidget* AssignButtonReturn;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
+	UTexture2D* CV_Texture = nullptr;
+
 protected:
 	virtual void NativeConstruct() override;
 

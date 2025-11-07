@@ -39,6 +39,9 @@ struct WORKSHOP_MOBILE_API FCharacterStructure : public FTableRowBase
 	UTexture2D* Photo = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
+	UTexture2D* CV_Character = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
 	USkeletalMesh* CharacterMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character")
