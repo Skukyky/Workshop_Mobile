@@ -39,6 +39,22 @@ void UBTNCustomWidget::NativePreConstruct()
 	}
 }
 
+void UBTNCustomWidget::ChangeDesiredSize(FVector2D SizeMax)
+{
+	float SizeToScale = FMath::Min(SizeMax.X, SizeMax.Y);
+	if (BackgroundTexture)
+	{
+		float Scaling = BackgroundTexture->GetSizeY() / SizeToScale;
+		if (SizeMax.X < SizeMax.Y)
+		{
+			Scaling = BackgroundTexture->GetSizeX() / SizeToScale;
+		}
+		DesiredSize->SetHeightOverride(BackgroundTexture->GetSizeX()/Scaling);
+		DesiredSize->SetWidthOverride(BackgroundTexture->GetSizeY()/Scaling);
+	}
+}
+
+
 void UBTNCustomWidget::OnCustomButtonClickedHandler()
 {
 	OnCustomButtonClicked.Broadcast();

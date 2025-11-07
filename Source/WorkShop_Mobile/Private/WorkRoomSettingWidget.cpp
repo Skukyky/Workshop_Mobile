@@ -21,6 +21,11 @@ void UWorkRoomSettingWidget::OnUpgradeCliqued()
 	RoomWorking->CanUpgradeWithMoney();
 }
 
+void UWorkRoomSettingWidget::OnExitClicked()
+{
+	RemoveFromParent();
+}
+
 void UWorkRoomSettingWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
@@ -44,6 +49,7 @@ void UWorkRoomSettingWidget::NativeConstruct()
 			UBTNCustomWidget* NewCustomButton = CreateWidget<UBTNCustomWidget>(this, Button);
 			NewCustomButton->BackgroundTexture = BackgroundTexture;
 			NewCustomButton->Text = FText::FromString("");
+			//NewCustomButton->ChangeDesiredSize(FVector2D)
 			int Row = i%2;
 			int Column = i/2;
 			GridPanel->AddChildToUniformGrid(NewCustomButton,Row,Column);
@@ -61,5 +67,9 @@ void UWorkRoomSettingWidget::NativeConstruct()
 	if (UpgradeGem)
 	{
 		UpgradeGem->OnCustomButtonClicked.AddDynamic(this,&UWorkRoomSettingWidget::OnGemClicked);
+	}
+	if (Exit)
+	{
+		Exit->OnCustomButtonClicked.AddDynamic(this,&UWorkRoomSettingWidget::OnExitClicked);
 	}
 }

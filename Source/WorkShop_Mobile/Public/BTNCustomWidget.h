@@ -48,4 +48,5 @@ public:
 
 	virtual void NativePreConstruct() override;
 
+	void ChangeDesiredSize(FVector2D SizeMax);
 };

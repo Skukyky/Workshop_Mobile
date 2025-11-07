@@ -32,6 +32,9 @@ public:
 	UBTNCustomWidget* GetGold;
 
 	UPROPERTY(Meta = (BindWidget))
+	UBTNCustomWidget* Exit;
+
+	UPROPERTY(Meta = (BindWidget))
 	UBTNCustomWidget* UpgradeGold;
 	
 	UPROPERTY(Meta = (BindWidget))
@@ -65,7 +68,12 @@ protected:
 	UFUNCTION()
 	void OnUpgradeCliqued();
 
+	UFUNCTION()
+	void OnExitClicked();
+
 	virtual void NativePreConstruct() override;
 
 	virtual void NativeConstruct() override;
+
+	
 };

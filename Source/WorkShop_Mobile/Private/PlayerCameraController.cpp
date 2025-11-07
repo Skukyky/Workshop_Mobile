@@ -3,6 +3,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "PlayerActor.h"
+#include "RoomWorking.h"
 #include "Worker.h"
 
 bool APlayerCameraController::GetHitUnderFingerByChannel(FVector2D ScreenPosition, ECollisionChannel TraceChannel, FHitResult& OutHit)
@@ -233,6 +234,10 @@ void APlayerCameraController::OnTouchSelect(const FInputActionValue& Value)
 						}
 					}
 				}
+			}
+			if (ARoomWorking* Room = Cast<ARoomWorking>(HitActor))
+			{
+				Room->SpawnWidget();
 			}
 			else if (GEngine)
 			{

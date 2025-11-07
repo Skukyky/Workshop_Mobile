@@ -99,6 +99,9 @@ protected:
 	UFUNCTION()
 	void Upgrade();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* StaticMeshComponent = nullptr;
+	
 	UPROPERTY()
 	APlayerActor* PlayerActor = nullptr;
 
