@@ -3,6 +3,7 @@
 
 #include "HUDGeneral.h"
 
+#include "Kismet/GameplayStatics.h"
 
 
 void UHUDGeneral::CloseOpenPanel_Implementation()
@@ -44,6 +45,14 @@ void UHUDGeneral::NativeConstruct()
 	if (BoolVibrationButton)
 	{
 		BoolVibrationButton->OnReleased.AddDynamic(this, &UHUDGeneral::ClickBoolVibrationButton);
+	}
+	if (SoundEffectsSlider)
+	{
+		SoundEffectsSlider->OnValueChanged.AddDynamic(this, &UHUDGeneral::OnSoundEffectsChanged);
+	}
+	if (MusicSlider)
+	{
+		MusicSlider->OnValueChanged.AddDynamic(this, &UHUDGeneral::OnMusicChanged);
 	}
 }
 
@@ -111,24 +120,31 @@ void UHUDGeneral::ClickBoolVibrationButton()
 		{
 			Vibration = false;
 			PlayerController->bForceFeedbackEnabled = false;
-
-			FButtonStyle ButtonStyle = BoolVibrationButton->WidgetStyle;
-			FLinearColor NewColor(1.0f, 0.0f, 0.0f, 1.0f);
-			FSlateColor NewSlateColor(NewColor);
-
-			ButtonStyle.Normal.TintColor = NewSlateColor;
-			BoolVibrationButton->SetStyle(ButtonStyle);
 		}
 		else
 		{
 			Vibration = true;
 			PlayerController->bForceFeedbackEnabled = true;
-			FButtonStyle ButtonStyle = BoolVibrationButton->WidgetStyle;
-			FLinearColor NewColor(0.0f, 1.0f, 0.0f, 1.0f);
-			FSlateColor NewSlateColor(NewColor);
-
-			ButtonStyle.Normal.TintColor = NewSlateColor;
-			BoolVibrationButton->SetStyle(ButtonStyle);
 		}
+	}
+}
+
+void UHUDGeneral::OnSoundEffectsChanged(float Value)
+{
+	if (MasterSoundMix && SoundEffectsSoundClass)
+	{
+		UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMix, SoundEffectsSoundClass, Value, 1.0f, 0.0f);
+		UGameplayStatics::PushSoundMixModifier(GetWorld(), MasterSoundMix);
+		SoundEffectsSlider->SetValue(Value);
+	}
+}
+
+void UHUDGeneral::OnMusicChanged(float Value)
+{
+	if (MasterSoundMix && MusicSoundClass)
+	{
+		UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMix, MusicSoundClass, Value, 1.0f, 0.0f);
+		UGameplayStatics::PushSoundMixModifier(GetWorld(), MasterSoundMix);
+		MusicSlider->SetValue(Value);
 	}
 }

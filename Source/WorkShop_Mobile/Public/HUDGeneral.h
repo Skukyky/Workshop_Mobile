@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/Slider.h"
 #include "Components/CanvasPanel.h"
 #include "HUDGeneral.generated.h"
+
 
 /**
  * 
@@ -103,4 +105,25 @@ public:
 	
 	UFUNCTION()
 	void ClickBoolVibrationButton();
+
+	UPROPERTY(meta = (BindWidget))
+	USlider* SoundEffectsSlider;
+
+	UPROPERTY(meta = (BindWidget))
+	USlider* MusicSlider;
+
+	UFUNCTION()
+	void OnSoundEffectsChanged(float Value);
+
+	UFUNCTION()
+	void OnMusicChanged(float Value);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	USoundMix* MasterSoundMix;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	USoundClass* SoundEffectsSoundClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	USoundClass* MusicSoundClass;
 };
