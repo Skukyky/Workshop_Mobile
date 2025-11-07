@@ -83,41 +83,72 @@ void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& 
 
     for (const FCharacterProgress& Progress : SortedInventory)
     {
-        if(AssignButtonReturn->WorkRoomSettingWidget->RoomWorking)
+        if(AssignButtonReturn)
         {
-            IsAllReadyUse = false;
-            for (FWorkerAssigned Worker : AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->Workers)
+            if(AssignButtonReturn->WorkRoomSettingWidget->RoomWorking)
             {
-                if (Worker.Worker == Progress.WorkerSpawnRef) IsAllReadyUse = true;
-            }
-            if (!IsAllReadyUse)
-            {
-                const FName& CharacterRowName = Progress.CharacterID;
-                FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT("GachaInventoryWidget::PopulateInventory"));
-                if (!CharacterData)
+                IsAllReadyUse = false;
+                for (FWorkerAssigned Worker : AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->Workers)
                 {
-                    continue;
+                    if (Worker.Worker == Progress.WorkerSpawnRef) IsAllReadyUse = true;
                 }
-
-                if (!ItemWidgetClass)
+                if (!IsAllReadyUse)
                 {
-                    continue;
+                    const FName& CharacterRowName = Progress.CharacterID;
+                    FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT("GachaInventoryWidget::PopulateInventory"));
+                    if (!CharacterData)
+                    {
+                        continue;
+                    }
+
+                    if (!ItemWidgetClass)
+                    {
+                        continue;
+                    }
+
+                    UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
+                    if (!EntryWidget)
+                    {
+                        continue;
+                    }
+
+                    EntryWidget->InitializeWithData(*CharacterData, Progress, Progress.CharacterID);
+
+                    // Bind event selection
+                    EntryWidget->OnItemSelected.AddDynamic(this, &UGachaInventoryWidget::OnItemSelected);
+
+                    InventoryScrollBox->AddChild(EntryWidget);
                 }
-
-                UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
-                if (!EntryWidget)
-                {
-                    continue;
-                }
-
-                EntryWidget->InitializeWithData(*CharacterData, Progress, Progress.CharacterID);
-
-                // Bind event selection
-                EntryWidget->OnItemSelected.AddDynamic(this, &UGachaInventoryWidget::OnItemSelected);
-
-                InventoryScrollBox->AddChild(EntryWidget);
             }
             
+            
+        }
+        else
+        {
+            const FName& CharacterRowName = Progress.CharacterID;
+            FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT("GachaInventoryWidget::PopulateInventory"));
+            if (!CharacterData)
+            {
+                continue;
+            }
+
+            if (!ItemWidgetClass)
+            {
+                continue;
+            }
+
+            UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
+            if (!EntryWidget)
+            {
+                continue;
+            }
+
+            EntryWidget->InitializeWithData(*CharacterData, Progress, Progress.CharacterID);
+
+            // Bind event selection
+            EntryWidget->OnItemSelected.AddDynamic(this, &UGachaInventoryWidget::OnItemSelected);
+
+            InventoryScrollBox->AddChild(EntryWidget);
         }
     }
 }
