@@ -2,16 +2,31 @@
 #include "GachaSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "GachaPullWidget.h"
+#include "Components/Image.h"
 
 void UBannerWidget::SetParentGachaWidget(UGachaPullWidget* Parent)
 {
     ParentGachaWidget = Parent;
 }
 
+void UBannerWidget::NativePreConstruct()
+{
+    Super::NativePreConstruct();
+
+    if (ImageBackground && BackgroundTexture)
+    {
+        FSlateBrush NewBrush;
+        NewBrush.SetResourceObject(BackgroundTexture);
+        NewBrush.ImageSize = FVector2D(BackgroundTexture->GetSizeX(), BackgroundTexture->GetSizeY());
+
+        ImageBackground->SetBrush(NewBrush);
+    }
+}
+
 void UBannerWidget::NativeConstruct()
 {
     Super::NativeConstruct();
-
+    
     if (BTN_Pull)
     {
         BTN_Pull->OnCustomButtonClicked.AddDynamic(this, &UBannerWidget::HandlePullClicked);

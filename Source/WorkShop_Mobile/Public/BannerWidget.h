@@ -8,6 +8,7 @@
 #include "CharacterProgress.h"
 #include "BannerWidget.generated.h"
 
+class UImage;
 class UGachaPullWidget;
 
 USTRUCT(BlueprintType)
@@ -35,6 +36,12 @@ public:
     void SetParentGachaWidget(UGachaPullWidget* Parent);
 
     UPROPERTY(meta = (BindWidget))
+    UImage* ImageBackground;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
+    UTexture2D* BackgroundTexture = nullptr;
+
+    UPROPERTY(meta = (BindWidget))
     UBTNCustomWidget* BTN_Pull;
     
     UPROPERTY(meta = (BindWidget))
@@ -60,6 +67,8 @@ protected:
 
     virtual void NativeConstruct() override;
 
+    virtual void NativePreConstruct() override;
+
     UFUNCTION()
     void HandlePullClicked();
 
@@ -67,7 +76,7 @@ protected:
     void HandlePullMultiClicked();
 
 private:
-    void SaveProgress();
+    void SaveProgress(); 
 
     FName PerformSinglePull();
     void MergePullResults(const TArray<FName>& PullResults);
