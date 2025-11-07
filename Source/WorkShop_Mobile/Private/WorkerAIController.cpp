@@ -13,7 +13,7 @@ void AWorkerAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	// 🔹 Lancer un mouvement aléatoire toutes les quelques secondes
-	StartMovement;
+	StartMovement(InPawn);
 }
 
 void AWorkerAIController::Tick(float DeltaTime)

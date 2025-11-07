@@ -44,12 +44,7 @@ protected:
 
 	UPROPERTY()
 	float MoneyPerWorkBase;
-
-	UPROPERTY()
-	float MoneyPerWork;
-
-
-
+	
 	
 	FCharacterStructure* MyRow;
 
@@ -61,9 +56,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void OnConstruction(const FTransform& Transform) override;
-
-	UPROPERTY()
-	float MoneyPerWorkWithBonus;
 
 	UPROPERTY()
 	float MoneyPerWork;

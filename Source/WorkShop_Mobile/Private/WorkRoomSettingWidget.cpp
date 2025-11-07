@@ -13,7 +13,7 @@ void UWorkRoomSettingWidget::OnGoldClicked()
 }
 
 void UWorkRoomSettingWidget::ActualiseMoney()
-{
+{/*
 	MoneySecond = 0;
 	for (int i = 0; i < RoomWorking->Workers.Num(); i++)
 	{
@@ -25,16 +25,9 @@ void UWorkRoomSettingWidget::ActualiseMoney()
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Total MoneySecond: %f"), MoneySecond);
 	FString StringMoney = FString::SanitizeFloat(MoneySecond);
-	GoldPerSecond->SetText(FText::FromString(StringMoney));
+	GoldPerSecond->SetText(FText::FromString(StringMoney));*/
 }
 
-
-void UWorkRoomSettingWidget::OnUpgradeCliqued()
-void UWorkRoomSettingWidget::Refresh()
-{
-	RoomWorking->CanUpgradeWithMoney();
-	ActualiseMoney();
-}
 
 void UWorkRoomSettingWidget::OnExitClicked()
 {
@@ -45,6 +38,11 @@ void UWorkRoomSettingWidget::OnExitClicked()
 void UWorkRoomSettingWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
+	Refresh();
+}
+
+void UWorkRoomSettingWidget::Refresh()
+{
 	if (RoomWorking)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Work Room Setting for %d"),RoomWorking->Workers.Num());
@@ -90,42 +88,13 @@ void UWorkRoomSettingWidget::RefreshStat()
 	}
 }
 
-void UWorkRoomSettingWidget::OnGoldClicked()
-{
-	RoomWorking->SendMoneyToPlayer();
-}
+
 
 void UWorkRoomSettingWidget::OnUpgradeCliqued()
 {
 	RoomWorking->CanUpgradeWithMoney();
 }
 
-void UWorkRoomSettingWidget::OnExitClicked()
-{
-	RemoveFromParent();
-}
-
-void UWorkRoomSettingWidget::NativePreConstruct()
-{
-	Super::NativePreConstruct();
-	Refresh();
-			UE_LOG(LogTemp, Display, TEXT("Work Room Setting n°%d"), i);
-			UBTNCustomWidget* NewCustomButton = CreateWidget<UBTNCustomWidget>(this, Button);
-			NewCustomButton->BackgroundTexture = BackgroundTexture;
-			NewCustomButton->Text = FText::FromString("");
-			NewCustomButton->IsWorkerAssignableButton = true;
-			NewCustomButton->Position = i ;
-			NewCustomButton->WorkRoomSettingWidget = this;
-			//NewCustomButton->ChangeDesiredSize(FVector2D)
-			NewCustomButton->PourcentSize = 80;
-			int Row = i%2;
-			int Column = i/2;
-			GridPanel->AddChildToUniformGrid(NewCustomButton,Row,Column);
-			CustomButtonForWorker.Add(NewCustomButton);
-			ActualiseMoney();
-		}
-	}
-}
 
 void UWorkRoomSettingWidget::NativeConstruct()
 {
