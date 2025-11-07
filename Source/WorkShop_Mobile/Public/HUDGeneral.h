@@ -52,16 +52,16 @@ public:
 	void ClickShopButton();
 	
 	UPROPERTY(meta = (BindWidget))
-	UButton* UpgradeButton;
+	UButton* InvocationButton;
 
 	UPROPERTY()
-	UUserWidget* UpgradeWidgetRef;
+	UUserWidget* InvocationWidgetRef;
 	
 	UPROPERTY(EditDefaultsOnly, Category = Widget)
-	TSubclassOf<UUserWidget> WidgetUpgradeReference;
+	TSubclassOf<UUserWidget> WidgetInvocationReference;
 	
 	UFUNCTION()
-	void ClickUpgradeButton();
+	void ClickInvocationButton();
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* OptionButton;

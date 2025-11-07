@@ -26,9 +26,9 @@ void UHUDGeneral::NativeConstruct()
 	{
 		ShopButton->OnReleased.AddDynamic(this, &UHUDGeneral::ClickShopButton);
 	}
-	if (UpgradeButton)
+	if (InvocationButton)
 	{
-		UpgradeButton->OnReleased.AddDynamic(this, &UHUDGeneral::ClickUpgradeButton);
+		InvocationButton->OnReleased.AddDynamic(this, &UHUDGeneral::ClickInvocationButton);
 	}
 	if (OptionButton)
 	{
@@ -68,10 +68,10 @@ void UHUDGeneral::ClickShopButton()
 	if (ShopWidgetRef) ShopWidgetRef->AddToViewport();
 }
 
-void UHUDGeneral::ClickUpgradeButton()
+void UHUDGeneral::ClickInvocationButton()
 {
-	UpgradeWidgetRef = CreateWidget<UUserWidget>(GetWorld(), WidgetUpgradeReference);
-	if (UpgradeWidgetRef) UpgradeWidgetRef->AddToViewport();
+	InvocationWidgetRef = CreateWidget<UUserWidget>(GetWorld(), WidgetInvocationReference);
+	if (InvocationWidgetRef) InvocationWidgetRef->AddToViewport();
 }
 
 void UHUDGeneral::VisiblityChange_Implementation(bool Despawn)
