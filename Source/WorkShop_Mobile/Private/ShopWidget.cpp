@@ -7,10 +7,14 @@ void UShopWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (APlayerActor* Player = Cast<APlayerActor>(GetWorld()->GetFirstPlayerController()))
+	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
 	{
-		PlayerActor = Player;
+		if (APlayerActor* Player = Cast<APlayerActor>(PC->GetPawn()))
+		{
+			PlayerActor = Player;
+		}
 	}
+	
 	//---------------ShopTab---------------
 	if (BTN_Boutique)
 	{

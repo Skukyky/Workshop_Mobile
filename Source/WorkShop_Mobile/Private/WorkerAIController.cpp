@@ -13,7 +13,7 @@ void AWorkerAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	// 🔹 Lancer un mouvement aléatoire toutes les quelques secondes
-	GetWorldTimerManager().SetTimer(MoveTimerHandle, this, &AWorkerAIController::MoveToRandomLocation, Speed, true, Delay);
+	StartMovement;
 }
 
 void AWorkerAIController::Tick(float DeltaTime)
@@ -23,20 +23,35 @@ void AWorkerAIController::Tick(float DeltaTime)
 
 void AWorkerAIController::MoveToRandomLocation()
 {
-	APawn* MyPawn = GetPawn();
-	if (!MyPawn) return;
-
-	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
-	if (!NavSys) return;
-
-	FNavLocation RandomPoint;
-
-	// 🔹 Trouve un point atteignable dans un rayon autour du Pawn
-	bool bFound = NavSys->GetRandomReachablePointInRadius(MyPawn->GetActorLocation(), Radius, RandomPoint);
-
-	if (bFound)
+	if (tasked == false)
 	{
-		// 🔹 Déplace l'IA vers ce point
-		MoveToLocation(RandomPoint.Location);
+		APawn* MyPawn = GetPawn();
+		if (!MyPawn) return;
+
+		UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
+		if (!NavSys) return;
+
+		FNavLocation RandomPoint;
+
+		// 🔹 Trouve un point atteignable dans un rayon autour du Pawn
+		bool bFound = NavSys->GetRandomReachablePointInRadius(MyPawn->GetActorLocation(), Radius, RandomPoint);
+
+		if (bFound)
+		{
+			// 🔹 Déplace l'IA vers ce point
+			MoveToLocation(RandomPoint.Location);
+		}
 	}
+
+	else
+	{
+		MoveToLocation(FVector(WorkPosition.X, WorkPosition.Y, GetPawn()->GetActorLocation().Z));
+
+		GetWorldTimerManager().ClearTimer(MoveTimerHandle);
+	}
+}
+
+void AWorkerAIController::StartMovement(APawn* InPawn)
+{
+	GetWorldTimerManager().SetTimer(MoveTimerHandle, this, &AWorkerAIController::MoveToRandomLocation, Speed, true, Delay);
 }
