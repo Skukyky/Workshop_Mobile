@@ -9,15 +9,35 @@
 void UWorkRoomSettingWidget::OnGoldClicked()
 {
 	RoomWorking->SendMoneyToPlayer();
+	ActualiseMoney();
 }
+
+void UWorkRoomSettingWidget::ActualiseMoney()
+{
+	MoneySecond = 0;
+	for (int i = 0; i < RoomWorking->Workers.Num(); i++)
+	{
+		if (RoomWorking->Workers[i].Worker != nullptr)
+		{
+			MoneySecond += RoomWorking->Workers[i].Worker->MoneyPerWork;
+			UE_LOG(LogTemp, Warning, TEXT("Worker %d: %f"), i, RoomWorking->Workers[i].Worker->MoneyPerWork);
+		}
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Total MoneySecond: %f"), MoneySecond);
+	FString StringMoney = FString::SanitizeFloat(MoneySecond);
+	GoldPerSecond->SetText(FText::FromString(StringMoney));
+}
+
 
 void UWorkRoomSettingWidget::OnUpgradeCliqued()
 {
 	RoomWorking->CanUpgradeWithMoney();
+	ActualiseMoney();
 }
 
 void UWorkRoomSettingWidget::OnExitClicked()
 {
+	ActualiseMoney();
 	RemoveFromParent();
 }
 
@@ -47,6 +67,7 @@ void UWorkRoomSettingWidget::NativePreConstruct()
 			int Column = i/2;
 			GridPanel->AddChildToUniformGrid(NewCustomButton,Row,Column);
 			CustomButtonForWorker.Add(NewCustomButton);
+			ActualiseMoney();
 		}
 	}
 }
@@ -67,4 +88,5 @@ void UWorkRoomSettingWidget::NativeConstruct()
 	{
 		Exit->OnCustomButtonClicked.AddDynamic(this,&UWorkRoomSettingWidget::OnExitClicked);
 	}
+	ActualiseMoney();
 }

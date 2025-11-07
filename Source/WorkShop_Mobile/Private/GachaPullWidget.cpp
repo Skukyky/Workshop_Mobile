@@ -36,7 +36,11 @@ void UGachaPullWidget::NativeConstruct()
 void UGachaPullWidget::NativePreConstruct()
 {
     Super::NativePreConstruct();
-    
+
+    if (ScrollBoxBanner)
+    {
+        ScrollBoxBanner->SetScrollOffset(0);
+    }
 }
 
 void UGachaPullWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

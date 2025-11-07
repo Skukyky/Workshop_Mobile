@@ -41,24 +41,24 @@ protected:
 
 	UPROPERTY()
 	float MoneyPerWorkBase;
-
-	UPROPERTY()
-	float MoneyPerWork;
-
-	UPROPERTY()
-	float MoneyPerWorkWithBonus;
-
+	
 	FCharacterStructure* MyRow;
 
 	UPROPERTY()
 	APlayerActor* PlayerActor;
 	
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
+	UPROPERTY()
+	float MoneyPerWorkWithBonus;
+
+	UPROPERTY()
+	float MoneyPerWork;
+	
 	UPROPERTY(EditAnywhere)
 	USceneComponent* MySceneComponent;
 

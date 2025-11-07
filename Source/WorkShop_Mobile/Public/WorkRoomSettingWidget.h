@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ScrollBox.h"
+#include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
 #include "WorkRoomSettingWidget.generated.h"
 
@@ -37,6 +38,9 @@ public:
 	UPROPERTY(Meta = (BindWidget))
 	UBTNCustomWidget* UpgradeGold;
 
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* GoldPerSecond;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlayerActor* PlayerActor;
 
@@ -56,8 +60,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AWorker* Worker;
 
+	UPROPERTY()
+	float MoneySecond;
+
 	UFUNCTION()
 	void OnGoldClicked();
+
+	UFUNCTION()
+	void ActualiseMoney();
 	
 	UFUNCTION()
 	void OnUpgradeCliqued();
@@ -68,6 +78,4 @@ protected:
 	virtual void NativePreConstruct() override;
 
 	virtual void NativeConstruct() override;
-
-	
 };
