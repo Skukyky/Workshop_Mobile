@@ -20,6 +20,9 @@ AGachaCharacterShowcase::AGachaCharacterShowcase()
 
 	CharacterCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("CharacterCapture"));
 	CharacterCapture->SetupAttachment(RootComp);
+
+	Name = CreateDefaultSubobject<UTextRenderComponent>(TEXT("Name"));
+	Name->SetupAttachment(RootComp);
 	
 
 }
@@ -49,6 +52,10 @@ void AGachaCharacterShowcase::SetCharacterByRowName(FName RowName)
 	if (!CharacterData)
 		return;
 
+	if (!CharacterData->Name.IsEmpty())
+	{
+		Name->SetText(FText::FromString(CharacterData->Name));
+	}
 	if (CharacterData->CharacterMesh)
 	{
 		if (!CharacterMesh)

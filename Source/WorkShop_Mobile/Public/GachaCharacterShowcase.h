@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TextRenderComponent.h"
 #include "GameFramework/Actor.h"
 #include "GachaCharacterShowcase.generated.h"
 
@@ -18,6 +19,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* CharacterMesh = nullptr;
 
+	UPROPERTY(EditAnywhere)
+	UTextRenderComponent* Name = nullptr;
+	
 	UPROPERTY(EditAnywhere)
 	USceneCaptureComponent2D* CharacterCapture = nullptr;
 
