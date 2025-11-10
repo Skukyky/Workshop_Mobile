@@ -138,8 +138,7 @@ void ARoomWorking::SpawnWidget()
 	{
 		if (RoomSettingWidget)
 		{
-			RoomSettingWidget->Refresh();
-			return;
+			RoomSettingWidget->RemoveFromParent();
 		}
 		RoomSettingWidget = CreateWidget<UWorkRoomSettingWidget>(GetWorld(), Widget);
 		if (RoomSettingWidget)

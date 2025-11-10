@@ -17,73 +17,70 @@ class UGachaInventoryItemWidget;
 UCLASS()
 class WORKSHOP_MOBILE_API UGachaInventoryWidget : public UUserWidget
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
+    UPROPERTY(meta = (BindWidget))
+    UImage* CharacterImage;
 
-	UPROPERTY(meta = (BindWidget))
-	UImage* CharacterImage;
+    UPROPERTY(meta = (BindWidget))
+    UImage* StatImage;
 
-	UPROPERTY(meta = (BindWidget))
-	UImage* StatImage;
+    UPROPERTY(meta = (BindWidget))
+    UBTNCustomWidget* BTN_LostFocus;
 
-	UPROPERTY(meta = (BindWidget))
-	UBTNCustomWidget* BTN_LostFocus;
+    UPROPERTY(meta = (BindWidget))
+    UBTNCustomWidget* BTN_Assign;
 
-	UPROPERTY(meta = (BindWidget))
-	UBTNCustomWidget* BTN_Assign;
+    UPROPERTY(meta = (BindWidget))
+    UProgressBar* PB_Youtube;
 
-	UPROPERTY(meta = (BindWidget))
-	UProgressBar* PB_Youtube;
+    UPROPERTY(meta = (BindWidget))
+    UProgressBar* PB_Tiktok;
 
-	UPROPERTY(meta = (BindWidget))
-	UProgressBar* PB_Tiktok;
+    UPROPERTY(meta = (BindWidget))
+    UScrollBox* InventoryScrollBox;
 
-	UPROPERTY(meta = (BindWidget))
-	UScrollBox* InventoryScrollBox;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+    UDataTable* CharacterDataTable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
-	UDataTable* CharacterDataTable;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+    TSubclassOf<UGachaInventoryItemWidget> ItemWidgetClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
-	TSubclassOf<UGachaInventoryItemWidget> ItemWidgetClass;
-    
-	// Mis à jour pour accepter un tableau au lieu d'une map
-	void PopulateInventory(const TArray<FCharacterProgress>& CharactersInventory);
+    // Récupère directement depuis le PlayerActor
+    void PopulateInventoryFromPlayer();
 
-	UFUNCTION()
-	void OnLostFocusClicked();
+    UFUNCTION()
+    void OnLostFocusClicked();
 
-	UFUNCTION()
-	void OnAssignClicked();
+    UFUNCTION()
+    void OnAssignClicked();
 
-	UPROPERTY()
-	AGachaCharacterShowcase* CurrentCharacterShowcase = nullptr;
+    UPROPERTY()
+    AGachaCharacterShowcase* CurrentCharacterShowcase = nullptr;
 
-	// Classe à spawn (exposée pour assigner dans Blueprint)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
-	TSubclassOf<AGachaCharacterShowcase> CharacterShowcaseActorClass;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+    TSubclassOf<AGachaCharacterShowcase> CharacterShowcaseActorClass;
 
-	UPROPERTY()
-	UBTNCustomWidget* AssignButtonReturn = nullptr;
+    UPROPERTY()
+    UBTNCustomWidget* AssignButtonReturn = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
-	UTexture2D* CV_Texture = nullptr;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
+    UTexture2D* CV_Texture = nullptr;
 
 protected:
-	virtual void NativeConstruct() override;
+    virtual void NativeConstruct() override;
 
-	UPROPERTY()
-	bool IsAllReadyUse;
+    UPROPERTY()
+    bool IsAllReadyUse;
 
 private:
-	
-	UPROPERTY()
-	UGachaInventoryItemWidget* SelectedItemWidget = nullptr;
+    UPROPERTY()
+    UGachaInventoryItemWidget* SelectedItemWidget = nullptr;
 
-	UPROPERTY()
-	APlayerActor* PlayerActor = nullptr;
-	
-	UFUNCTION()
-	void OnItemSelected(UGachaInventoryItemWidget* ClickedItem);
+    UPROPERTY()
+    APlayerActor* PlayerActor = nullptr;
+
+    UFUNCTION()
+    void OnItemSelected(UGachaInventoryItemWidget* ClickedItem);
 };

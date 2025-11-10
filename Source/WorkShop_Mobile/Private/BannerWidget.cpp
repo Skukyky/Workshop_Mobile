@@ -1,8 +1,8 @@
 #include "BannerWidget.h"
-#include "GachaSaveGame.h"
-#include "Kismet/GameplayStatics.h"
 #include "GachaPullWidget.h"
 #include "Components/Image.h"
+#include "PlayerActor.h"
+#include "Kismet/GameplayStatics.h"
 
 void UBannerWidget::SetParentGachaWidget(UGachaPullWidget* Parent)
 {
@@ -12,17 +12,15 @@ void UBannerWidget::SetParentGachaWidget(UGachaPullWidget* Parent)
 void UBannerWidget::NativePreConstruct()
 {
     Super::NativePreConstruct();
-
     if (ImageBackground && BackgroundTexture)
     {
         FSlateBrush NewBrush;
         NewBrush.SetResourceObject(BackgroundTexture);
         NewBrush.DrawAs = ESlateBrushDrawType::RoundedBox;
         NewBrush.ImageSize = FVector2D(BackgroundTexture->GetSizeX(), BackgroundTexture->GetSizeY());
-
         ImageBackground->SetBrush(NewBrush);
     }
-    
+
     BTN_Pull->BackgroundTexture = ButtonPullTexture;
     BTN_Pull->Refresh();
     BTN_PullMulti->BackgroundTexture = ButtonPull10Texture;
@@ -32,7 +30,14 @@ void UBannerWidget::NativePreConstruct()
 void UBannerWidget::NativeConstruct()
 {
     Super::NativeConstruct();
-    
+
+    // Récupérer la référence au PlayerActor
+    APlayerController* PC = GetWorld()->GetFirstPlayerController();
+    if (PC)
+    {
+        PlayerActorRef = Cast<APlayerActor>(PC->GetPawn());
+    }
+
     if (BTN_Pull)
     {
         BTN_Pull->OnCustomButtonClicked.AddDynamic(this, &UBannerWidget::HandlePullClicked);
@@ -54,9 +59,9 @@ void UBannerWidget::HandlePullClicked()
 
     TArray<FName> PullResults;
     PullResults.Add(PulledCharacter);
-
-    MergePullResults(PullResults);
-    SaveProgress();
+    
+    // Ajouter au PlayerActor au lieu de sauvegarder
+    AddPulledWorkersToPlayer(PullResults);
 
     if (ParentGachaWidget)
     {
@@ -82,8 +87,8 @@ void UBannerWidget::HandlePullMultiClicked()
         }
     }
 
-    MergePullResults(PullResults);
-    SaveProgress();
+    // Ajouter au PlayerActor au lieu de sauvegarder
+    AddPulledWorkersToPlayer(PullResults);
 
     if (ParentGachaWidget)
     {
@@ -92,59 +97,19 @@ void UBannerWidget::HandlePullMultiClicked()
     }
 }
 
-void UBannerWidget::SaveProgress()
+void UBannerWidget::AddPulledWorkersToPlayer(const TArray<FName>& PullResults)
 {
-    UGachaSaveGame* SaveGameInstance = nullptr;
-
-    if (UGameplayStatics::DoesSaveGameExist(TEXT("GachaSaveSlot"), 0))
+    if (!PlayerActorRef)
     {
-        SaveGameInstance = Cast<UGachaSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("GachaSaveSlot"), 0));
+        UE_LOG(LogTemp, Error, TEXT("PlayerActorRef is null in AddPulledWorkersToPlayer"));
+        return;
     }
 
-    if (!SaveGameInstance)
+    // Pour chaque worker tiré, l'ajouter à l'inventaire du joueur
+    // Le système gérera automatiquement le spawn et l'ajout de stars
+    for (const FName& CharacterID : PullResults)
     {
-        SaveGameInstance = Cast<UGachaSaveGame>(UGameplayStatics::CreateSaveGameObject(UGachaSaveGame::StaticClass()));
-    }
-
-    if (SaveGameInstance)
-    {
-        TMap<FName, int32> AggregatedStars;
-
-        for (const FCharacterProgress& Progress : SaveGameInstance->SavedCharactersArray)
-        {
-            AggregatedStars.FindOrAdd(Progress.CharacterID) += Progress.StarCount;
-        }
-
-        for (const FCharacterProgress& Progress : CharactersInventory)
-        {
-            AggregatedStars.FindOrAdd(Progress.CharacterID) += Progress.StarCount;
-        }
-
-        const int32 MaxStarCount = 5;
-
-        SaveGameInstance->SavedCharactersArray.Empty();
-        for (auto& Elem : AggregatedStars)
-        {
-            int32 TotalStars = Elem.Value;
-            const FName& CharID = Elem.Key;
-
-            while (TotalStars > 0)
-            {
-                int32 CurStars = FMath::Min(TotalStars, MaxStarCount);
-
-                FCharacterProgress NewProgress;
-                NewProgress.CharacterID = CharID;
-                NewProgress.StarCount = CurStars;
-
-                SaveGameInstance->SavedCharactersArray.Add(NewProgress);
-
-                TotalStars -= CurStars;
-            }
-        }
-
-        CharactersInventory.Empty();
-
-        UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("GachaSaveSlot"), 0);
+        PlayerActorRef->AddWorkerToInventory(CharacterID, 1);
     }
 }
 
@@ -154,7 +119,6 @@ FName UBannerWidget::PerformSinglePull()
         return NAME_None;
 
     TArray<FName> RowNames = CharacterDataTable->GetRowNames();
-
     float TotalWeightedDropRate = 0.f;
     TArray<FName> ValidCharacterRowNames;
 
@@ -192,8 +156,8 @@ FName UBannerWidget::PerformSinglePull()
 
         float* RarityDropRate = DropRatesByRarity.Find(CharData->Rarity);
         float Weight = RarityDropRate ? *RarityDropRate : 0.f;
-
         Accumulated += Weight;
+
         if (RandomPoint <= Accumulated)
         {
             return RowName;
@@ -201,41 +165,4 @@ FName UBannerWidget::PerformSinglePull()
     }
 
     return NAME_None;
-}
-
-void UBannerWidget::MergePullResults(const TArray<FName>& PullResults)
-{
-    TMap<FName, int32> AggregatedStars;
-
-    for (const FCharacterProgress& Progress : CharactersInventory)
-    {
-        AggregatedStars.FindOrAdd(Progress.CharacterID) += Progress.StarCount;
-    }
-
-    for (const FName& PulledID : PullResults)
-    {
-        AggregatedStars.FindOrAdd(PulledID) += 1;
-    }
-
-    const int32 MaxStarCount = 5;
-
-    CharactersInventory.Empty();
-    for (auto& Elem : AggregatedStars)
-    {
-        int32 TotalStars = Elem.Value;
-        const FName& CharID = Elem.Key;
-
-        while (TotalStars > 0)
-        {
-            int32 CurStars = FMath::Min(TotalStars, MaxStarCount);
-
-            FCharacterProgress NewProgress;
-            NewProgress.CharacterID = CharID;
-            NewProgress.StarCount = CurStars;
-
-            CharactersInventory.Add(NewProgress);
-
-            TotalStars -= CurStars;
-        }
-    }
 }

@@ -3,8 +3,6 @@
 #include "GachaCharacterShowcase.h"
 #include "GachaInventoryItemWidget.h"
 #include "Components/ScrollBox.h"
-#include "Kismet/GameplayStatics.h"
-#include "GachaSaveGame.h"
 #include "PlayerActor.h"
 #include "RoomWorking.h"
 #include "Worker.h"
@@ -15,19 +13,14 @@
 void UGachaInventoryWidget::NativeConstruct()
 {
     Super::NativeConstruct();
-    
-/*
-    UGachaSaveGame* LoadedGame = nullptr;
-    if (UGameplayStatics::DoesSaveGameExist(TEXT("GachaSaveSlot"), 0))
-    {
-        LoadedGame = Cast<UGachaSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("GachaSaveSlot"), 0));
-    }*/
-    
+
+    // Récupérer la référence au PlayerActor
     PlayerActor = Cast<APlayerActor>(GetWorld()->GetFirstPlayerController()->GetPawn());
+    
     if (PlayerActor != nullptr)
     {
-        PlayerActor->LoadInventory();
-        PopulateInventory(PlayerActor->CharactersInventory);
+        // Peupler l'inventaire directement depuis le PlayerActor
+        PopulateInventoryFromPlayer();
     }
     else if (InventoryScrollBox)
     {
@@ -45,14 +38,17 @@ void UGachaInventoryWidget::NativeConstruct()
     }
 }
 
-void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& CharactersInventory)
+void UGachaInventoryWidget::PopulateInventoryFromPlayer()
 {
-    if (!InventoryScrollBox || !CharacterDataTable)
+    if (!InventoryScrollBox || !CharacterDataTable || !PlayerActor)
     {
         return;
     }
 
     InventoryScrollBox->ClearChildren();
+
+    // Récupérer le tableau directement depuis le PlayerActor
+    TArray<FCharacterProgress>& CharactersInventory = PlayerActor->GetWorkersInventory();
 
     if (CharactersInventory.Num() == 0)
     {
@@ -61,13 +57,13 @@ void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& 
 
     // Copie locale pour tri
     TArray<FCharacterProgress> SortedInventory = CharactersInventory;
-
+    
     // Tri par rareté descendante, étoiles descendantes, puis nom ascendante
     SortedInventory.Sort([this](const FCharacterProgress& A, const FCharacterProgress& B)
     {
         FCharacterStructure* DataA = CharacterDataTable->FindRow<FCharacterStructure>(A.CharacterID, TEXT(""));
         FCharacterStructure* DataB = CharacterDataTable->FindRow<FCharacterStructure>(B.CharacterID, TEXT(""));
-
+        
         int32 RarityA = DataA ? static_cast<int32>(DataA->Rarity) : 0;
         int32 RarityB = DataB ? static_cast<int32>(DataB->Rarity) : 0;
 
@@ -86,71 +82,46 @@ void UGachaInventoryWidget::PopulateInventory(const TArray<FCharacterProgress>& 
 
     for (const FCharacterProgress& Progress : SortedInventory)
     {
-        if(AssignButtonReturn)
+        bool ShouldDisplay = true;
+
+        // Vérifier si le worker est déjà assigné
+        if (AssignButtonReturn)
         {
-            if(AssignButtonReturn->WorkRoomSettingWidget->RoomWorking)
+            if (AssignButtonReturn->WorkRoomSettingWidget->RoomWorking)
             {
                 IsAllReadyUse = false;
                 for (FWorkerAssigned Worker : AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->Workers)
                 {
-                    if (Worker.Worker == Progress.WorkerSpawnRef) IsAllReadyUse = true;
-                }
-                if (!IsAllReadyUse)
-                {
-                    const FName& CharacterRowName = Progress.CharacterID;
-                    FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT("GachaInventoryWidget::PopulateInventory"));
-                    if (!CharacterData)
+                    if (Worker.Worker == Progress.WorkerSpawnRef)
                     {
-                        continue;
+                        IsAllReadyUse = true;
+                        ShouldDisplay = false;
+                        break;
                     }
-
-                    if (!ItemWidgetClass)
-                    {
-                        continue;
-                    }
-
-                    UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
-                    if (!EntryWidget)
-                    {
-                        continue;
-                    }
-
-                    EntryWidget->InitializeWithData(*CharacterData, Progress, Progress.CharacterID);
-
-                    // Bind event selection
-                    EntryWidget->OnItemSelected.AddDynamic(this, &UGachaInventoryWidget::OnItemSelected);
-
-                    InventoryScrollBox->AddChild(EntryWidget);
                 }
             }
         }
-        else
+
+        if (!ShouldDisplay)
+            continue;
+
+        const FName& CharacterRowName = Progress.CharacterID;
+        FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT("GachaInventoryWidget::PopulateInventory"));
+        
+        if (!CharacterData || !ItemWidgetClass)
         {
-            const FName& CharacterRowName = Progress.CharacterID;
-            FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(CharacterRowName, TEXT("GachaInventoryWidget::PopulateInventory"));
-            if (!CharacterData)
-            {
-                continue;
-            }
-
-            if (!ItemWidgetClass)
-            {
-                continue;
-            }
-
-            UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
-            if (!EntryWidget)
-            {
-                continue;
-            }
-
-            EntryWidget->InitializeWithData(*CharacterData, Progress, Progress.CharacterID);
-
-            // Bind event selection
-            EntryWidget->OnItemSelected.AddDynamic(this, &UGachaInventoryWidget::OnItemSelected);
-
-            InventoryScrollBox->AddChild(EntryWidget);
+            continue;
         }
+
+        UGachaInventoryItemWidget* EntryWidget = CreateWidget<UGachaInventoryItemWidget>(this, ItemWidgetClass);
+        if (!EntryWidget)
+        {
+            continue;
+        }
+
+        EntryWidget->InitializeWithData(*CharacterData, Progress, Progress.CharacterID);
+        EntryWidget->OnItemSelected.AddDynamic(this, &UGachaInventoryWidget::OnItemSelected);
+        InventoryScrollBox->AddChild(EntryWidget);
     }
 }
 
@@ -166,8 +137,7 @@ void UGachaInventoryWidget::OnItemSelected(UGachaInventoryItemWidget* ClickedIte
     if (StatImage)
     {
         StatImage->SetVisibility(ESlateVisibility::Visible);
-
-        // Récupération du CharacterID depuis le widget sélectionné
+        
         FName SelectedCharacterID = SelectedItemWidget ? SelectedItemWidget->GetCharacterID() : NAME_None;
         if (SelectedCharacterID != NAME_None && CharacterDataTable)
         {
@@ -177,7 +147,6 @@ void UGachaInventoryWidget::OnItemSelected(UGachaInventoryItemWidget* ClickedIte
                 FSlateBrush NewBrush;
                 NewBrush.SetResourceObject(CharacterRow->CV_Character);
                 NewBrush.ImageSize = FVector2D(CharacterRow->CV_Character->GetSizeX(), CharacterRow->CV_Character->GetSizeY());
-
                 StatImage->SetBrush(NewBrush);
             }
             else
@@ -186,24 +155,22 @@ void UGachaInventoryWidget::OnItemSelected(UGachaInventoryItemWidget* ClickedIte
             }
         }
     }
+
     if (PB_Tiktok)
-    {  FName SelectedCharacterID = SelectedItemWidget ? SelectedItemWidget->GetCharacterID() : NAME_None;
+    {
+        FName SelectedCharacterID = SelectedItemWidget ? SelectedItemWidget->GetCharacterID() : NAME_None;
         const FCharacterStructure* CharacterRow = CharacterDataTable->FindRow<FCharacterStructure>(SelectedCharacterID, TEXT("OnItemSelected"));
         PB_Tiktok->SetVisibility(ESlateVisibility::Visible);
-        float StarPercent = CharacterRow->StatTikTok /5;
-        FString StarPercentString = FString::SanitizeFloat(StarPercent);
-        GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, StarPercentString);
+        float StarPercent = CharacterRow->StatTikTok / 5;
         PB_Tiktok->SetPercent(StarPercent);
     }
-   
-    
+
     if (PB_Youtube)
-    {  FName SelectedCharacterID = SelectedItemWidget ? SelectedItemWidget->GetCharacterID() : NAME_None;
+    {
+        FName SelectedCharacterID = SelectedItemWidget ? SelectedItemWidget->GetCharacterID() : NAME_None;
         const FCharacterStructure* CharacterRow = CharacterDataTable->FindRow<FCharacterStructure>(SelectedCharacterID, TEXT("OnItemSelected"));
         PB_Youtube->SetVisibility(ESlateVisibility::Visible);
-        float StarPercent = CharacterRow->StatYoutube /5;
-        FString StarPercentString = FString::SanitizeFloat(StarPercent);
-        GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, StarPercentString);
+        float StarPercent = CharacterRow->StatYoutube / 5;
         PB_Youtube->SetPercent(StarPercent);
     }
 
@@ -219,7 +186,7 @@ void UGachaInventoryWidget::OnItemSelected(UGachaInventoryItemWidget* ClickedIte
         CurrentCharacterShowcase = nullptr;
     }
 
-    // Spawn nouveau showcase en utilisant la hauteur configurable
+    // Spawn nouveau showcase
     if (CharacterShowcaseActorClass && GetWorld())
     {
         FVector SpawnLocation = FVector(0.f, 0.f, 100000);
@@ -227,16 +194,14 @@ void UGachaInventoryWidget::OnItemSelected(UGachaInventoryItemWidget* ClickedIte
         FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 
         CurrentCharacterShowcase = GetWorld()->SpawnActor<AGachaCharacterShowcase>(CharacterShowcaseActorClass, SpawnTransform);
-
         if (CurrentCharacterShowcase && SelectedItemWidget)
         {
             FName CharacterID = SelectedItemWidget->GetCharacterID();
-            CurrentCharacterShowcase->CharacterDataTable = CharacterDataTable; 
+            CurrentCharacterShowcase->CharacterDataTable = CharacterDataTable;
             CurrentCharacterShowcase->SetCharacterByRowName(CharacterID);
         }
     }
 }
-
 
 void UGachaInventoryWidget::OnLostFocusClicked()
 {
@@ -271,13 +236,21 @@ void UGachaInventoryWidget::OnAssignClicked()
 {
     if (AssignButtonReturn && SelectedItemWidget && PlayerActor)
     {
-        for (int i = 0;PlayerActor->CharactersInventory.Num() -1 >= i; i++)
+        TArray<FCharacterProgress>& Inventory = PlayerActor->GetWorkersInventory();
+        
+        for (int i = 0; i < Inventory.Num(); i++)
         {
-            if (PlayerActor->CharactersInventory[i].CharacterID == SelectedItemWidget->ProgressRef.CharacterID && PlayerActor->CharactersInventory[i].StarCount == SelectedItemWidget->ProgressRef.StarCount)
+            if (Inventory[i].CharacterID == SelectedItemWidget->ProgressRef.CharacterID && 
+                Inventory[i].StarCount == SelectedItemWidget->ProgressRef.StarCount &&
+                Inventory[i].WorkerSpawnRef == SelectedItemWidget->ProgressRef.WorkerSpawnRef)
             {
-                AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->AddWorker(AssignButtonReturn->Position,PlayerActor->CharactersInventory[i].WorkerSpawnRef);
+                AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->AddWorker(
+                    AssignButtonReturn->Position,
+                    Inventory[i].WorkerSpawnRef
+                );
+                break;
             }
         }
-        RemoveFromParent();
     }
+    RemoveFromParent();
 }

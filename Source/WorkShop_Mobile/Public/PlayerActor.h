@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -17,92 +15,91 @@ class AWorker;
 UCLASS()
 class WORKSHOP_MOBILE_API APlayerActor : public APawn
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
-	APlayerActor();
+    APlayerActor();
+    
+    UFUNCTION()
+    void SetGem(int AddGem);
+    
+    UFUNCTION()
+    int GetGem() const;
+    
+    UFUNCTION()
+    void SetMoney(int AddMoney);
+    
+    UFUNCTION()
+    int GetMoney() const;
+    
+    UFUNCTION()
+    void SetPoolResource(int AddPool);
+    
+    UFUNCTION()
+    int GetPoolResource() const;
 
-	UFUNCTION()
-	void SetGem(int AddGem);
+    // Nouvelle fonction pour ajouter un worker et le spawn
+    UFUNCTION(BlueprintCallable)
+    void AddWorkerToInventory(FName CharacterID, int32 StarCount = 1);
 
-	UFUNCTION()
-	int GetGem() const;
-
-	UFUNCTION()
-	void SetMoney(int AddMoney);
-
-	UFUNCTION()
-	int GetMoney() const;
-
-	UFUNCTION()
-	void SetPoolResource(int AddPool);
-
-	UFUNCTION()
-	int GetPoolResource() const;
+    // Récupérer le tableau des workers pour l'inventaire
+    UFUNCTION(BlueprintCallable)
+    TArray<FCharacterProgress>& GetWorkersInventory() { return CharactersInventory; }
 
 protected:
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-	UPROPERTY()
-	int Money;
+    UPROPERTY()
+    int Money;
 
-	UPROPERTY(EditAnywhere)
-	USceneComponent* RootComp;
+    UPROPERTY(EditAnywhere)
+    USceneComponent* RootComp;
 
-	UPROPERTY()
-	int Gem;
+    UPROPERTY()
+    int Gem;
 
-	UPROPERTY(EditAnywhere)
-	UCameraComponent* camera;
-	
-	UPROPERTY()
-	int PoolResource;
-	
-	
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+    UPROPERTY(EditAnywhere)
+    UCameraComponent* camera;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    UPROPERTY()
+    int PoolResource;
 
-	//SAVE
-	UFUNCTION(BlueprintCallable)
-	void SaveInventory();
+public:
+    virtual void Tick(float DeltaTime) override;
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-	USpringArmComponent* SpringArm;
-	
-	UFUNCTION(BlueprintCallable)
-	void LoadInventory();
-	void ClampCameraWithinBoundary();
-	void OnConstruction(const FTransform& Transform);
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+    USpringArmComponent* SpringArm;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Camera Boundary", meta=(MakeEditWidget=true))
-	TArray<FVector> CameraBoundaryPoints;
+    void ClampCameraWithinBoundary();
+    void OnConstruction(const FTransform& Transform);
 
-	UPROPERTY(BlueprintReadWrite)
-	TArray<FCharacterProgress> CharactersInventory;
-	
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UHUDGeneral> WidgetHUDReference;
+    UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Camera Boundary", meta=(MakeEditWidget=true))
+    TArray<FVector> CameraBoundaryPoints;
 
-	UPROPERTY()
-	UHUDGeneral* HUDRef;
-	
-	UFUNCTION()
-	void SpawnWorkersFromInventory();
+    // Tableau principal des workers (remplace la save)
+    UPROPERTY(BlueprintReadWrite)
+    TArray<FCharacterProgress> CharactersInventory;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character")
-	UDataTable* MyDataTable;
+    UPROPERTY(EditAnywhere)
+    TSubclassOf<UHUDGeneral> WidgetHUDReference;
 
-	UFUNCTION()
-	FVector GetDefaultWorkerSpawnLocation(int32 WorkerIndex) const;
+    UPROPERTY()
+    UHUDGeneral* HUDRef;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector DefaultWorkerSpawnLocation = FVector(0, 0, 0);
-	
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character")
+    UDataTable* MyDataTable;
+
+    UFUNCTION()
+    FVector GetDefaultWorkerSpawnLocation(int32 WorkerIndex) const;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FVector DefaultWorkerSpawnLocation = FVector(0, 0, 0);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character")
+    TSubclassOf<AWorker> WorkerClass;
+
+private:
+    // Fonction interne pour spawn un worker
+    AWorker* SpawnWorker(FName CharacterID, int32 WorkerIndex);
 };
