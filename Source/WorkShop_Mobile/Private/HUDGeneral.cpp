@@ -2,7 +2,6 @@
 
 
 #include "HUDGeneral.h"
-#include <string>
 #include "Kismet/GameplayStatics.h"
 
 
@@ -151,24 +150,24 @@ void UHUDGeneral::OnMusicChanged(float Value)
 
 void UHUDGeneral::UpdateMoneyText(int Count)
 {
-	/*if (MoneyText)
+	if (MoneyText)
 	{
 		MoneyText->SetText(FText::AsNumber(Count));
-	}*/
+	}
 }
 
 void UHUDGeneral::UpdateAbonnerText(int Count)
 {
-	/*if (AbonnerText)
+	if (AbonnerText)
 	{
 		AbonnerText->SetText(FText::AsNumber(Count));
-	}*/
+	}
 }
 
 void UHUDGeneral::UpdateGemText(int Count)
 {
-	/*if (GemText)
+	if (GemText)
 	{
 		GemText->SetText(FText::AsNumber(Count));
-	}*/
+	}
 }

@@ -86,12 +86,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FCharacterProgress> CharactersInventory;
-
-	UPROPERTY()
-	UUserWidget* HUDWidgetRef;
 	
-	UPROPERTY(EditDefaultsOnly, Category = Widget)
-	TSubclassOf<UUserWidget> WidgetHUDReference;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UHUDGeneral> WidgetHUDReference;
 
 	UPROPERTY()
 	UHUDGeneral* HUDRef;

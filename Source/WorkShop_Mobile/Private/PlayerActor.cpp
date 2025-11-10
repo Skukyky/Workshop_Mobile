@@ -2,6 +2,8 @@
 
 
 #include "PlayerActor.h"
+
+#include "DelayAction.h"
 #include "DrawDebugHelpers.h"
 #include "GachaSaveGame.h"
 #include "HUDGeneral.h"
@@ -60,7 +62,10 @@ APlayerActor::APlayerActor()
 void APlayerActor::SetGem(int AddGem)
 {
 	Gem = Gem + AddGem;
-	HUDRef->UpdateMoneyText(Gem);
+	if (HUDRef)
+	{
+		HUDRef->UpdateMoneyText(Gem);
+	}
 }
 
 int APlayerActor::GetGem() const
@@ -71,7 +76,10 @@ int APlayerActor::GetGem() const
 void APlayerActor::SetMoney(int AddMoney)
 {
 	Money = Money + AddMoney;
-	HUDRef->UpdateMoneyText(Money);
+	if (HUDRef)
+	{
+		HUDRef->UpdateMoneyText(Money);
+	}
 }
 
 int APlayerActor::GetMoney() const
@@ -95,11 +103,11 @@ void APlayerActor::BeginPlay()
 	Super::BeginPlay();
 	LoadInventory();
 	SpawnWorkersFromInventory();
-	HUDWidgetRef = CreateWidget<UUserWidget>(GetWorld(), WidgetHUDReference);
-	if (HUDWidgetRef)
+	
+	HUDRef = CreateWidget<UHUDGeneral>(GetWorld(), WidgetHUDReference);
+	if (HUDRef)
 	{
-		HUDWidgetRef->AddToViewport();
-		HUDRef = Cast<UHUDGeneral>(HUDWidgetRef);
+		HUDRef->AddToViewport();
 	}
 }
 
