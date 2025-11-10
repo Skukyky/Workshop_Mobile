@@ -22,6 +22,11 @@ void UBannerWidget::NativePreConstruct()
 
         ImageBackground->SetBrush(NewBrush);
     }
+    
+    BTN_Pull->BackgroundTexture = ButtonPullTexture;
+    BTN_Pull->Refresh();
+    BTN_PullMulti->BackgroundTexture = ButtonPull10Texture;
+    BTN_PullMulti->Refresh();
 }
 
 void UBannerWidget::NativeConstruct()

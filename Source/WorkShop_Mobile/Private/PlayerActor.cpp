@@ -274,7 +274,7 @@ void APlayerActor::SpawnWorkersFromInventory()
 
 			// Initialise avec les données de progression
 			SpawnedWorker->AddBonusPerStars();
-            
+            GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Blue,SpawnedWorker->GetName());
 			CharProgress.WorkerSpawnRef = SpawnedWorker;
 		}
 	}

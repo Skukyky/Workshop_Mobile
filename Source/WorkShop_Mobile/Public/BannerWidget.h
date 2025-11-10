@@ -41,6 +41,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
     UTexture2D* BackgroundTexture = nullptr;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
+    UTexture2D* ButtonPullTexture = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
+    UTexture2D* ButtonPull10Texture = nullptr;
+
     UPROPERTY(meta = (BindWidget))
     UBTNCustomWidget* BTN_Pull;
     
