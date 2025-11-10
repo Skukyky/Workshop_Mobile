@@ -18,6 +18,9 @@ class WORKSHOP_MOBILE_API UGachaInventoryItemWidget : public UUserWidget
 
 public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsDragging = false;
+
 	UPROPERTY(meta = (BindWidget))
 	UBTNCustomWidget* BTN_SelectionItem;
 	

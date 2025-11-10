@@ -47,3 +47,4 @@ void UGachaInventoryItemWidget::NativeConstruct()
 		BTN_SelectionItem->OnCustomButtonClicked.AddDynamic(this, &UGachaInventoryItemWidget::OnItemClicked);
 	}
 }
+
