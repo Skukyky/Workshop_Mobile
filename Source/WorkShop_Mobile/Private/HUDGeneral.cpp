@@ -119,11 +119,37 @@ void UHUDGeneral::ClickBoolVibrationButton()
 		{
 			Vibration = false;
 			PlayerController->bForceFeedbackEnabled = false;
+			if (BoolVibrationButton && VibrationDisableImage)
+			{
+				FButtonStyle ButtonStyle = BoolVibrationButton->GetStyle();
+        
+				FSlateBrush NewBrush;
+				NewBrush.SetResourceObject(VibrationDisableImage);
+
+				ButtonStyle.SetNormal(NewBrush);
+				ButtonStyle.SetHovered(NewBrush);
+				ButtonStyle.SetPressed(NewBrush);
+
+				BoolVibrationButton->SetStyle(ButtonStyle);
+			}
 		}
 		else
 		{
 			Vibration = true;
 			PlayerController->bForceFeedbackEnabled = true;
+			if (BoolVibrationButton && VibrationActiveImage)
+			{
+				FButtonStyle ButtonStyle = BoolVibrationButton->GetStyle();
+        
+				FSlateBrush NewBrush;
+				NewBrush.SetResourceObject(VibrationActiveImage);
+
+				ButtonStyle.SetNormal(NewBrush);
+				ButtonStyle.SetHovered(NewBrush);
+				ButtonStyle.SetPressed(NewBrush);
+
+				BoolVibrationButton->SetStyle(ButtonStyle);
+			}
 		}
 	}
 }

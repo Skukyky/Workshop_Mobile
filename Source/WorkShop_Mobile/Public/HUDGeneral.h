@@ -8,6 +8,7 @@
 #include "Components/Slider.h"
 #include "Components/CanvasPanel.h"
 #include "Components/TextBlock.h"
+#include "Styling/SlateBrush.h"
 #include "HUDGeneral.generated.h"
 
 
@@ -103,6 +104,12 @@ public:
 	UButton* BoolVibrationButton;
 
 	bool Vibration = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button Style")
+	UTexture2D* VibrationActiveImage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button Style")
+	UTexture2D* VibrationDisableImage;
 	
 	UFUNCTION()
 	void ClickBoolVibrationButton();
