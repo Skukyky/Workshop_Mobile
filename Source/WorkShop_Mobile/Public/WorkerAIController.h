@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "WorkerManager.h"
 #include "WorkerAIController.generated.h"
 
 UCLASS()
@@ -13,15 +14,29 @@ public:
 	AWorkerAIController();
 
 	bool tasked = false;
-	FVector2d WorkPosition;
+	FVector WaitPosition;
+	FVector WorkPosition;
+
+	int32 CurrentWaitIndex = -1;
+	int32 CurrentWorkIndex = -1;
+
+	UPROPERTY()
+	APawn* MyPawn;
+
+	UPROPERTY(EditAnywhere)
+	AWorkerManager* Manager;
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	void MoveToRandomLocation();
-	void StartMovement(APawn* InPawn);
+	void MoveToLocation();
+	void AssignWaitPosition();
+	void AssignWorkPosition();
+	void ReleasePositions();
+	void SwitchToWorkPosition();
+	void SwitchToWaitPosition();
 
 	FTimerHandle MoveTimerHandle;
 

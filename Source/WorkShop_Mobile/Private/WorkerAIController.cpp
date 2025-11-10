@@ -1,7 +1,6 @@
 #include "WorkerAIController.h"
-#include "NavigationSystem.h"
-#include "GameFramework/Character.h"
 #include "GameFramework/Actor.h"
+#include "EngineUtils.h"
 
 AWorkerAIController::AWorkerAIController()
 {
@@ -12,46 +11,133 @@ void AWorkerAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	// 🔹 Lancer un mouvement aléatoire toutes les quelques secondes
-	StartMovement(InPawn);
+	if (!Manager)
+	{
+		// Trouver le WorkerManager dans la scène (par exemple le premier trouvé)
+		for (TActorIterator<AWorkerManager> It(GetWorld()); It; ++It)
+		{
+			Manager = *It;
+			break;
+		}
+	}
+
+	MyPawn = GetPawn();
+	
+	// Assigner une place d’attente au spawn
+	AssignWaitPosition();
 }
 
 void AWorkerAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (tasked && CurrentWorkIndex == -1)
+	{
+		SwitchToWorkPosition();
+	}
+	else if (!tasked && CurrentWaitIndex == -1)
+	{
+		SwitchToWaitPosition();
+	}
 }
 
-void AWorkerAIController::MoveToRandomLocation()
+void AWorkerAIController::MoveToLocation()
 {
-	if (tasked == false)
+	
+}
+
+void AWorkerAIController::AssignWaitPosition()
+{
+    if (Manager)
+    {
+        int32 Index = Manager->AcquireWaitPosition();
+        if (Index != -1)
+        {
+            CurrentWaitIndex = Index;
+        	WaitPosition = Manager->GetActorTransform().TransformPosition(Manager->WaitPosition[Index]);
+
+            // Visual debug
+            DrawDebugSphere(GetWorld(), WaitPosition, 30.f, 12, FColor::Green, false, 5.f);
+
+            // Déplacement AI controller
+            MyPawn->SetActorLocation(WaitPosition, false);
+        }
+    }
+}
+
+void AWorkerAIController::AssignWorkPosition()
+{
+	if (Manager && tasked)
 	{
-		APawn* MyPawn = GetPawn();
-		if (!MyPawn) return;
-
-		UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
-		if (!NavSys) return;
-
-		FNavLocation RandomPoint;
-
-		// 🔹 Trouve un point atteignable dans un rayon autour du Pawn
-		bool bFound = NavSys->GetRandomReachablePointInRadius(MyPawn->GetActorLocation(), Radius, RandomPoint);
-
-		if (bFound)
+		int32 Index = Manager->AcquireWorkPosition();
+		if (Index != -1)
 		{
-			// 🔹 Déplace l'IA vers ce point
-			MoveToLocation(RandomPoint.Location);
+			CurrentWorkIndex = Index;
+			WorkPosition = Manager->GetActorTransform().TransformPosition(Manager->WorkPosition[Index]);
+			// Teleport or move to WorkPosition
+			MyPawn->SetActorLocation(WorkPosition);
 		}
 	}
+}
 
-	else
+void AWorkerAIController::ReleasePositions()
+{
+	if (Manager)
 	{
-		MoveToLocation(FVector(WorkPosition.X, WorkPosition.Y, GetPawn()->GetActorLocation().Z));
-
-		GetWorldTimerManager().ClearTimer(MoveTimerHandle);
+		if (CurrentWaitIndex != -1)
+		{
+			Manager->ReleaseWaitPosition(CurrentWaitIndex);
+			CurrentWaitIndex = -1;
+		}
+		if (CurrentWorkIndex != -1)
+		{
+			Manager->ReleaseWorkPosition(CurrentWorkIndex);
+			CurrentWorkIndex = -1;
+		}
 	}
 }
 
-void AWorkerAIController::StartMovement(APawn* InPawn)
+void AWorkerAIController::SwitchToWorkPosition()
 {
-	GetWorldTimerManager().SetTimer(MoveTimerHandle, this, &AWorkerAIController::MoveToRandomLocation, Speed, true, Delay);
+	if (Manager && tasked)
+	{
+		// Libérer la position d’attente si on en a une
+		if (CurrentWaitIndex != -1)
+		{
+			Manager->ReleaseWaitPosition(CurrentWaitIndex);
+			CurrentWaitIndex = -1;
+		}
+
+		// Acquérir une position de travail
+		int32 Index = Manager->AcquireWorkPosition();
+		if (Index != -1)
+		{
+			CurrentWorkIndex = Index;
+			WorkPosition = Manager->GetActorTransform().TransformPosition(Manager->WorkPosition[Index]);
+			MyPawn->SetActorLocation(WorkPosition);
+		}
+	}
+}
+
+void AWorkerAIController::SwitchToWaitPosition()
+{
+	if (Manager)
+	{
+		// Libérer la position de travail si on en a une
+		if (CurrentWorkIndex != -1)
+		{
+			Manager->ReleaseWorkPosition(CurrentWorkIndex);
+			CurrentWorkIndex = -1;
+			tasked = false; // Optionnel : reset tâche ici
+		}
+
+		// Acquérir une position d’attente
+		int32 Index = Manager->AcquireWaitPosition();
+		if (Index != -1)
+		{
+			CurrentWaitIndex = Index;
+			WaitPosition = Manager->GetActorTransform().TransformPosition(Manager->WaitPosition[Index]);
+			MyPawn->SetActorLocation(WaitPosition);
+		}
+	}
 }

@@ -11,6 +11,7 @@
 
 class APlayerActor;
 class ARoomWorking;
+class AWorkerAIController;
 
 UCLASS()
 class WORKSHOP_MOBILE_API AWorker : public APawn
@@ -57,6 +58,9 @@ public:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
+	UPROPERTY()
+	AWorkerAIController* ControllerREF;
+	
 	UPROPERTY()
 	float MoneyPerWork;
 	

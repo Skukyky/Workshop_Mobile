@@ -23,11 +23,21 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void ReleaseWaitPosition(int32 Index);
+	void ReleaseWorkPosition(int32 Index);
+	
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Worker Post", meta=(MakeEditWidget=true))
-	TArray<FVector2D> WorkPosition;
+	TArray<FVector> WaitPosition;
+	
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Worker Post", meta=(MakeEditWidget=true))
+	TArray<FVector> WorkPosition;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
-	TArray<AWorker*> WorkerTasked;
+	TArray<bool> bWaitPositionOccupied;
+	TArray<bool> bWorkPositionOccupied;
 
+	int32 AcquireWorkPosition();
+	int32 AcquireWaitPosition();
+	
+	
 };

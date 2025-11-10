@@ -36,6 +36,8 @@ void AWorker::BeginPlay()
 {
 	Super::BeginPlay();
 	SetTable();
+
+	ControllerREF = Cast<AWorkerAIController>(GetController());
 }
 
 void AWorker::Working()
@@ -52,6 +54,7 @@ void AWorker::StartWorking()
 	{
 		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, "StartWorking");
 		GetWorldTimerManager().SetTimer(TimerHandle,this,&AWorker::Working,WorkingTimeBase,true);
+		ControllerREF->tasked = true;
 	}
 }
 
@@ -61,6 +64,8 @@ void AWorker::StopWorking()
 	{
 		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, "StopWorking");
 		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+		ControllerREF->tasked = false;
+		
 	}
 }
 
