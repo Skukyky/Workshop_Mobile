@@ -56,6 +56,7 @@ void UBannerWidget::HandlePullClicked()
     if (ParentGachaWidget)
     {
         ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
+        ParentGachaWidget->BTN_Back->SetVisibility(ESlateVisibility::Collapsed);
     }
 }
 
@@ -82,6 +83,7 @@ void UBannerWidget::HandlePullMultiClicked()
     if (ParentGachaWidget)
     {
         ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
+        ParentGachaWidget->BTN_Back->SetVisibility(ESlateVisibility::Collapsed);
     }
 }
 

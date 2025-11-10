@@ -6,6 +6,7 @@
 #include "CharacterProgress.h"
 #include "GachaInventoryItemWidget.generated.h"
 
+class UImage;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemSelected, UGachaInventoryItemWidget*, SelectedItem);
 
 class UBTNCustomWidget;
@@ -24,19 +25,10 @@ public:
 	UTextBlock* NameText;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* RarityText;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* TypeText;
-
-	UPROPERTY(meta = (BindWidget))
 	UTextBlock* StarText;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* StatYoutubeText;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* StatTikTokText;
+	UImage* CharacterPDP;
 	
 	UFUNCTION(BlueprintCallable)
 	void InitializeWithData(const FCharacterStructure& CharacterData, const FCharacterProgress& Progress, FName InCharacterID);

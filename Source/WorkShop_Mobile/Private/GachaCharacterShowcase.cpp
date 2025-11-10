@@ -20,9 +20,6 @@ AGachaCharacterShowcase::AGachaCharacterShowcase()
 
 	CharacterCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("CharacterCapture"));
 	CharacterCapture->SetupAttachment(RootComp);
-
-	Name = CreateDefaultSubobject<UTextRenderComponent>(TEXT("Name"));
-	Name->SetupAttachment(RootComp);
 	
 	NiagaraStar = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
 	NiagaraStar->SetupAttachment(GetRootComponent());
@@ -56,11 +53,7 @@ void AGachaCharacterShowcase::SetCharacterByRowName(FName RowName)
 	FCharacterStructure* CharacterData = CharacterDataTable->FindRow<FCharacterStructure>(RowName, TEXT("AGachaCharacterShowcase::SetCharacterByRowName"));
 	if (!CharacterData)
 		return;
-
-	if (!CharacterData->Name.IsEmpty())
-	{
-		Name->SetText(FText::FromString(CharacterData->Name));
-	}
+	
 	if (CharacterData->CharacterMesh)
 	{
 		if (!CharacterMesh)

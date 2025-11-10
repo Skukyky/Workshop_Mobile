@@ -10,6 +10,7 @@
 #include "Worker.h"
 #include "WorkRoomSettingWidget.h"
 #include "Components/Image.h"
+#include "Components/ProgressBar.h"
 
 void UGachaInventoryWidget::NativeConstruct()
 {
@@ -185,6 +186,26 @@ void UGachaInventoryWidget::OnItemSelected(UGachaInventoryItemWidget* ClickedIte
             }
         }
     }
+    if (PB_Tiktok)
+    {  FName SelectedCharacterID = SelectedItemWidget ? SelectedItemWidget->GetCharacterID() : NAME_None;
+        const FCharacterStructure* CharacterRow = CharacterDataTable->FindRow<FCharacterStructure>(SelectedCharacterID, TEXT("OnItemSelected"));
+        PB_Tiktok->SetVisibility(ESlateVisibility::Visible);
+        float StarPercent = CharacterRow->StatTikTok /5;
+        FString StarPercentString = FString::SanitizeFloat(StarPercent);
+        GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, StarPercentString);
+        PB_Tiktok->SetPercent(StarPercent);
+    }
+   
+    
+    if (PB_Youtube)
+    {  FName SelectedCharacterID = SelectedItemWidget ? SelectedItemWidget->GetCharacterID() : NAME_None;
+        const FCharacterStructure* CharacterRow = CharacterDataTable->FindRow<FCharacterStructure>(SelectedCharacterID, TEXT("OnItemSelected"));
+        PB_Youtube->SetVisibility(ESlateVisibility::Visible);
+        float StarPercent = CharacterRow->StatYoutube /5;
+        FString StarPercentString = FString::SanitizeFloat(StarPercent);
+        GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, StarPercentString);
+        PB_Youtube->SetPercent(StarPercent);
+    }
 
     if (BTN_Assign)
     {
@@ -233,6 +254,9 @@ void UGachaInventoryWidget::OnLostFocusClicked()
     {
         BTN_Assign->SetVisibility(ESlateVisibility::Collapsed);
     }
+
+    PB_Youtube->SetVisibility(ESlateVisibility::Collapsed);
+    PB_Tiktok->SetVisibility(ESlateVisibility::Collapsed);
 
     if (CurrentCharacterShowcase)
     {

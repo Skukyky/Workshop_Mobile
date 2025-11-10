@@ -31,6 +31,10 @@ void UGachaPullWidget::NativeConstruct()
     {
         BTN_CharacterNext->OnCustomButtonClicked.AddDynamic(this, &UGachaPullWidget::OnCharacterNextClicked);
     }
+    if (BTN_Back)
+    {
+        BTN_Back->OnCustomButtonClicked.AddDynamic(this, &UGachaPullWidget::HandleBackClicked);
+    }
 }
 
 void UGachaPullWidget::NativePreConstruct()
@@ -144,6 +148,7 @@ void UGachaPullWidget::HandleBackToBannerClicked()
     {
         WS_GachaPull->SetActiveWidgetIndex(0);
     }
+    BTN_Back->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UGachaPullWidget::UpdateShowcaseCharacter()
@@ -205,6 +210,11 @@ void UGachaPullWidget::OnCharacterNextClicked()
             CharacterShowcaseActor = nullptr;
         }
     }
+}
+
+void UGachaPullWidget::HandleBackClicked()
+{
+    RemoveFromParent();
 }
 
 void UGachaPullWidget::ShowPullResultsWithShowcase(const TArray<FName>& PulledCharacters)

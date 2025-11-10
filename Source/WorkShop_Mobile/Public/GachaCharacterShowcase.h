@@ -21,9 +21,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* CharacterMesh = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	UTextRenderComponent* Name = nullptr;
 	
 	UPROPERTY(EditAnywhere)
 	USceneCaptureComponent2D* CharacterCapture = nullptr;

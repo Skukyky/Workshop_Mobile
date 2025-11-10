@@ -36,6 +36,9 @@ public:
     UBTNCustomWidget* BTN_BackToBanner;
 
     UPROPERTY(meta = (BindWidget))
+    UBTNCustomWidget* BTN_Back;
+
+    UPROPERTY(meta = (BindWidget))
     UBTNCustomWidget* BTN_CharacterNext;
 
     UPROPERTY(meta = (BindWidget))
@@ -90,6 +93,9 @@ public:
 
     UFUNCTION()
     void OnCharacterNextClicked();
+
+    UFUNCTION()
+    void HandleBackClicked();
 
 protected:
 

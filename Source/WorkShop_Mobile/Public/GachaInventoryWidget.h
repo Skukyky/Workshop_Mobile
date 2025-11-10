@@ -6,6 +6,7 @@
 #include "Engine/DataTable.h"
 #include "GachaInventoryWidget.generated.h"
 
+class UProgressBar;
 class APlayerActor;
 class AGachaCharacterShowcase;
 class UImage;
@@ -31,6 +32,12 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UBTNCustomWidget* BTN_Assign;
+
+	UPROPERTY(meta = (BindWidget))
+	UProgressBar* PB_Youtube;
+
+	UPROPERTY(meta = (BindWidget))
+	UProgressBar* PB_Tiktok;
 
 	UPROPERTY(meta = (BindWidget))
 	UScrollBox* InventoryScrollBox;
