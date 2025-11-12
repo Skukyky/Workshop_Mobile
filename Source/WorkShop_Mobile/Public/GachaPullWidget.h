@@ -6,6 +6,7 @@
 #include "CharacterProgress.h"
 #include "GachaPullWidget.generated.h"
 
+class APlayerActor;
 class AGachaCharacterShowcase;
 class UImage;
 class UBTNCustomWidget;
@@ -67,6 +68,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
     float ScrollLocation = 0.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
+    APlayerActor* PlayerREF = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
     float ScrollDirection = 0.0f;
