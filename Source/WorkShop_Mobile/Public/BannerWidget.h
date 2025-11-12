@@ -4,6 +4,8 @@
 #include "BTNCustomWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "CharacterStructure.h"
+#include "GachaPullWidget.h"
+#include "PlayerActor.h"
 #include "Engine/DataTable.h"
 #include "BannerWidget.generated.h"
 
@@ -66,6 +68,15 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pity System")
     bool bUseLegendaryPity = true;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    int PriceFollower = 100;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    int PriceMoney = 10000;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    bool bMoneyFollower = true;
 
 protected:
     virtual void NativeConstruct() override;

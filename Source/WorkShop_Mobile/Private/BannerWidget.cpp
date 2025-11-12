@@ -51,80 +51,119 @@ void UBannerWidget::NativeConstruct()
 
 void UBannerWidget::HandlePullClicked()
 {
-    FName PulledCharacter = PerformSinglePull();
-    if (PulledCharacter == NAME_None)
+    if ((!bMoneyFollower && ParentGachaWidget && ParentGachaWidget->PlayerREF && ParentGachaWidget->PlayerREF->GetMoney() >= PriceMoney)
+           || (bMoneyFollower && ParentGachaWidget->PlayerREF->GetFollower() >= PriceFollower))
     {
-        return;
-    }
+        if (bMoneyFollower)
+        {
+            ParentGachaWidget->PlayerREF->SetFollower(- PriceFollower);
+        }
+        else
+        {
+            ParentGachaWidget->PlayerREF->SetMoney(- PriceMoney); 
+        }
+        
+        FName PulledCharacter = PerformSinglePull();
+        if (PulledCharacter == NAME_None)
+        {
+            return;
+        }
 
-    TArray<FName> PullResults;
-    PullResults.Add(PulledCharacter);
+        TArray<FName> PullResults;
+        PullResults.Add(PulledCharacter);
+
+        AddPulledWorkersToPlayer(PullResults);
+
+        if (ParentGachaWidget)
+        {
+            ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
+            ParentGachaWidget->BTN_Back->SetVisibility(ESlateVisibility::Collapsed);
+        }
+    }
+    else
+    {
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Pas assez de ressources pour effectuer un tirage"));
+        }
+    }
     
-    // Ajouter au PlayerActor au lieu de sauvegarder
-    AddPulledWorkersToPlayer(PullResults);
-
-    if (ParentGachaWidget)
-    {
-        ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
-        ParentGachaWidget->BTN_Back->SetVisibility(ESlateVisibility::Collapsed);
-    }
 }
 
 void UBannerWidget::HandlePullMultiClicked()
 {
-    if (!CharacterDataTable)
+    if ((!bMoneyFollower && ParentGachaWidget && ParentGachaWidget->PlayerREF && ParentGachaWidget->PlayerREF->GetMoney() >= PriceMoney*10)
+        || (bMoneyFollower && ParentGachaWidget->PlayerREF->GetFollower() >= PriceFollower*10))
     {
-        return;
-    }
-
-    TArray<FName> PullResults;
-    for (int i = 0; i < 10; ++i)
-    {
-        FName PulledCharacter = PerformSinglePull();
-        if (PulledCharacter != NAME_None)
+        if (bMoneyFollower)
         {
-            PullResults.Add(PulledCharacter);
+            ParentGachaWidget->PlayerREF->SetFollower( - PriceFollower*10);
         }
-    }
-
-    // Trouver un épique dans le résultat
-    int32 EpicIndexInResult = -1;
-    for (int32 Index = 0; Index < PullResults.Num(); ++Index)
-    {
-        FCharacterStructure* CharData = CharacterDataTable->FindRow<FCharacterStructure>(PullResults[Index], TEXT(""));
-        if (CharData && CharData->Rarity == ECharacterRarity::Epique)
+        else
         {
-            EpicIndexInResult = Index;
-            break;
+            ParentGachaWidget->PlayerREF->SetMoney(- PriceMoney*10); 
         }
-    }
-
-    // Si aucun épique trouvé, en ajouter un aléatoirement
-    if (EpicIndexInResult == -1)
-    {
-        TArray<FName> EpicCharacters;
-        TArray<FName> RowNames = CharacterDataTable->GetRowNames();
-        for (const FName& RowName : RowNames)
+        
+        if (!CharacterDataTable)
         {
-            FCharacterStructure* CharData = CharacterDataTable->FindRow<FCharacterStructure>(RowName, TEXT(""));
-            if (CharData && CharData->Rarity == ECharacterRarity::Epique)
+            return;
+        }
+
+        TArray<FName> PullResults;
+        for (int i = 0; i < 10; ++i)
+        {
+            FName PulledCharacter = PerformSinglePull();
+            if (PulledCharacter != NAME_None)
             {
-                EpicCharacters.Add(RowName);
+                PullResults.Add(PulledCharacter);
             }
         }
-        if (EpicCharacters.Num() > 0)
+
+        // Trouver un épique dans le résultat
+        int32 EpicIndexInResult = -1;
+        for (int32 Index = 0; Index < PullResults.Num(); ++Index)
         {
-            int32 EpicIndex = FMath::RandRange(0, EpicCharacters.Num() - 1);
-            PullResults[PullResults.Num() - 1] = EpicCharacters[EpicIndex];
+            FCharacterStructure* CharData = CharacterDataTable->FindRow<FCharacterStructure>(PullResults[Index], TEXT(""));
+            if (CharData && CharData->Rarity == ECharacterRarity::Epique)
+            {
+                EpicIndexInResult = Index;
+                break;
+            }
         }
-    }
 
-    AddPulledWorkersToPlayer(PullResults);
+        // Si aucun épique trouvé, en ajouter un aléatoirement
+        if (EpicIndexInResult == -1)
+        {
+            TArray<FName> EpicCharacters;
+            TArray<FName> RowNames = CharacterDataTable->GetRowNames();
+            for (const FName& RowName : RowNames)
+            {
+                FCharacterStructure* CharData = CharacterDataTable->FindRow<FCharacterStructure>(RowName, TEXT(""));
+                if (CharData && CharData->Rarity == ECharacterRarity::Epique)
+                {
+                    EpicCharacters.Add(RowName);
+                }
+            }
+            if (EpicCharacters.Num() > 0)
+            {
+                int32 EpicIndex = FMath::RandRange(0, EpicCharacters.Num() - 1);
+                PullResults[PullResults.Num() - 1] = EpicCharacters[EpicIndex];
+            }
+        }
 
-    if (ParentGachaWidget)
+        AddPulledWorkersToPlayer(PullResults);
+
+        if (ParentGachaWidget)
+        {
+            ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
+            ParentGachaWidget->BTN_Back->SetVisibility(ESlateVisibility::Collapsed);
+        }
+    }else
     {
-        ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
-        ParentGachaWidget->BTN_Back->SetVisibility(ESlateVisibility::Collapsed);
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Pas assez de ressources pour effectuer un tirage"));
+        }
     }
 }
 
@@ -148,7 +187,7 @@ void UBannerWidget::AddPulledWorkersToPlayer(const TArray<FName>& PullResults)
 FName UBannerWidget::PerformSinglePull()
 {
     if (!CharacterDataTable) return NAME_None;
-
+    
     EpicCounter = EpicCounter % 10;
     LegendaryCounter = LegendaryCounter % 80;
 

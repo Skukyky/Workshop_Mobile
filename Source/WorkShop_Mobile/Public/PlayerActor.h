@@ -56,7 +56,7 @@ protected:
     virtual void BeginPlay() override;
 
     UPROPERTY()
-    int Money;
+    int Money = 100000;
 
     UPROPERTY(EditAnywhere)
     USceneComponent* RootComp;
@@ -71,7 +71,7 @@ protected:
     int PoolResource;
 
     UPROPERTY()
-    int Follower;
+    int Follower = 0;
 
 public:
     virtual void Tick(float DeltaTime) override;
