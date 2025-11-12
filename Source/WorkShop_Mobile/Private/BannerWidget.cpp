@@ -161,17 +161,17 @@ FName UBannerWidget::PerformSinglePull()
         FCharacterStructure* Data = CharacterDataTable->FindRow<FCharacterStructure>(RowName, TEXT(""));
         if (!Data) continue;
 
+        bool bForceLegendary = bUseLegendaryPity && (LegendaryCounter >= 79) && (Data->Rarity == ECharacterRarity::Legendary);
         bool bForceEpic = (EpicCounter >= 9) && (Data->Rarity == ECharacterRarity::Epique);
-        bool bForceLegendary = (LegendaryCounter >= 79) && (Data->Rarity == ECharacterRarity::Legendary);
 
         float Weight = 0.f;
         if (bForceLegendary)
         {
-            Weight = 100000.f; // Poids le plus élevé pour forcer le légendaire
+            Weight = 100000.f;
         }
         else if (bForceEpic)
         {
-            Weight = 99999.f; // Second poids pour forcer l’épique si pas en pity légendaire
+            Weight = 99999.f;
         }
         else
         {
@@ -198,7 +198,7 @@ FName UBannerWidget::PerformSinglePull()
         if (!CharData) continue;
 
         float Weight = 0.f;
-        if (LegendaryCounter >= 79 && CharData->Rarity == ECharacterRarity::Legendary)
+        if (bUseLegendaryPity && LegendaryCounter >= 79 && CharData->Rarity == ECharacterRarity::Legendary)
             Weight = 100000.f;
         else if (EpicCounter >= 9 && CharData->Rarity == ECharacterRarity::Epique)
             Weight = 99999.f;
@@ -211,11 +211,17 @@ FName UBannerWidget::PerformSinglePull()
         {
             if (CharData->Rarity == ECharacterRarity::Legendary)
             {
-                LegendaryCounter = 0;  
+                if (bUseLegendaryPity)
+                {
+                    LegendaryCounter = 0;
+                }
             }
             else
             {
-                LegendaryCounter++;
+                if (bUseLegendaryPity)
+                {
+                    LegendaryCounter++;
+                }
             }
 
             if (CharData->Rarity == ECharacterRarity::Epique)
