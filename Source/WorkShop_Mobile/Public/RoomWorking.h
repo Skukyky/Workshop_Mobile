@@ -32,6 +32,9 @@ struct FStatPerLevel
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
 	int MaxMoneyStorable = 1000;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
+	TArray<AActor*> NewGamingPC;
 	
 };
 
@@ -93,7 +96,7 @@ protected:
 	TArray<FStatPerLevel> StatPerLevel;
 
 	UPROPERTY()
-	int LevelRoom = 0;
+	int LevelRoom = -1;
 
 	UFUNCTION()
 	void SetUp();

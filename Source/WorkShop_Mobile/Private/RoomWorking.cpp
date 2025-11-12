@@ -20,7 +20,7 @@ ARoomWorking::ARoomWorking()
 
 void ARoomWorking::SetUp()
 {
-	Workers.SetNum(StatPerLevel[LevelRoom].MaxNbrWorker);
+	Upgrade();
 	for (FWorkerAssigned Worker : Workers)
 	{
 		if (Worker.Worker != nullptr)
@@ -32,7 +32,9 @@ void ARoomWorking::SetUp()
 
 void ARoomWorking::Upgrade()
 {
-	LevelRoom++;
+	
+	LevelRoom =  LevelRoom + 1;
+	
 	WorkMultiplierOnCurrentLevel = StatPerLevel[LevelRoom].WorkMultiplier;
 	if (PlayerActor)
 	{
@@ -47,7 +49,17 @@ void ARoomWorking::Upgrade()
 		
 	}
 	Workers.SetNum(StatPerLevel[LevelRoom].MaxNbrWorker);
-	SpawnWidget();
+	for (AActor* PC : StatPerLevel[LevelRoom].NewGamingPC)
+	{
+		if (PC != nullptr)
+		{
+			PC->SetActorHiddenInGame(false);
+		}
+	}
+	if (LevelRoom != 0)
+	{
+		SpawnWidget();
+	}
 }
 
 
@@ -55,7 +67,7 @@ bool ARoomWorking::CanUpgradeWithGem()
 {
 	if (PlayerActor)
 	{
-		if (StatPerLevel[LevelRoom].RequiredGemForUpgrade <= PlayerActor->GetGem() && StatPerLevel[LevelRoom].RequiredFollowerForNextUpgrade <= 2 && CanUpgrade)
+		if (StatPerLevel[LevelRoom].RequiredGemForUpgrade <= PlayerActor->GetGem() && StatPerLevel[LevelRoom].RequiredFollowerForNextUpgrade <= 2 && CanUpgrade && LevelRoom + 1 < StatPerLevel.Num() -1)
 		{
 			PlayerActor->SetGem(-StatPerLevel[LevelRoom].RequiredGemForUpgrade);
 			Upgrade();
@@ -69,7 +81,7 @@ bool ARoomWorking::CanUpgradeWithMoney()
 {
 	if (PlayerActor)
 	{
-		if (StatPerLevel[LevelRoom].RequiredMoneyForUpgrade <= PlayerActor->GetMoney() && StatPerLevel[LevelRoom].RequiredFollowerForNextUpgrade <= 2 && CanUpgrade)
+		if (StatPerLevel[LevelRoom].RequiredMoneyForUpgrade <= PlayerActor->GetMoney() && StatPerLevel[LevelRoom].RequiredFollowerForNextUpgrade <= PlayerActor->GetFollower() && CanUpgrade && LevelRoom + 1 < StatPerLevel.Num() -1)
 		{
 			PlayerActor->SetMoney(-StatPerLevel[LevelRoom].RequiredMoneyForUpgrade);
 			Upgrade();
@@ -121,7 +133,7 @@ void ARoomWorking::AddWorker(int position, AWorker* worker)
 {
 	if (Workers.Num() - 1 >= position)
 	{
-		if (Workers[position].Worker) Workers[position].Worker->StopWorking();
+		if (Workers[position].Worker) Workers[position].Worker->UnassignWork();
 		Workers[position] = {worker, FVector2D::ZeroVector};
 		worker->AssignWork(this);
 		SpawnWidget();
@@ -130,16 +142,21 @@ void ARoomWorking::AddWorker(int position, AWorker* worker)
 
 void ARoomWorking::SpawnWidget()
 {
-	if (Widget)
+	if (Widget && PlayerActor)
 	{
 		if (RoomSettingWidget)
 		{
 			RoomSettingWidget->RemoveFromParent();
 		}
+		if (PlayerActor->Widget)
+		{
+			PlayerActor->Widget->RemoveFromParent();
+		}
 		RoomSettingWidget = CreateWidget<UWorkRoomSettingWidget>(GetWorld(), Widget);
 		if (RoomSettingWidget)
 		{
 			RoomSettingWidget->RoomWorking = this;
+			PlayerActor->Widget = RoomSettingWidget;
 			RoomSettingWidget->AddToViewport();
 		}
 		

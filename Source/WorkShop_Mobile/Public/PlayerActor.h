@@ -52,6 +52,12 @@ public:
     UFUNCTION(BlueprintCallable)
     TArray<FCharacterProgress>& GetWorkersInventory() { return CharactersInventory; }
 
+    UPROPERTY()
+    UUserWidget* Widget;
+
+    UPROPERTY()
+    TArray<AWorker*> Workers;
+
 protected:
     virtual void BeginPlay() override;
 

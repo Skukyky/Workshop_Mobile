@@ -36,7 +36,7 @@ void AWorker::BeginPlay()
 {
 	Super::BeginPlay();
 	SetTable();
-
+	PlayerActor = Cast<APlayerActor>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ControllerREF = Cast<AWorkerAIController>(GetController());
 }
 
@@ -72,8 +72,9 @@ void AWorker::StopWorking()
 void AWorker::AssignWork(ARoomWorking* Working)
 {
 	RoomWorking = Working;
-	if (RoomWorking)
+	if (RoomWorking && PlayerActor)
 	{
+		PlayerActor->Workers.AddUnique(this);
 		AddBonusPerRoom();
 		StartWorking();
 	}
@@ -81,8 +82,13 @@ void AWorker::AssignWork(ARoomWorking* Working)
 
 void AWorker::UnassignWork()
 {
-	StopWorking();
-	RoomWorking = nullptr;
+	if (PlayerActor)
+	{
+		int remove = PlayerActor->Workers.Find(this);
+		if (remove>-1){PlayerActor->Workers.RemoveAt(remove);}
+		StopWorking();
+		RoomWorking = nullptr;
+	}
 }
 
 void AWorker::AddBonusPerRoom()

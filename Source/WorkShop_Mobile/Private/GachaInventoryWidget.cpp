@@ -90,9 +90,9 @@ void UGachaInventoryWidget::PopulateInventoryFromPlayer()
             if (AssignButtonReturn->WorkRoomSettingWidget->RoomWorking)
             {
                 IsAllReadyUse = false;
-                for (FWorkerAssigned Worker : AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->Workers)
+                for (AWorker* Worker : PlayerActor->Workers)
                 {
-                    if (Worker.Worker == Progress.WorkerSpawnRef)
+                    if (Worker == Progress.WorkerSpawnRef)
                     {
                         IsAllReadyUse = true;
                         ShouldDisplay = false;
