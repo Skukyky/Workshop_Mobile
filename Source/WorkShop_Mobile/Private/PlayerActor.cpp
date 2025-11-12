@@ -110,7 +110,7 @@ void APlayerActor::AddWorkerToInventory(FName CharacterID, int32 StarCount)
         return;
     }
 
-    // Vérifier que le CharacterID existe dans la DataTable
+    // Chercher la structure de base pour StarMax
     FCharacterStructure* CharacterRow = MyDataTable->FindRow<FCharacterStructure>(CharacterID, TEXT("AddWorkerToInventory"));
     if (!CharacterRow)
     {
@@ -118,32 +118,45 @@ void APlayerActor::AddWorkerToInventory(FName CharacterID, int32 StarCount)
         return;
     }
 
-    // Créer la nouvelle entrée de progression
-    FCharacterProgress NewProgress;
-    NewProgress.CharacterID = CharacterID;
-    NewProgress.StarCount = StarCount;
-    NewProgress.StatYoutube = CharacterRow->StatYoutube;
-    NewProgress.StatTikTok = CharacterRow->StatTikTok;
-
-    // Spawn le worker sur la map
-    int32 WorkerIndex = CharactersInventory.Num();
-    AWorker* SpawnedWorker = SpawnWorker(CharacterID, WorkerIndex);
-
-    if (SpawnedWorker)
+    // On cherche un worker avec StarCount < StarMax pour ajouter les étoiles
+    FCharacterProgress* ExistingProgress = CharactersInventory.FindByPredicate([&](const FCharacterProgress& Progress) 
     {
-        // Stocker la référence du worker spawné dans la struct
-        NewProgress.WorkerSpawnRef = SpawnedWorker;
-        
-        // Ajouter au tableau d'inventaire
-        CharactersInventory.Add(NewProgress);
-        
-        UE_LOG(LogTemp, Log, TEXT("Worker %s ajouté à l'inventaire et spawné sur la map"), *CharacterID.ToString());
+        return Progress.CharacterID == CharacterID && Progress.StarCount < CharacterRow->StarMax;
+    });
+
+    if (ExistingProgress)
+    {
+        // Ajouter les étoiles, sans dépasser StarMax
+        int32 NewStarCount = FMath::Clamp(ExistingProgress->StarCount + StarCount, 0, CharacterRow->StarMax);
+        ExistingProgress->StarCount = NewStarCount;
+        UE_LOG(LogTemp, Log, TEXT("Worker %s existant : étoiles mises à jour à %d"), *CharacterID.ToString(), NewStarCount);
     }
     else
     {
-        UE_LOG(LogTemp, Error, TEXT("Échec du spawn du worker %s"), *CharacterID.ToString());
+        // Aucun worker avec StarCount < StarMax, créer une nouvelle entrée (doublon) avec StarCount = 1
+        FCharacterProgress NewProgress;
+        NewProgress.CharacterID = CharacterID;
+        // Mettre StarCount à 1 ou à la valeur reçue si elle est plus petite (par prudence)
+        NewProgress.StarCount = FMath::Clamp(StarCount, 1, CharacterRow->StarMax); 
+        NewProgress.StatYoutube = CharacterRow->StatYoutube;
+        NewProgress.StatTikTok = CharacterRow->StatTikTok;
+
+        int32 WorkerIndex = CharactersInventory.Num();
+        AWorker* SpawnedWorker = SpawnWorker(CharacterID, WorkerIndex);
+
+        if (SpawnedWorker)
+        {
+            NewProgress.WorkerSpawnRef = SpawnedWorker;
+            CharactersInventory.Add(NewProgress);
+            UE_LOG(LogTemp, Log, TEXT("Worker %s ajouté à l'inventaire (doublon) et spawné sur la map"), *CharacterID.ToString());
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Échec du spawn du worker %s"), *CharacterID.ToString());
+        }
     }
 }
+
 
 AWorker* APlayerActor::SpawnWorker(FName CharacterID, int32 WorkerIndex)
 {

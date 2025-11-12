@@ -58,6 +58,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
     UDataTable* CharacterDataTable;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gacha")
+    int EpicCounter = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gacha")
+    int LegendaryCounter = 0;
+
 protected:
     virtual void NativeConstruct() override;
     virtual void NativePreConstruct() override;

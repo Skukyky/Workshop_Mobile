@@ -87,7 +87,38 @@ void UBannerWidget::HandlePullMultiClicked()
         }
     }
 
-    // Ajouter au PlayerActor au lieu de sauvegarder
+    // Trouver un épique dans le résultat
+    int32 EpicIndexInResult = -1;
+    for (int32 Index = 0; Index < PullResults.Num(); ++Index)
+    {
+        FCharacterStructure* CharData = CharacterDataTable->FindRow<FCharacterStructure>(PullResults[Index], TEXT(""));
+        if (CharData && CharData->Rarity == ECharacterRarity::Epique)
+        {
+            EpicIndexInResult = Index;
+            break;
+        }
+    }
+
+    // Si aucun épique trouvé, en ajouter un aléatoirement
+    if (EpicIndexInResult == -1)
+    {
+        TArray<FName> EpicCharacters;
+        TArray<FName> RowNames = CharacterDataTable->GetRowNames();
+        for (const FName& RowName : RowNames)
+        {
+            FCharacterStructure* CharData = CharacterDataTable->FindRow<FCharacterStructure>(RowName, TEXT(""));
+            if (CharData && CharData->Rarity == ECharacterRarity::Epique)
+            {
+                EpicCharacters.Add(RowName);
+            }
+        }
+        if (EpicCharacters.Num() > 0)
+        {
+            int32 EpicIndex = FMath::RandRange(0, EpicCharacters.Num() - 1);
+            PullResults[PullResults.Num() - 1] = EpicCharacters[EpicIndex];
+        }
+    }
+
     AddPulledWorkersToPlayer(PullResults);
 
     if (ParentGachaWidget)
@@ -96,6 +127,7 @@ void UBannerWidget::HandlePullMultiClicked()
         ParentGachaWidget->BTN_Back->SetVisibility(ESlateVisibility::Collapsed);
     }
 }
+
 
 void UBannerWidget::AddPulledWorkersToPlayer(const TArray<FName>& PullResults)
 {
@@ -115,8 +147,10 @@ void UBannerWidget::AddPulledWorkersToPlayer(const TArray<FName>& PullResults)
 
 FName UBannerWidget::PerformSinglePull()
 {
-    if (!CharacterDataTable)
-        return NAME_None;
+    if (!CharacterDataTable) return NAME_None;
+
+    EpicCounter = EpicCounter % 10;
+    LegendaryCounter = LegendaryCounter % 80;
 
     TArray<FName> RowNames = CharacterDataTable->GetRowNames();
     float TotalWeightedDropRate = 0.f;
@@ -125,13 +159,25 @@ FName UBannerWidget::PerformSinglePull()
     for (const FName& RowName : RowNames)
     {
         FCharacterStructure* Data = CharacterDataTable->FindRow<FCharacterStructure>(RowName, TEXT(""));
-        if (!Data)
-        {
-            continue;
-        }
+        if (!Data) continue;
 
-        float* RarityDropRate = DropRatesByRarity.Find(Data->Rarity);
-        float Weight = RarityDropRate ? *RarityDropRate : 0.f;
+        bool bForceEpic = (EpicCounter >= 9) && (Data->Rarity == ECharacterRarity::Epique);
+        bool bForceLegendary = (LegendaryCounter >= 79) && (Data->Rarity == ECharacterRarity::Legendary);
+
+        float Weight = 0.f;
+        if (bForceLegendary)
+        {
+            Weight = 100000.f; // Poids le plus élevé pour forcer le légendaire
+        }
+        else if (bForceEpic)
+        {
+            Weight = 99999.f; // Second poids pour forcer l’épique si pas en pity légendaire
+        }
+        else
+        {
+            float* DropRate = DropRatesByRarity.Find(Data->Rarity);
+            Weight = DropRate ? *DropRate : 0.f;
+        }
 
         if (Weight > 0.f)
         {
@@ -149,17 +195,38 @@ FName UBannerWidget::PerformSinglePull()
     for (const FName& RowName : ValidCharacterRowNames)
     {
         FCharacterStructure* CharData = CharacterDataTable->FindRow<FCharacterStructure>(RowName, TEXT(""));
-        if (!CharData)
-        {
-            continue;
-        }
+        if (!CharData) continue;
 
-        float* RarityDropRate = DropRatesByRarity.Find(CharData->Rarity);
-        float Weight = RarityDropRate ? *RarityDropRate : 0.f;
+        float Weight = 0.f;
+        if (LegendaryCounter >= 79 && CharData->Rarity == ECharacterRarity::Legendary)
+            Weight = 100000.f;
+        else if (EpicCounter >= 9 && CharData->Rarity == ECharacterRarity::Epique)
+            Weight = 99999.f;
+        else
+            Weight = DropRatesByRarity.Find(CharData->Rarity) ? *DropRatesByRarity.Find(CharData->Rarity) : 0.f;
+
         Accumulated += Weight;
 
         if (RandomPoint <= Accumulated)
         {
+            if (CharData->Rarity == ECharacterRarity::Legendary)
+            {
+                LegendaryCounter = 0;  
+            }
+            else
+            {
+                LegendaryCounter++;
+            }
+
+            if (CharData->Rarity == ECharacterRarity::Epique)
+            {
+                EpicCounter = 0;
+            }
+            else
+            {
+                EpicCounter++;
+            }
+
             return RowName;
         }
     }
