@@ -24,19 +24,25 @@ public:
     void SetGem(int AddGem);
     
     UFUNCTION()
-    int GetGem() const;
+    int GetGem() const {return Gem;}
     
     UFUNCTION()
     void SetMoney(int AddMoney);
     
     UFUNCTION()
-    int GetMoney() const;
+    int GetMoney() const {return Money;}
     
     UFUNCTION()
     void SetPoolResource(int AddPool);
     
     UFUNCTION()
-    int GetPoolResource() const;
+    int GetPoolResource() const {return PoolResource;}
+
+    UFUNCTION()
+    void SetFollower(int Addfollower);
+
+    UFUNCTION()
+    int GetFollower() const {return Follower;}
 
     // Nouvelle fonction pour ajouter un worker et le spawn
     UFUNCTION(BlueprintCallable)
@@ -56,13 +62,16 @@ protected:
     USceneComponent* RootComp;
 
     UPROPERTY()
-    int Gem;
+    int Gem = 100;
 
     UPROPERTY(EditAnywhere)
     UCameraComponent* camera;
 
     UPROPERTY()
     int PoolResource;
+
+    UPROPERTY()
+    int Follower;
 
 public:
     virtual void Tick(float DeltaTime) override;

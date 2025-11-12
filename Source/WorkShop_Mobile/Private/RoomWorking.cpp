@@ -36,7 +36,7 @@ void ARoomWorking::Upgrade()
 	WorkMultiplierOnCurrentLevel = StatPerLevel[LevelRoom].WorkMultiplier;
 	if (PlayerActor)
 	{
-		PlayerActor->SetPoolResource(117);
+		PlayerActor->SetPoolResource(1000);
 	}
 	for (FWorkerAssigned Worker : Workers)
 	{
@@ -75,10 +75,7 @@ bool ARoomWorking::CanUpgradeWithMoney()
 			Upgrade();
 			return true;
 		}
-		else
-		{
-			CanUpgradeWithGem();
-		}
+		CanUpgradeWithGem();
 	}
 	return false;
 }
@@ -108,6 +105,7 @@ void ARoomWorking::SendMoneyToPlayer()
 	if (PlayerActor)
 	{
 		PlayerActor->SetMoney(CurrentMoneyInStock);
+		PlayerActor->SetFollower(CurrentFollowerInStock/3);
 		CurrentMoneyInStock = 0;
 		for (FWorkerAssigned Worker : Workers)
 		{
@@ -121,7 +119,6 @@ void ARoomWorking::SendMoneyToPlayer()
 
 void ARoomWorking::AddWorker(int position, AWorker* worker)
 {
-	//FIX
 	if (Workers.Num() - 1 >= position)
 	{
 		if (Workers[position].Worker) Workers[position].Worker->StopWorking();
@@ -129,7 +126,6 @@ void ARoomWorking::AddWorker(int position, AWorker* worker)
 		worker->AssignWork(this);
 		SpawnWidget();
 	}
-
 }
 
 void ARoomWorking::SpawnWidget()

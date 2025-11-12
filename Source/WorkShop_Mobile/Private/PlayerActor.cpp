@@ -59,11 +59,6 @@ void APlayerActor::SetGem(int AddGem)
     }
 }
 
-int APlayerActor::GetGem() const
-{
-    return Gem;
-}
-
 void APlayerActor::SetMoney(int AddMoney)
 {
     Money = Money + AddMoney;
@@ -73,19 +68,14 @@ void APlayerActor::SetMoney(int AddMoney)
     }
 }
 
-int APlayerActor::GetMoney() const
-{
-    return Money;
-}
-
 void APlayerActor::SetPoolResource(int AddPool)
 {
     PoolResource = PoolResource + AddPool;
 }
 
-int APlayerActor::GetPoolResource() const
+void APlayerActor::SetFollower(int Addfollower)
 {
-    return PoolResource;
+    Follower = Follower + Addfollower;
 }
 
 void APlayerActor::BeginPlay()

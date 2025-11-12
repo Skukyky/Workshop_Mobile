@@ -80,6 +80,8 @@ public:
 	UFUNCTION()
 	void SpawnWidget();
 
+	UPROPERTY()
+	bool IsYoutubeRoom;
 
 protected:
 	virtual void BeginPlay() override;
