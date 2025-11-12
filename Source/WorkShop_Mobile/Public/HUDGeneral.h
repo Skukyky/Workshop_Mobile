@@ -153,4 +153,9 @@ public:
 	UTextBlock* GemText;
 
 	void UpdateGemText(int Count);
+	
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* FollowerText;
+
+	void UpdateFollowerText(int Count);
 };

@@ -200,3 +200,11 @@ void UHUDGeneral::UpdateGemText(int Count)
 		GemText->SetText(FText::AsNumber(Count));
 	}
 }
+
+void UHUDGeneral::UpdateFollowerText(int Count)
+{
+	if (FollowerText)
+	{
+		FollowerText->SetText(FText::AsNumber(Count));
+	}
+}

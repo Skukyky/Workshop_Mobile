@@ -71,11 +71,19 @@ void APlayerActor::SetMoney(int AddMoney)
 void APlayerActor::SetPoolResource(int AddPool)
 {
     PoolResource = PoolResource + AddPool;
+    if (HUDRef)
+    {
+        HUDRef->UpdateAbonnerText(PoolResource);
+    }
 }
 
 void APlayerActor::SetFollower(int Addfollower)
 {
     Follower = Follower + Addfollower;
+    if (HUDRef)
+    {
+        HUDRef->UpdateFollowerText(Follower);
+    }
 }
 
 void APlayerActor::BeginPlay()
@@ -88,6 +96,10 @@ void APlayerActor::BeginPlay()
         HUDRef->PlayerActorRef = this;
         HUDRef->AddToViewport();
     }
+    SetMoney(0);
+    SetGem(0);
+    SetPoolResource(0);
+    SetFollower(0);
 }
 
 void APlayerActor::Tick(float DeltaTime)
