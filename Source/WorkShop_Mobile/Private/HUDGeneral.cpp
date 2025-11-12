@@ -4,6 +4,7 @@
 #include "HUDGeneral.h"
 
 #include "GachaPullWidget.h"
+#include "PlayerActor.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -74,6 +75,7 @@ void UHUDGeneral::ClickInvocationButton()
 	InvocationWidgetRef = CreateWidget<UGachaPullWidget>(GetWorld(), WidgetInvocationReference);
 	InvocationWidgetRef->PlayerREF = PlayerActorRef;
 	if (InvocationWidgetRef) InvocationWidgetRef->AddToViewport();
+	PlayerActorRef->ChangeVolumeMusic(0.0f);
 }
 
 void UHUDGeneral::VisiblityChange_Implementation(bool Despawn)

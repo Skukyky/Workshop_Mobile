@@ -3,6 +3,7 @@
 #include "DrawDebugHelpers.h"
 #include "HUDGeneral.h"
 #include "Worker.h"
+#include "Sound/SoundCue.h"
 
 bool IsPointInPolygon(const FVector2D& Point, const TArray<FVector2D>& Polygon)
 {
@@ -48,6 +49,11 @@ APlayerActor::APlayerActor()
     camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
     AutoPossessPlayer = EAutoReceiveInput::Disabled;
+
+    MainMusicAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("MusicAudioComponent"));
+    MainMusicAudioComponent->bAutoActivate = false;
+    MainMusicAudioComponent->bIsUISound = true;
+    MainMusicAudioComponent->SetupAttachment(RootComponent);
 }
 
 void APlayerActor::SetGem(int AddGem)
@@ -100,6 +106,11 @@ void APlayerActor::BeginPlay()
     SetGem(0);
     SetPoolResource(0);
     SetFollower(0);
+    if (MainMusic)
+    {
+        MainMusicAudioComponent->SetSound(MainMusic);
+    }
+    MainMusicAudioComponent->Play();
 }
 
 void APlayerActor::Tick(float DeltaTime)
@@ -170,6 +181,11 @@ void APlayerActor::AddWorkerToInventory(FName CharacterID, int32 StarCount)
     }
 }
 
+
+void APlayerActor::ChangeVolumeMusic(float Volume)
+{
+    MainMusicAudioComponent->SetVolumeMultiplier(Volume);
+}
 
 AWorker* APlayerActor::SpawnWorker(FName CharacterID, int32 WorkerIndex)
 {

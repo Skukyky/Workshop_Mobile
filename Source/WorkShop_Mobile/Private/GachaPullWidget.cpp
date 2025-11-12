@@ -214,6 +214,7 @@ void UGachaPullWidget::OnCharacterNextClicked()
 
 void UGachaPullWidget::HandleBackClicked()
 {
+    PlayerREF->ChangeVolumeMusic(1.0f);
     RemoveFromParent();
 }
 
