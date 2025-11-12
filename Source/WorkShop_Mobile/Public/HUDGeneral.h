@@ -11,7 +11,7 @@
 #include "Styling/SlateBrush.h"
 #include "HUDGeneral.generated.h"
 
-
+class UGachaPullWidget;
 class APlayerActor;
 /**
  * 
@@ -58,10 +58,10 @@ public:
 	UButton* InvocationButton;
 
 	UPROPERTY()
-	UUserWidget* InvocationWidgetRef;
+	UGachaPullWidget* InvocationWidgetRef;
 	
 	UPROPERTY(EditDefaultsOnly, Category = Widget)
-	TSubclassOf<UUserWidget> WidgetInvocationReference;
+	TSubclassOf<UGachaPullWidget> WidgetInvocationReference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widget)
 	APlayerActor* PlayerActorRef;

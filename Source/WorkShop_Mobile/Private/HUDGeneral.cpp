@@ -2,6 +2,8 @@
 
 
 #include "HUDGeneral.h"
+
+#include "GachaPullWidget.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -69,7 +71,8 @@ void UHUDGeneral::ClickShopButton()
 
 void UHUDGeneral::ClickInvocationButton()
 {
-	InvocationWidgetRef = CreateWidget<UUserWidget>(GetWorld(), WidgetInvocationReference);
+	InvocationWidgetRef = CreateWidget<UGachaPullWidget>(GetWorld(), WidgetInvocationReference);
+	InvocationWidgetRef->PlayerREF = PlayerActorRef;
 	if (InvocationWidgetRef) InvocationWidgetRef->AddToViewport();
 }
 
