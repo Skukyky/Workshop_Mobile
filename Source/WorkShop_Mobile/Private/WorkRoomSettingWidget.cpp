@@ -13,19 +13,19 @@ void UWorkRoomSettingWidget::OnGoldClicked()
 }
 
 void UWorkRoomSettingWidget::ActualiseMoney()
-{/*
+{
 	MoneySecond = 0;
 	for (int i = 0; i < RoomWorking->Workers.Num(); i++)
 	{
 		if (RoomWorking->Workers[i].Worker != nullptr)
 		{
-			MoneySecond += RoomWorking->Workers[i].Worker->MoneyPerWork;
+			MoneySecond += RoomWorking->Workers[i].Worker->MoneyPerWorkWithBonus;
 			UE_LOG(LogTemp, Warning, TEXT("Worker %d: %f"), i, RoomWorking->Workers[i].Worker->MoneyPerWork);
 		}
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Total MoneySecond: %f"), MoneySecond);
 	FString StringMoney = FString::SanitizeFloat(MoneySecond);
-	GoldPerSecond->SetText(FText::FromString(StringMoney));*/
+	GoldPerSecond->SetText(FText::FromString(StringMoney));
 }
 
 
@@ -82,9 +82,8 @@ void UWorkRoomSettingWidget::Refresh()
 void UWorkRoomSettingWidget::RefreshStat()
 {
 	if (RoomWorking)
-	{/*
-		FString Convert = FString::FromInt(RoomWorking.);
-		AllGoldStocked->SetText(FText::FromString(Convert));*/
+	{
+		
 	}
 }
 
@@ -112,4 +111,10 @@ void UWorkRoomSettingWidget::NativeConstruct()
 	{
 		Exit->OnCustomButtonClicked.AddDynamic(this,&UWorkRoomSettingWidget::OnExitClicked);
 	}
+}
+
+void UWorkRoomSettingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	ActualiseMoney();
 }

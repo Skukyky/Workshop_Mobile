@@ -44,7 +44,8 @@ void AWorker::Working()
 {
 	if (RoomWorking)
 	{
-		RoomWorking->AddMoney(MoneyPerWorkBase);
+		RoomWorking->AddMoney(MoneyPerWorkWithBonus);
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "StdqzdqdqdqdqdqdqdqdqzdqzartWorking");
 	}
 }
 
@@ -52,7 +53,7 @@ void AWorker::StartWorking()
 {
 	if (!TimerHandle.IsValid())
 	{
-		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, "StartWorking");
+		
 		GetWorldTimerManager().SetTimer(TimerHandle,this,&AWorker::Working,WorkingTimeBase,true);
 		ControllerREF->tasked = true;
 	}
@@ -75,8 +76,7 @@ void AWorker::AssignWork(ARoomWorking* Working)
 	if (RoomWorking && PlayerActor)
 	{
 		PlayerActor->Workers.AddUnique(this);
-		AddBonusPerRoom();
-		StartWorking();
+		AddBonusPerStars();
 	}
 }
 
@@ -93,15 +93,19 @@ void AWorker::UnassignWork()
 
 void AWorker::AddBonusPerRoom()
 {
+	MoneyPerWorkWithBonus  = MoneyPerWork;
 	if (RoomWorking)
 	{
+		int bonus = RoomWorking->IsYoutubeRoom ? MyRow->StatYoutube : MyRow->StatTikTok;
 		MoneyPerWorkWithBonus = MoneyPerWork * RoomWorking->WorkMultiplierOnCurrentLevel;
+		MoneyPerWorkWithBonus = MoneyPerWorkWithBonus * bonus;
+		StartWorking();
 	}
 }
 
 void AWorker::AddBonusPerStars()
 {
-	MoneyPerWork = MoneyPerWorkBase * MyRow->Star;
+	MoneyPerWork = MoneyPerWorkBase * MyRow->Star + 1;
 	AddBonusPerRoom();
 }
 
@@ -109,11 +113,6 @@ void AWorker::AddBonusPerStars()
 void AWorker::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (MyRow)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, "Tick");
-	}
 
 }
 

@@ -83,7 +83,7 @@ public:
 	UFUNCTION()
 	void SpawnWidget();
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Room Stats")
 	bool IsYoutubeRoom;
 
 protected:

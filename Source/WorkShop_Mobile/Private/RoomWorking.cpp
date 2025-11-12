@@ -117,7 +117,7 @@ void ARoomWorking::SendMoneyToPlayer()
 	if (PlayerActor)
 	{
 		PlayerActor->SetMoney(CurrentMoneyInStock);
-		PlayerActor->SetFollower(CurrentFollowerInStock/3);
+		PlayerActor->SetFollower(CurrentMoneyInStock/3);
 		CurrentMoneyInStock = 0;
 		for (FWorkerAssigned Worker : Workers)
 		{
