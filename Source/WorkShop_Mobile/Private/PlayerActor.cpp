@@ -85,6 +85,7 @@ void APlayerActor::BeginPlay()
     HUDRef = CreateWidget<UHUDGeneral>(GetWorld(), WidgetHUDReference);
     if (HUDRef)
     {
+        HUDRef->PlayerActorRef = this;
         HUDRef->AddToViewport();
     }
 }

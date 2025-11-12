@@ -12,6 +12,7 @@
 #include "HUDGeneral.generated.h"
 
 
+class APlayerActor;
 /**
  * 
  */
@@ -61,6 +62,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = Widget)
 	TSubclassOf<UUserWidget> WidgetInvocationReference;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widget)
+	APlayerActor* PlayerActorRef;
 	
 	UFUNCTION()
 	void ClickInvocationButton();
