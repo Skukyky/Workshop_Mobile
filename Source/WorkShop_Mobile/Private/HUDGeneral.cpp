@@ -63,12 +63,26 @@ void UHUDGeneral::ClickReserveButton()
 {
 	EmployerWidgetRef = CreateWidget<UUserWidget>(GetWorld(), WidgetEmployerReference);
 	if (EmployerWidgetRef) EmployerWidgetRef->AddToViewport();
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
+	{
+		FInputModeUIOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
+	}
 }
 
 void UHUDGeneral::ClickShopButton()
 {
 	ShopWidgetRef = CreateWidget<UUserWidget>(GetWorld(), WidgetShopReference);
 	if (ShopWidgetRef) ShopWidgetRef->AddToViewport();
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
+	{
+		FInputModeUIOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
+	}
 }
 
 void UHUDGeneral::ClickInvocationButton()
@@ -77,6 +91,13 @@ void UHUDGeneral::ClickInvocationButton()
 	InvocationWidgetRef->PlayerREF = PlayerActorRef;
 	if (InvocationWidgetRef) InvocationWidgetRef->AddToViewport();
 	PlayerActorRef->ChangeVolumeMusic(true);
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
+	{
+		FInputModeUIOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
+	}
 }
 
 void UHUDGeneral::VisiblityChange_Implementation(bool Despawn)
@@ -90,23 +111,27 @@ void UHUDGeneral::Despawn()
 
 void UHUDGeneral::ClickOptionButton()
 {
-	if (!VisibleOption)
+	Option->SetVisibility(ESlateVisibility::Visible);
+	VisiblityChange(false);
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
 	{
-		VisibleOption = true;
-		Option->SetVisibility(ESlateVisibility::Visible);
-		VisiblityChange(!VisibleOption);
-	}
-	else
-	{
-		VisibleOption = false;
-		VisiblityChange(!VisibleOption);
+		FInputModeUIOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
 	}
 }
 
 void UHUDGeneral::ClickCloseOption()
 {
-	VisibleOption = false;
-	VisiblityChange(!VisibleOption);
+	VisiblityChange(true);
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
+	{
+		FInputModeGameAndUI InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
+	}
 }
 
 void UHUDGeneral::ClickCreditButton()

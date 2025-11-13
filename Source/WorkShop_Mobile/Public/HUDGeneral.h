@@ -75,8 +75,6 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UCanvasPanel* Option;
 
-	bool VisibleOption = false;
-
 	UFUNCTION(BlueprintNativeEvent)
 	void VisiblityChange(bool Despawn);
 

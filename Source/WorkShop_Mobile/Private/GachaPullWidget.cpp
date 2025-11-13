@@ -8,6 +8,7 @@
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
 #include "Components/WidgetSwitcher.h"
+#include "Kismet/GameplayStatics.h"
 
 void UGachaPullWidget::NativeConstruct()
 {
@@ -223,6 +224,13 @@ void UGachaPullWidget::OnCharacterNextClicked()
 void UGachaPullWidget::HandleBackClicked()
 {
     PlayerREF->ChangeVolumeMusic(false);
+    APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+    if (PlayerController)
+    {
+        FInputModeGameAndUI InputMode;
+        PlayerController->SetInputMode(InputMode);
+        PlayerController->bShowMouseCursor = true;
+    }
     RemoveFromParent();
 }
 

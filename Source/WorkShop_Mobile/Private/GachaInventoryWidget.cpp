@@ -9,6 +9,7 @@
 #include "WorkRoomSettingWidget.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
+#include "Kismet/GameplayStatics.h"
 
 void UGachaInventoryWidget::NativeConstruct()
 {
@@ -251,6 +252,13 @@ void UGachaInventoryWidget::OnAssignClicked()
                 break;
             }
         }
+    }
+    APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+    if (PlayerController)
+    {
+        FInputModeGameAndUI InputMode;
+        PlayerController->SetInputMode(InputMode);
+        PlayerController->bShowMouseCursor = true;
     }
     RemoveFromParent();
 }

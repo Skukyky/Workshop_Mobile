@@ -3,6 +3,8 @@
 
 #include "ShopWidget.h"
 
+#include "Kismet/GameplayStatics.h"
+
 void UShopWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -136,6 +138,13 @@ void UShopWidget::OnBoost_Clicked()
 
 void UShopWidget::OnLeave_Clicked()
 {
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
+	{
+		FInputModeGameAndUI InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
+	}
 	RemoveFromParent();
 }
 
