@@ -26,6 +26,8 @@ void UTutorialWidget::HandleClicked()
 	}
 	else
 	{
+		CharacterShowcaseActor->K2_DestroyActor();
+		CharacterShowcaseActor = nullptr;
 		RemoveFromParent();
 	}
 }
