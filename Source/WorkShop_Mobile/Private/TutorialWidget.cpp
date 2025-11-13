@@ -13,7 +13,7 @@ void UTutorialWidget::HandleClicked()
 		{
 			TEXT_Tuto->SetText(FText::FromString(TutorialTexts[TutorialNumber]));
 		}
-		if (TutorialNumber == 3)
+		if (TutorialNumber == 1)
 		{
 			ImageArrow->SetVisibility(ESlateVisibility::Visible);
 			ImageTuto->SetVisibility(ESlateVisibility::Visible);
