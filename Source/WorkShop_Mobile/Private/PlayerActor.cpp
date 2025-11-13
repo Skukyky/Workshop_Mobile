@@ -2,6 +2,7 @@
 #include "DelayAction.h"
 #include "DrawDebugHelpers.h"
 #include "HUDGeneral.h"
+#include "TutorialWidget.h"
 #include "Worker.h"
 #include "Sound/SoundCue.h"
 
@@ -111,6 +112,12 @@ void APlayerActor::BeginPlay()
         MainMusicAudioComponent->SetSound(MainMusic);
     }
     MainMusicAudioComponent->Play();
+
+    TutoRef = CreateWidget<UTutorialWidget>(GetWorld(), WidgetTutoReference);
+    if (TutoRef)
+    {
+        TutoRef->AddToViewport();
+    }
 }
 
 void APlayerActor::Tick(float DeltaTime)

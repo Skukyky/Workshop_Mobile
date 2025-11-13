@@ -11,6 +11,7 @@
 #include "PlayerCameraController.h"
 #include "PlayerActor.generated.h"
 
+class UTutorialWidget;
 class AWorker;
 
 UCLASS()
@@ -102,6 +103,14 @@ public:
 
     UPROPERTY()
     UHUDGeneral* HUDRef;
+
+    UPROPERTY(EditAnywhere)
+    TSubclassOf<UTutorialWidget> WidgetTutoReference;
+
+    UPROPERTY()
+    UTutorialWidget* TutoRef;
+
+    
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character")
     UDataTable* MyDataTable;

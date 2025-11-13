@@ -11,6 +11,7 @@
 #include "TutorialWidget.generated.h"
 
 
+class AGachaCharacterShowcase;
 class UBTNCustomWidget;
 /**
  * 
@@ -22,11 +23,29 @@ class WORKSHOP_MOBILE_API UTutorialWidget : public UUserWidget
 
 public:
 
+	UPROPERTY(EditAnywhere, Blueprintable)
+	UAnimationAsset* AnimationAsset = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+	TSubclassOf<AGachaCharacterShowcase> CharacterShowcaseActorClass;
+	
+	UPROPERTY()
+	AGachaCharacterShowcase* CharacterShowcaseActor = nullptr;
+
+	UPROPERTY(EditAnywhere, Blueprintable)
+	USkeletalMesh* SkeletalMeshActor = nullptr;
+
 	UPROPERTY(meta = (BindWidget))
 	UBTNCustomWidget* BTN_Click;
 
 	UPROPERTY(meta = (BindWidget))
 	UImage* GeraudImage;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* ImageTuto;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* ImageArrow;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TEXT_Tuto;
