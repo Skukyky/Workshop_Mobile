@@ -2,6 +2,7 @@
 #include "BannerWidget.h"
 #include "CharacterStructure.h"
 #include "GachaCharacterShowcase.h"
+#include "AssetTypeActions/AssetDefinition_SoundBase.h"
 #include "Components/Image.h"
 #include "Components/ScrollBox.h"
 #include "Components/UniformGridPanel.h"
@@ -38,7 +39,6 @@ void UGachaPullWidget::NativeConstruct()
 
     FollowerText->SetText(FText::FromString(FString::FromInt(PlayerREF->GetFollower())));
     MoneyText->SetText(FText::FromString(FString::FromInt(PlayerREF->GetMoney())));
-
 }
 
 void UGachaPullWidget::NativePreConstruct()
@@ -222,7 +222,7 @@ void UGachaPullWidget::OnCharacterNextClicked()
 
 void UGachaPullWidget::HandleBackClicked()
 {
-    PlayerREF->ChangeVolumeMusic(1.0f);
+    PlayerREF->ChangeVolumeMusic(false);
     RemoveFromParent();
 }
 

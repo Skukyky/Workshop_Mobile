@@ -4,7 +4,7 @@
 #include "HUDGeneral.h"
 #include "TutorialWidget.h"
 #include "Worker.h"
-#include "Sound/SoundCue.h"
+#include "CompGeom/FitOrientedBox3.h"
 
 bool IsPointInPolygon(const FVector2D& Point, const TArray<FVector2D>& Polygon)
 {
@@ -55,6 +55,11 @@ APlayerActor::APlayerActor()
     MainMusicAudioComponent->bAutoActivate = false;
     MainMusicAudioComponent->bIsUISound = true;
     MainMusicAudioComponent->SetupAttachment(RootComponent);
+
+    PullMusicAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("PullMusicAudioComponent"));
+    PullMusicAudioComponent->bAutoActivate = false;
+    PullMusicAudioComponent->bIsUISound = true;
+    PullMusicAudioComponent->SetupAttachment(RootComponent);
 }
 
 void APlayerActor::SetGem(int AddGem)
@@ -107,8 +112,14 @@ void APlayerActor::BeginPlay()
     {
         MainMusicAudioComponent->SetSound(MainMusic);
     }
+    if (PullMusic)
+    {
+        PullMusicAudioComponent->SetSound(PullMusic);
+    }
     MainMusicAudioComponent->Play();
-
+    PullMusicAudioComponent->SetVolumeMultiplier(0.0f);
+    PullMusicAudioComponent->Play();
+    
     TutoRef = CreateWidget<UTutorialWidget>(GetWorld(), WidgetTutoReference);
     if (TutoRef)
     {
@@ -185,9 +196,18 @@ void APlayerActor::AddWorkerToInventory(FName CharacterID, int32 StarCount)
 }
 
 
-void APlayerActor::ChangeVolumeMusic(float Volume)
+void APlayerActor::ChangeVolumeMusic(bool InGacha)
 {
-    MainMusicAudioComponent->SetVolumeMultiplier(Volume);
+    if (InGacha)
+    {
+        MainMusicAudioComponent->SetVolumeMultiplier(0.0f);
+        PullMusicAudioComponent->SetVolumeMultiplier(1.0f);
+    }
+    else
+    {
+        MainMusicAudioComponent->SetVolumeMultiplier(1.0f);
+        PullMusicAudioComponent->SetVolumeMultiplier(0.0f);
+    }
 }
 
 AWorker* APlayerActor::SpawnWorker(FName CharacterID, int32 WorkerIndex)

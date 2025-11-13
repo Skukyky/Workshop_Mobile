@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Pawn.h"
 #include "Blueprint/UserWidget.h"
+#include "Sound/SoundCue.h"
 #include "HUDGeneral.h"
 #include "Components/AudioComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -130,7 +131,13 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
     USoundCue* MainMusic;
 
-    void ChangeVolumeMusic(float Volume);
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Audio")
+    UAudioComponent* PullMusicAudioComponent;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+    USoundCue* PullMusic;
+
+    void ChangeVolumeMusic(bool InGacha);
 private:
     // Fonction interne pour spawn un worker
     AWorker* SpawnWorker(FName CharacterID, int32 WorkerIndex);

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Engine/DataTable.h"
+#include "Sound/SoundCue.h"
 #include "CharacterProgress.h"
 #include "GachaPullWidget.generated.h"
 
@@ -21,8 +22,7 @@ class WORKSHOP_MOBILE_API UGachaPullWidget : public UUserWidget
 {
     GENERATED_BODY()
 
-public:
-    
+public:    
     bool bSinglePullWithPlaceholders = false;
     
     TArray<FName> CurrentPulledCharacters;

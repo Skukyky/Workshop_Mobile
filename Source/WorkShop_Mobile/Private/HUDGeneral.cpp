@@ -76,7 +76,7 @@ void UHUDGeneral::ClickInvocationButton()
 	InvocationWidgetRef = CreateWidget<UGachaPullWidget>(GetWorld(), WidgetInvocationReference);
 	InvocationWidgetRef->PlayerREF = PlayerActorRef;
 	if (InvocationWidgetRef) InvocationWidgetRef->AddToViewport();
-	PlayerActorRef->ChangeVolumeMusic(0.0f);
+	PlayerActorRef->ChangeVolumeMusic(true);
 }
 
 void UHUDGeneral::VisiblityChange_Implementation(bool Despawn)
