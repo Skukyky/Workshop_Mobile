@@ -99,6 +99,7 @@ void AWorker::AddBonusPerRoom()
 		int bonus = RoomWorking->IsYoutubeRoom ? MyRow->StatYoutube : MyRow->StatTikTok;
 		MoneyPerWorkWithBonus = MoneyPerWork * RoomWorking->WorkMultiplierOnCurrentLevel;
 		MoneyPerWorkWithBonus = MoneyPerWorkWithBonus * bonus;
+		
 		StartWorking();
 	}
 }
