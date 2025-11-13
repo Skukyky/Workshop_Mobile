@@ -86,17 +86,23 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Room Stats")
 	bool IsYoutubeRoom;
 
-protected:
-	virtual void BeginPlay() override;
-
 	UPROPERTY()
-	bool CanUpgrade = true;
+	float CurrentMoneyInStock = 0;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Stats")
 	TArray<FStatPerLevel> StatPerLevel;
 
 	UPROPERTY()
+	float CurrentFollowerInStock = 0;
+
+	UPROPERTY()
 	int LevelRoom = -1;
+	
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY()
+	bool CanUpgrade = true;
 
 	UFUNCTION()
 	void SetUp();
@@ -109,12 +115,7 @@ protected:
 	
 	UPROPERTY()
 	APlayerActor* PlayerActor = nullptr;
-
-	UPROPERTY()
-	float CurrentMoneyInStock = 0;
-
-	UPROPERTY()
-	float CurrentFollowerInStock = 0;
+	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UWorkRoomSettingWidget> Widget;

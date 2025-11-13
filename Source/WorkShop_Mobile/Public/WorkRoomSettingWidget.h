@@ -75,6 +75,9 @@ protected:
 	UPROPERTY()
 	float MoneySecond;
 
+	UPROPERTY()
+	float FollowerSecond;
+
 	UFUNCTION()
 	void OnGoldClicked();
 

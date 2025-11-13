@@ -8,7 +8,7 @@ public class WorkShop_Mobile : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Niagara", "AIModule", "NavigationSystem","UMG","EnhancedInput","Slate", "SlateCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Niagara", "AIModule", "NavigationSystem","UMG","EnhancedInput","Slate", "SlateCore", "AudioMixer" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

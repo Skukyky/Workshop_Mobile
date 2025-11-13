@@ -45,7 +45,6 @@ void AWorker::Working()
 	if (RoomWorking)
 	{
 		RoomWorking->AddMoney(MoneyPerWorkWithBonus);
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "StdqzdqdqdqdqdqdqdqdqzdqzartWorking");
 	}
 }
 
@@ -99,7 +98,6 @@ void AWorker::AddBonusPerRoom()
 		int bonus = RoomWorking->IsYoutubeRoom ? MyRow->StatYoutube : MyRow->StatTikTok;
 		MoneyPerWorkWithBonus = MoneyPerWork * RoomWorking->WorkMultiplierOnCurrentLevel;
 		MoneyPerWorkWithBonus = MoneyPerWorkWithBonus * bonus;
-		
 		StartWorking();
 	}
 }

@@ -1,6 +1,7 @@
 #include "PlayerActor.h"
 #include "DelayAction.h"
 #include "DrawDebugHelpers.h"
+#include "Sound/SoundCue.h" 
 #include "HUDGeneral.h"
 #include "TutorialWidget.h"
 #include "Worker.h"

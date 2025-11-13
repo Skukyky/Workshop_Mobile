@@ -15,17 +15,28 @@ void UWorkRoomSettingWidget::OnGoldClicked()
 void UWorkRoomSettingWidget::ActualiseMoney()
 {
 	MoneySecond = 0;
+	FollowerSecond = 0;
 	for (int i = 0; i < RoomWorking->Workers.Num(); i++)
 	{
 		if (RoomWorking->Workers[i].Worker != nullptr)
 		{
 			MoneySecond += RoomWorking->Workers[i].Worker->MoneyPerWorkWithBonus;
-			UE_LOG(LogTemp, Warning, TEXT("Worker %d: %f"), i, RoomWorking->Workers[i].Worker->MoneyPerWork);
+			FollowerSecond += RoomWorking->Workers[i].Worker->MoneyPerWorkWithBonus/3;
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Total MoneySecond: %f"), MoneySecond);
 	FString StringMoney = FString::SanitizeFloat(MoneySecond);
-	GoldPerSecond->SetText(FText::FromString(StringMoney));
+	FString StringFollower = FString::SanitizeFloat(FollowerSecond);
+	FText Text = FText::Format(NSLOCTEXT("","","Money/s: {0} \n Follower/s : {1}"), FText::FromString(StringMoney), FText::FromString(StringFollower));
+	GoldPerSecond->SetText(Text);
+	
+	FString StringAllMoneyStored = FString::SanitizeFloat(RoomWorking->CurrentMoneyInStock);
+	FText TextAllMoney = FText::Format(NSLOCTEXT("","","All Money Stocked:\n {0}"), FText::FromString(StringAllMoneyStored));
+	AllGoldStocked->SetText(TextAllMoney);
+
+	FString StringMoneyUpgrade = FString::SanitizeFloat(RoomWorking->StatPerLevel[RoomWorking->LevelRoom].RequiredMoneyForUpgrade);
+	FString StringFollowerUpgrade = FString::SanitizeFloat(RoomWorking->StatPerLevel[RoomWorking->LevelRoom].RequiredFollowerForNextUpgrade);
+	FText TextUpgrade = FText::Format(NSLOCTEXT("","","Need Money : {0}\n Need Follower : {1}"), FText::FromString(StringMoneyUpgrade), FText::FromString(StringFollowerUpgrade));
+	NeedGold->SetText(TextUpgrade);
 }
 
 
@@ -38,6 +49,7 @@ void UWorkRoomSettingWidget::OnExitClicked()
 void UWorkRoomSettingWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
+	SetIsFocusable(true);
 	Refresh();
 }
 
@@ -83,7 +95,7 @@ void UWorkRoomSettingWidget::RefreshStat()
 {
 	if (RoomWorking)
 	{
-		
+		ActualiseMoney();
 	}
 }
 
@@ -99,6 +111,8 @@ void UWorkRoomSettingWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	UE_LOG(LogTemp, Display, TEXT("Work Room"));
+	SetFocus();
+	
 	if (GetGold)
 	{
 		GetGold->OnCustomButtonClicked.AddDynamic(this,&UWorkRoomSettingWidget::OnGoldClicked);
@@ -111,10 +125,10 @@ void UWorkRoomSettingWidget::NativeConstruct()
 	{
 		Exit->OnCustomButtonClicked.AddDynamic(this,&UWorkRoomSettingWidget::OnExitClicked);
 	}
+	RefreshStat();
 }
 
 void UWorkRoomSettingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	ActualiseMoney();
 }

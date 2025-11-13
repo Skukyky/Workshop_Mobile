@@ -87,7 +87,6 @@ bool ARoomWorking::CanUpgradeWithMoney()
 			Upgrade();
 			return true;
 		}
-		CanUpgradeWithGem();
 	}
 	return false;
 }
@@ -97,7 +96,10 @@ void ARoomWorking::AddMoney(float NewMoney)
 	float MoneyTemp = CurrentMoneyInStock + NewMoney;
 	float MaxMoney = StatPerLevel[LevelRoom].MaxMoneyStorable;
 	CurrentMoneyInStock = FMath::Clamp(MoneyTemp, 0, MaxMoney);
-	
+	if (RoomSettingWidget)
+	{
+		RoomSettingWidget->RefreshStat();
+	}
 	if (CurrentMoneyInStock >= MaxMoney)
 	{
 		for (FWorkerAssigned Worker : Workers)

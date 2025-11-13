@@ -12,6 +12,7 @@
 #include "PlayerCameraController.h"
 #include "PlayerActor.generated.h"
 
+class USoundCue;
 class UTutorialWidget;
 class AWorker;
 
