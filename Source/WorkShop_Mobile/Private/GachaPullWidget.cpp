@@ -37,7 +37,7 @@ void UGachaPullWidget::NativeConstruct()
         BTN_Back->OnCustomButtonClicked.AddDynamic(this, &UGachaPullWidget::HandleBackClicked);
     }
 
-    FollowerText->SetText(FText::FromString(FString::FromInt(PlayerREF->GetFollower())));
+    FollowerText->SetText(FText::FromString(FString::FromInt(PlayerREF->GetPoolResource())));
     MoneyText->SetText(FText::FromString(FString::FromInt(PlayerREF->GetMoney())));
 }
 

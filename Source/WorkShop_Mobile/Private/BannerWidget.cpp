@@ -52,11 +52,11 @@ void UBannerWidget::NativeConstruct()
 void UBannerWidget::HandlePullClicked()
 {
     if ((!bMoneyFollower && ParentGachaWidget && ParentGachaWidget->PlayerREF && ParentGachaWidget->PlayerREF->GetMoney() >= PriceMoney)
-           || (bMoneyFollower && ParentGachaWidget->PlayerREF->GetFollower() >= PriceFollower))
+           || (bMoneyFollower && ParentGachaWidget->PlayerREF->GetPoolResource() >= PriceFollower))
     {
         if (bMoneyFollower)
         {
-            ParentGachaWidget->PlayerREF->SetFollower(- PriceFollower);
+            ParentGachaWidget->PlayerREF->SetPoolResource(- PriceFollower);
         }
         else
         {
@@ -78,7 +78,7 @@ void UBannerWidget::HandlePullClicked()
         {
             ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
             ParentGachaWidget->BTN_Back->SetVisibility(ESlateVisibility::Collapsed);
-            ParentGachaWidget->FollowerText->SetText(FText::FromString(FString::FromInt(ParentGachaWidget->PlayerREF->GetFollower())));
+            ParentGachaWidget->FollowerText->SetText(FText::FromString(FString::FromInt(ParentGachaWidget->PlayerREF->GetPoolResource())));
             ParentGachaWidget->MoneyText->SetText(FText::FromString(FString::FromInt(ParentGachaWidget->PlayerREF->GetMoney())));
             ParentGachaWidget->FollowerImage->SetVisibility(ESlateVisibility::Collapsed);
             ParentGachaWidget->MoneyImage->SetVisibility(ESlateVisibility::Collapsed);
@@ -99,11 +99,11 @@ void UBannerWidget::HandlePullClicked()
 void UBannerWidget::HandlePullMultiClicked()
 {
     if ((!bMoneyFollower && ParentGachaWidget && ParentGachaWidget->PlayerREF && ParentGachaWidget->PlayerREF->GetMoney() >= PriceMoney*10)
-        || (bMoneyFollower && ParentGachaWidget->PlayerREF->GetFollower() >= PriceFollower*10))
+        || (bMoneyFollower && ParentGachaWidget->PlayerREF->GetPoolResource() >= PriceFollower*10))
     {
         if (bMoneyFollower)
         {
-            ParentGachaWidget->PlayerREF->SetFollower( - PriceFollower*10);
+            ParentGachaWidget->PlayerREF->SetPoolResource( - PriceFollower*10);
         }
         else
         {
@@ -163,7 +163,7 @@ void UBannerWidget::HandlePullMultiClicked()
         {
             ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
             ParentGachaWidget->BTN_Back->SetVisibility(ESlateVisibility::Collapsed);
-            ParentGachaWidget->FollowerText->SetText(FText::FromString(FString::FromInt(ParentGachaWidget->PlayerREF->GetFollower())));
+            ParentGachaWidget->FollowerText->SetText(FText::FromString(FString::FromInt(ParentGachaWidget->PlayerREF->GetPoolResource())));
             ParentGachaWidget->MoneyText->SetText(FText::FromString(FString::FromInt(ParentGachaWidget->PlayerREF->GetMoney())));
             ParentGachaWidget->FollowerImage->SetVisibility(ESlateVisibility::Collapsed);
             ParentGachaWidget->MoneyImage->SetVisibility(ESlateVisibility::Collapsed);
@@ -187,9 +187,7 @@ void UBannerWidget::AddPulledWorkersToPlayer(const TArray<FName>& PullResults)
         UE_LOG(LogTemp, Error, TEXT("PlayerActorRef is null in AddPulledWorkersToPlayer"));
         return;
     }
-
-    // Pour chaque worker tiré, l'ajouter à l'inventaire du joueur
-    // Le système gérera automatiquement le spawn et l'ajout de stars
+    
     for (const FName& CharacterID : PullResults)
     {
         PlayerActorRef->AddWorkerToInventory(CharacterID, 1);
