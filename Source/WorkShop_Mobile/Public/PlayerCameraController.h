@@ -57,7 +57,7 @@ protected:
 	// Header
 private:
 	bool bHasMoved = false;
-    float TouchMoveThreshold = 10.f;
+    float TouchMoveThreshold = 30.f;
     FVector2D InitialTouchPosition;
 	float LastTouchDistance = 0.f;
 	FVector OriginPosition;

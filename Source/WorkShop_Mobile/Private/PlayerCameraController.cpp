@@ -110,6 +110,7 @@ void APlayerCameraController::SetupInputComponent()
 		{
 			EIC->BindAction(TouchPressedAction, ETriggerEvent::Started, this, &APlayerCameraController::OnTouchPressed);
 			EIC->BindAction(TouchPressedAction, ETriggerEvent::Completed, this, &APlayerCameraController::OnTouchReleased);
+			EIC->BindAction(TouchPressedAction, ETriggerEvent::Canceled, this, &APlayerCameraController::OnTouchReleased);
 		}
 		if (TouchPositionAction)
 		{
@@ -118,10 +119,6 @@ void APlayerCameraController::SetupInputComponent()
 		if (ZoomAction)
 		{
 			EIC->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &APlayerCameraController::OnZoomTriggered);
-		}
-		if (TouchSelectAction)
-		{
-			EIC->BindAction(TouchSelectAction, ETriggerEvent::Started, this, &APlayerCameraController::OnTouchSelect);
 		}
 	}
 }
@@ -132,15 +129,26 @@ void APlayerCameraController::OnTouchPressed(const FInputActionValue& Value)
 	bTouching = true;
 	bFirstTouch = true;
 	bHasMoved = false;
-	InitialTouchPosition = Value.Get<FVector2D>();
-	LastTouchPosition = InitialTouchPosition;
+    
+	float X, Y;
+	bool bPressed;
+	GetInputTouchState(ETouchIndex::Touch1, X, Y, bPressed);
+	if (bPressed)
+	{
+		InitialTouchPosition = FVector2D(X, Y);
+		LastTouchPosition = InitialTouchPosition;
+
+		//UE_LOG(LogTemp, Warning, TEXT("TouchPressed at %s"), *InitialTouchPosition.ToString());
+	}
 }
 
 void APlayerCameraController::OnTouchReleased(const FInputActionValue& Value)
 {
+	
 	if (!bHasMoved)
 	{
 		OnTouchSelect(FInputActionValue(InitialTouchPosition));
+		UE_LOG(LogTemp, Warning, TEXT("InitialTouchPosition at %s"), *InitialTouchPosition.ToString());
 	}
 
 	bTouching = false;
@@ -160,6 +168,9 @@ void APlayerCameraController::OnTouchPosition(const FInputActionValue& Value)
 	}
 
 	FVector2D TotalDelta = CurrentPosition - InitialTouchPosition;
+	//UE_LOG(LogTemp, Warning, TEXT("InitialTouchPosition at %s"), *InitialTouchPosition.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("CurrentPosition at %s"), *CurrentPosition.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("TotalDelta at %s"), *TotalDelta.ToString());
 	if (!bHasMoved && TotalDelta.Size() > TouchMoveThreshold)
 	{
 		bHasMoved = true;
