@@ -35,6 +35,10 @@ void UGachaPullWidget::NativeConstruct()
     {
         BTN_Back->OnCustomButtonClicked.AddDynamic(this, &UGachaPullWidget::HandleBackClicked);
     }
+
+    FollowerText->SetText(FText::FromString(FString::FromInt(PlayerREF->GetFollower())));
+    MoneyText->SetText(FText::FromString(FString::FromInt(PlayerREF->GetMoney())));
+
 }
 
 void UGachaPullWidget::NativePreConstruct()
@@ -149,6 +153,10 @@ void UGachaPullWidget::HandleBackToBannerClicked()
         WS_GachaPull->SetActiveWidgetIndex(0);
     }
     BTN_Back->SetVisibility(ESlateVisibility::Visible);
+    FollowerImage->SetVisibility(ESlateVisibility::Visible);
+    MoneyImage->SetVisibility(ESlateVisibility::Visible);
+    FollowerText->SetVisibility(ESlateVisibility::Visible);
+    MoneyText->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UGachaPullWidget::UpdateShowcaseCharacter()

@@ -78,6 +78,12 @@ void UBannerWidget::HandlePullClicked()
         {
             ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
             ParentGachaWidget->BTN_Back->SetVisibility(ESlateVisibility::Collapsed);
+            ParentGachaWidget->FollowerText->SetText(FText::FromString(FString::FromInt(ParentGachaWidget->PlayerREF->GetFollower())));
+            ParentGachaWidget->MoneyText->SetText(FText::FromString(FString::FromInt(ParentGachaWidget->PlayerREF->GetMoney())));
+            ParentGachaWidget->FollowerImage->SetVisibility(ESlateVisibility::Collapsed);
+            ParentGachaWidget->MoneyImage->SetVisibility(ESlateVisibility::Collapsed);
+            ParentGachaWidget->FollowerText->SetVisibility(ESlateVisibility::Collapsed);
+            ParentGachaWidget->MoneyText->SetVisibility(ESlateVisibility::Collapsed);
         }
     }
     else
@@ -157,6 +163,12 @@ void UBannerWidget::HandlePullMultiClicked()
         {
             ParentGachaWidget->ShowPullResultsWithShowcase(PullResults);
             ParentGachaWidget->BTN_Back->SetVisibility(ESlateVisibility::Collapsed);
+            ParentGachaWidget->FollowerText->SetText(FText::FromString(FString::FromInt(ParentGachaWidget->PlayerREF->GetFollower())));
+            ParentGachaWidget->MoneyText->SetText(FText::FromString(FString::FromInt(ParentGachaWidget->PlayerREF->GetMoney())));
+            ParentGachaWidget->FollowerImage->SetVisibility(ESlateVisibility::Collapsed);
+            ParentGachaWidget->MoneyImage->SetVisibility(ESlateVisibility::Collapsed);
+            ParentGachaWidget->FollowerText->SetVisibility(ESlateVisibility::Collapsed);
+            ParentGachaWidget->MoneyText->SetVisibility(ESlateVisibility::Collapsed);
         }
     }else
     {

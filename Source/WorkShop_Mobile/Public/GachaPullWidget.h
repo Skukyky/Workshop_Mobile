@@ -6,6 +6,7 @@
 #include "CharacterProgress.h"
 #include "GachaPullWidget.generated.h"
 
+class UTextBlock;
 class APlayerActor;
 class AGachaCharacterShowcase;
 class UImage;
@@ -35,6 +36,18 @@ public:
 
     UPROPERTY(meta = (BindWidget))
     UBTNCustomWidget* BTN_BackToBanner;
+
+    UPROPERTY(meta = (BindWidget))
+    UTextBlock* MoneyText;
+
+    UPROPERTY(meta = (BindWidget))
+    UImage* MoneyImage;
+
+    UPROPERTY(meta = (BindWidget))
+    UImage* FollowerImage;
+
+    UPROPERTY(meta = (BindWidget))
+    UTextBlock* FollowerText;
 
     UPROPERTY(meta = (BindWidget))
     UBTNCustomWidget* BTN_Back;
