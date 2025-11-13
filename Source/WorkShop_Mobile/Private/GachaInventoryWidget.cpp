@@ -256,7 +256,7 @@ void UGachaInventoryWidget::OnAssignClicked()
     APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
     if (PlayerController)
     {
-        FInputModeGameAndUI InputMode;
+        FInputModeGameOnly InputMode;
         PlayerController->SetInputMode(InputMode);
         PlayerController->bShowMouseCursor = true;
     }

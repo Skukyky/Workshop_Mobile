@@ -2,7 +2,6 @@
 #include "BannerWidget.h"
 #include "CharacterStructure.h"
 #include "GachaCharacterShowcase.h"
-#include "AssetTypeActions/AssetDefinition_SoundBase.h"
 #include "Components/Image.h"
 #include "Components/ScrollBox.h"
 #include "Components/UniformGridPanel.h"
@@ -227,7 +226,7 @@ void UGachaPullWidget::HandleBackClicked()
     APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
     if (PlayerController)
     {
-        FInputModeGameAndUI InputMode;
+        FInputModeGameOnly InputMode;
         PlayerController->SetInputMode(InputMode);
         PlayerController->bShowMouseCursor = true;
     }

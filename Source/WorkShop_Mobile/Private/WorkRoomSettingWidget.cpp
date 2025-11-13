@@ -5,6 +5,7 @@
 #include "BTNCustomWidget.h"
 #include "RoomWorking.h"
 #include "Worker.h"
+#include "Kismet/GameplayStatics.h"
 
 void UWorkRoomSettingWidget::OnGoldClicked()
 {
@@ -43,6 +44,13 @@ void UWorkRoomSettingWidget::ActualiseMoney()
 void UWorkRoomSettingWidget::OnExitClicked()
 {
 	ActualiseMoney();
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
+	{
+		FInputModeGameOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
+	}
 	RemoveFromParent();
 }
 
@@ -110,6 +118,13 @@ void UWorkRoomSettingWidget::OnUpgradeCliqued()
 void UWorkRoomSettingWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
+	{
+		FInputModeUIOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
+	}
 	UE_LOG(LogTemp, Display, TEXT("Work Room"));
 	SetFocus();
 	

@@ -36,7 +36,7 @@ void ARoomWorking::Upgrade()
 	LevelRoom =  LevelRoom + 1;
 	
 	WorkMultiplierOnCurrentLevel = StatPerLevel[LevelRoom].WorkMultiplier;
-	if (PlayerActor)
+	if (PlayerActor && LevelRoom > 0)
 	{
 		PlayerActor->SetPoolResource(1000);
 	}
