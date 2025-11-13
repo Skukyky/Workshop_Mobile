@@ -62,7 +62,7 @@ void APlayerActor::SetGem(int AddGem)
     Gem = Gem + AddGem;
     if (HUDRef)
     {
-        HUDRef->UpdateMoneyText(Gem);
+        HUDRef->UpdateMoneyText(GetGem());
     }
 }
 
@@ -80,7 +80,7 @@ void APlayerActor::SetPoolResource(int AddPool)
     PoolResource = PoolResource + AddPool;
     if (HUDRef)
     {
-        HUDRef->UpdateAbonnerText(PoolResource);
+        HUDRef->UpdateAbonnerText(GetPoolResource());
     }
 }
 
@@ -89,7 +89,7 @@ void APlayerActor::SetFollower(int Addfollower)
     Follower = Follower + Addfollower;
     if (HUDRef)
     {
-        HUDRef->UpdateFollowerText(Follower);
+        HUDRef->UpdateFollowerText(GetFollower());
     }
 }
 
@@ -102,12 +102,7 @@ void APlayerActor::BeginPlay()
     {
         HUDRef->PlayerActorRef = this;
         HUDRef->AddToViewport();
-        HUDRef->UpdateMoneyText(GetMoney());
     }
-    SetMoney(0);
-    SetGem(0);
-    SetPoolResource(0);
-    SetFollower(0);
     if (MainMusic)
     {
         MainMusicAudioComponent->SetSound(MainMusic);

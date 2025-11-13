@@ -158,4 +158,9 @@ public:
 	UTextBlock* FollowerText;
 
 	void UpdateFollowerText(int Count);
+
+	FTimerHandle UpdateStartDelay;
+
+	UFUNCTION()
+	void UpdateValue();
 };

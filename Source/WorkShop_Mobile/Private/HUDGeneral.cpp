@@ -56,6 +56,7 @@ void UHUDGeneral::NativeConstruct()
 	{
 		MusicSlider->OnValueChanged.AddDynamic(this, &UHUDGeneral::OnMusicChanged);
 	}
+	GetWorld()->GetTimerManager().SetTimer(UpdateStartDelay,this,&UHUDGeneral::UpdateValue,3.0f,false);
 }
 
 void UHUDGeneral::ClickReserveButton()
@@ -192,7 +193,8 @@ void UHUDGeneral::UpdateAbonnerText(int Count)
 {
 	if (AbonnerText)
 	{
-		AbonnerText->SetText(FText::AsNumber(Count));
+		FString StringAbonner = FString::SanitizeFloat(Count);
+		AbonnerText->SetText(FText::FromString(StringAbonner));
 	}
 }
 
@@ -200,7 +202,8 @@ void UHUDGeneral::UpdateGemText(int Count)
 {
 	if (GemText)
 	{
-		GemText->SetText(FText::AsNumber(Count));
+		FString StringGem = FString::SanitizeFloat(Count);
+		GemText->SetText(FText::FromString(StringGem));
 	}
 }
 
@@ -208,6 +211,15 @@ void UHUDGeneral::UpdateFollowerText(int Count)
 {
 	if (FollowerText)
 	{
-		FollowerText->SetText(FText::AsNumber(Count));
+		FString StringFollower = FString::SanitizeFloat(Count);
+		FollowerText->SetText(FText::FromString(StringFollower));
 	}
+}
+
+void UHUDGeneral::UpdateValue()
+{
+	UpdateMoneyText(PlayerActorRef->GetMoney());
+	UpdateGemText(PlayerActorRef->GetGem());
+	UpdateFollowerText(PlayerActorRef->GetFollower());
+	UpdateAbonnerText(PlayerActorRef->GetPoolResource());
 }
