@@ -76,7 +76,7 @@ protected:
     UCameraComponent* camera;
 
     UPROPERTY()
-    int PoolResource;
+    int PoolResource = 0;
 
     UPROPERTY()
     int Follower = 0;

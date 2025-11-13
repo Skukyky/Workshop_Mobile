@@ -71,7 +71,7 @@ void APlayerActor::SetMoney(int AddMoney)
     Money = Money + AddMoney;
     if (HUDRef)
     {
-        HUDRef->UpdateMoneyText(Money);
+        HUDRef->UpdateMoneyText(GetMoney());
     }
 }
 
@@ -102,6 +102,7 @@ void APlayerActor::BeginPlay()
     {
         HUDRef->PlayerActorRef = this;
         HUDRef->AddToViewport();
+        HUDRef->UpdateMoneyText(GetMoney());
     }
     SetMoney(0);
     SetGem(0);

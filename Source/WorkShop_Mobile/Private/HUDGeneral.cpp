@@ -183,7 +183,8 @@ void UHUDGeneral::UpdateMoneyText(int Count)
 {
 	if (MoneyText)
 	{
-		MoneyText->SetText(FText::AsNumber(Count));
+		FString StringMoney = FString::SanitizeFloat(Count);
+		MoneyText->SetText(FText::FromString(StringMoney));
 	}
 }
 
