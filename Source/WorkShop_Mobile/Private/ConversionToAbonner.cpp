@@ -37,7 +37,7 @@ void UConversionToAbonner::OnGemChanged(float Value)
 	NeedToConvert = Value;
 	if (GemNumberText)
 	{
-		FString StringAbonner = FString::SanitizeFloat(Value);
+		FString StringAbonner = FString::FromInt(Value);
 		GemNumberText->SetText(FText::FromString(StringAbonner));
 	}
 }
