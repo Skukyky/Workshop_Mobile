@@ -124,6 +124,10 @@ public:
     UFUNCTION()
     void HandleBackClicked();
 
+    FTimerHandle TimerHandle;
+    
+    UFUNCTION()
+    void UpdateValue();
 protected:
 
     virtual void NativeConstruct() override;

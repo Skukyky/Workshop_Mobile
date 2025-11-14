@@ -37,8 +37,7 @@ void UGachaPullWidget::NativeConstruct()
         BTN_Back->OnCustomButtonClicked.AddDynamic(this, &UGachaPullWidget::HandleBackClicked);
     }
 
-    FollowerText->SetText(FText::FromString(FString::FromInt(PlayerREF->GetPoolResource())));
-    MoneyText->SetText(FText::FromString(FString::FromInt(PlayerREF->GetMoney())));
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UGachaPullWidget::UpdateValue, 0.1f, true);
 }
 
 void UGachaPullWidget::NativePreConstruct()
@@ -256,6 +255,12 @@ void UGachaPullWidget::HandleBackClicked()
         PlayerController->bShowMouseCursor = true;
     }
     RemoveFromParent();
+}
+
+void UGachaPullWidget::UpdateValue()
+{
+    FollowerText->SetText(FText::FromString(FString::FromInt(PlayerREF->GetPoolResource())));
+    MoneyText->SetText(FText::FromString(FString::FromInt(PlayerREF->GetMoney())));
 }
 
 void UGachaPullWidget::ShowPullResultsWithShowcase(const TArray<FName>& PulledCharacters)
