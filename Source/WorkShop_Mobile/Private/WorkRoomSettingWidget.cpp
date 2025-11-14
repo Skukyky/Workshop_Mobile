@@ -41,11 +41,13 @@ void UWorkRoomSettingWidget::ActualiseMoney()
 	NeedGold->SetText(TextUpgrade);
 	if (RoomWorking->CanUpgradeWithMoney())
 	{
-		UpgradeGold->BackgroundColor = FLinearColor(0.498264f, 0.498264f, 0.498264f, 1.0f);
+		UpgradeGold->BackgroundColor = FLinearColor(1.000000,1.000000,1.000000,1.000000);
+		UpgradeGold->Refresh();
 	}
 	else
 	{
-		UpgradeGold->BackgroundColor = FLinearColor(1.000000,1.000000,1.000000,1.000000);
+		UpgradeGold->BackgroundColor = FLinearColor(0.498264f, 0.498264f, 0.498264f, 1.0f);
+		UpgradeGold->Refresh();
 	}
 	Level->SetText(FText::AsNumber(RoomWorking->LevelRoom + 1));
 }
@@ -54,11 +56,12 @@ void UWorkRoomSettingWidget::ActualiseMoney()
 void UWorkRoomSettingWidget::OnExitClicked()
 {
 	ActualiseMoney();
-	FInputModeGameOnly InputMode;
-	APlayerController* PC = GetOwningPlayer();
-	if (PC)
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
 	{
-		PC->SetInputMode(InputMode);
+		FInputModeGameOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
 	}
 	RemoveFromParent();
 }
@@ -127,12 +130,12 @@ void UWorkRoomSettingWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
-	FInputModeUIOnly InputMode;
-	InputMode.SetWidgetToFocus(this->TakeWidget());
-	APlayerController* PC = GetOwningPlayer();
-	if (PC)
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
 	{
-		PC->SetInputMode(InputMode);
+		FInputModeUIOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
 	}
 	SetFocus();
 	
