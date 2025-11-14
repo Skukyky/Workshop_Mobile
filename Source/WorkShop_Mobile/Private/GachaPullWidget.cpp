@@ -161,6 +161,11 @@ void UGachaPullWidget::HandleBackToBannerClicked()
 
 void UGachaPullWidget::UpdateShowcaseCharacter()
 {
+    if (AnimLoot)
+    {
+        PlayAnimation(AnimLoot);
+    }
+    
     if (CharacterShowcaseActor)
     {
         CharacterShowcaseActor->Destroy();
@@ -172,6 +177,24 @@ void UGachaPullWidget::UpdateShowcaseCharacter()
         WS_GachaPull->SetActiveWidgetIndex(1);
         return;
     }
+
+    // --- Ajout modification couleur d'effet selon la rareté ---
+    if (EffectImage && CharacterDataTable)
+    {
+        FName CharId = CurrentPulledCharacters[CurrentShowcaseIndex];
+        const FCharacterStructure* Data = CharacterDataTable->FindRow<FCharacterStructure>(CharId, TEXT(""));
+        if (Data)
+        {
+            FLinearColor RarityColor = GetColorForRarity(Data->Rarity);
+            EffectImage->SetColorAndOpacity(RarityColor);
+        }
+        else
+        {
+            // Optionnel : reset à blanc si pas de data trouvée
+            EffectImage->SetColorAndOpacity(FLinearColor::White);
+        }
+    }
+    // ----------------------------------------------------------
 
     if (!CharacterShowcaseActorClass)
     {
@@ -197,6 +220,8 @@ void UGachaPullWidget::UpdateShowcaseCharacter()
 
 void UGachaPullWidget::OnCharacterNextClicked()
 {
+
+    
     // Si mode single pull avec placeholders, ignorer le next (pas d’autre perso)
     if (bSinglePullWithPlaceholders)
     {
@@ -235,6 +260,7 @@ void UGachaPullWidget::HandleBackClicked()
 
 void UGachaPullWidget::ShowPullResultsWithShowcase(const TArray<FName>& PulledCharacters)
 {
+    
     if (!UGP_GachaHistory || !WS_GachaPull)
         return;
 
@@ -250,4 +276,23 @@ void UGachaPullWidget::ShowPullResultsWithShowcase(const TArray<FName>& PulledCh
     WS_GachaPull->SetActiveWidgetIndex(2);
 
     UpdateShowcaseCharacter();
+}
+
+FLinearColor UGachaPullWidget::GetColorForRarity(ECharacterRarity Rarity)
+{
+    switch (Rarity)
+    {
+    case ECharacterRarity::Commun:
+        return FLinearColor(0.f, 1.f, 0.045f, 1.f); // Blanc
+    case ECharacterRarity::Rare:
+        return FLinearColor(0.f, 0.376f, 1.f, 1.f); // Bleu
+    case ECharacterRarity::Epique:
+        return FLinearColor(0.244f, 0.f, 1.f, 1.f); // Violet
+    case ECharacterRarity::Legendary:
+        return FLinearColor(0.794f, 0.77f, 0.f, 1.f); // Jaune
+    case ECharacterRarity::Secret:
+        return FLinearColor(0.794f, 0.f, 0.064f, 1.f); // Rouge
+    default:
+        return FLinearColor(1.f, 1.f, 1.f, 1.f);
+    }
 }

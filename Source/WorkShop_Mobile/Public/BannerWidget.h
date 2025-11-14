@@ -73,7 +73,7 @@ public:
     int PriceFollower = 100;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-    int PriceMoney = 10000;
+    int PriceMoney = 1000;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
     bool bMoneyFollower = true;

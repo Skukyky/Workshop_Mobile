@@ -5,6 +5,7 @@
 #include "Engine/DataTable.h"
 #include "Sound/SoundCue.h"
 #include "CharacterProgress.h"
+#include "CharacterStructure.h"
 #include "GachaPullWidget.generated.h"
 
 class UTextBlock;
@@ -34,6 +35,9 @@ public:
     UPROPERTY(EditAnywhere, Category="Showcase")
     TSubclassOf<AGachaCharacterShowcase> CharacterShowcaseActorClass = nullptr;
 
+    UPROPERTY(meta = (BindWidgetAnim), Transient)
+    UWidgetAnimation* AnimLoot;
+
     UPROPERTY(meta = (BindWidget))
     UBTNCustomWidget* BTN_BackToBanner;
 
@@ -42,6 +46,9 @@ public:
 
     UPROPERTY(meta = (BindWidget))
     UImage* MoneyImage;
+
+    UPROPERTY(meta = (BindWidget))
+    UImage* EffectImage;
 
     UPROPERTY(meta = (BindWidget))
     UImage* FollowerImage;
@@ -102,6 +109,9 @@ public:
     void ShowPullHistory(const TArray<FName>& PulledCharacters);
 
     void ShowPullResultsWithShowcase(const TArray<FName>& PulledCharacters); // nouvelle méthode pour showcase
+
+    
+    FLinearColor GetColorForRarity(ECharacterRarity Rarity);
 
     void UpdateShowcaseCharacter();
 
