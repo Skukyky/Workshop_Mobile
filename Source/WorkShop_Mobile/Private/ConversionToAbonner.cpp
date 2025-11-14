@@ -7,6 +7,12 @@
 void UConversionToAbonner::NativeConstruct()
 {
 	Super::NativeConstruct();
+	
+	APlayerController* PlayerController = GetOwningPlayer();
+    if (PlayerController)
+    {
+        PlayerActorRef = Cast<APlayerActor>(PlayerController->GetPawn());
+    }
 	if (GemSlider)
 	{
 		GemSlider->OnValueChanged.AddDynamic(this, &UConversionToAbonner::OnGemChanged);
