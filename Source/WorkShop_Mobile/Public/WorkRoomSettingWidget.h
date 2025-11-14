@@ -42,6 +42,9 @@ public:
 	UTextBlock* GoldPerSecond;
 
 	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* Level;
+
+	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* AllGoldStocked;
 
 	UPROPERTY(Meta = (BindWidget))

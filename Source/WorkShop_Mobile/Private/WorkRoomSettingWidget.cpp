@@ -47,6 +47,7 @@ void UWorkRoomSettingWidget::ActualiseMoney()
 	{
 		UpgradeGold->BackgroundColor = FLinearColor(1.000000,1.000000,1.000000,1.000000);
 	}
+	Level->SetText(FText::AsNumber(RoomWorking->LevelRoom + 1));
 }
 
 
