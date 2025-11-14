@@ -7,6 +7,7 @@
 #include "CharacterStructure.h"
 #include "PlayerActor.h"
 #include "RoomWorking.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AWorker::AWorker()
@@ -112,6 +113,13 @@ void AWorker::AddBonusPerStars()
 void AWorker::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (PlayerActor && MyCharacterNameText)
+	{
+		FVector PlayerLocation = PlayerActor->GetActorLocation();
+		FVector TextLocation = MyCharacterNameText->GetComponentLocation();
+		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(TextLocation, PlayerLocation);
+		MyCharacterNameText->SetWorldRotation(LookAtRotation);
+	}
 
 }
 
