@@ -230,6 +230,11 @@ void UGachaInventoryWidget::OnItemSelected(UGachaInventoryItemWidget* ClickedIte
 
 void UGachaInventoryWidget::OnBackClicked()
 {
+    if (CurrentCharacterShowcase)
+    {
+        CurrentCharacterShowcase->K2_DestroyActor();
+        CurrentCharacterShowcase = nullptr;
+    }
     if (gotFocused == true)
     {
         AssignButtonReturn->WorkRoomSettingWidget->RemoveFromParent();
