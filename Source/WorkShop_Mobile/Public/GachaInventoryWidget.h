@@ -60,6 +60,9 @@ public:
     void OnAssignClicked();
 
     UPROPERTY()
+    bool gotFocused = false;
+
+    UPROPERTY()
     AGachaCharacterShowcase* CurrentCharacterShowcase = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")

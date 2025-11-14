@@ -70,6 +70,7 @@ void UBTNCustomWidget::OnCustomButtonClickedHandler()
 			GachaInventoryWidget = CreateWidget<UGachaInventoryWidget>(GetWorld(),Inventory);
 			if (GachaInventoryWidget)
 			{
+				GachaInventoryWidget->gotFocused = true;
 				GachaInventoryWidget->AssignButtonReturn = this;
 				GachaInventoryWidget->AddToViewport();
 			}

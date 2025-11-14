@@ -218,9 +218,10 @@ void UGachaInventoryWidget::OnItemSelected(UGachaInventoryItemWidget* ClickedIte
 
 void UGachaInventoryWidget::OnBackClicked()
 {
-    if (AssignButtonReturn->WorkRoomSettingWidget)
+    if (gotFocused == true)
     {
         AssignButtonReturn->WorkRoomSettingWidget->RemoveFromParent();
+        gotFocused = false;
     }
     FInputModeGameOnly InputMode;
     APlayerController* PC = GetOwningPlayer();
