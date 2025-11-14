@@ -26,10 +26,6 @@ void UShopWidget::NativeConstruct()
 	{
 		BTN_Offers->OnClicked.AddDynamic(this, &UShopWidget::OnOffers_Clicked);
 	}
-	if (BTN_Boost)
-	{
-		BTN_Boost->OnClicked.AddDynamic(this, &UShopWidget::OnBoost_Clicked);
-	}
 	
 	//---------------LeaveBTN---------------
 	if (BTN_Leave)
@@ -76,37 +72,6 @@ void UShopWidget::NativeConstruct()
 	{
 		BTN_Offer_3->OnClicked.AddDynamic(this, &UShopWidget::OnOffer_3_Clicked);
 	}
-
-	//---------------BoostPanel---------------
-	if (BTN_Boost_1)
-	{
-		BTN_Boost_1->OnClicked.AddDynamic(this, &UShopWidget::OnBoost_1_Clicked);
-	}
-	if (BTN_Boost_2)
-	{
-		BTN_Boost_2->OnClicked.AddDynamic(this, &UShopWidget::OnBoost_2_Clicked);
-	}
-	if (BTN_Boost_3)
-	{
-		BTN_Boost_3->OnClicked.AddDynamic(this, &UShopWidget::OnBoost_3_Clicked);
-	}
-	if (BTN_Boost_4)
-	{
-		BTN_Boost_4->OnClicked.AddDynamic(this, &UShopWidget::OnBoost_4_Clicked);
-	}
-	if (BTN_Boost_5)
-	{
-		BTN_Boost_5->OnClicked.AddDynamic(this, &UShopWidget::OnBoost_5_Clicked);
-	}
-	if (BTN_Boost_6)
-	{
-		BTN_Boost_6->OnClicked.AddDynamic(this, &UShopWidget::OnBoost_6_Clicked);
-	}
-	if (BTN_Boost_7)
-	{
-		BTN_Boost_7->OnClicked.AddDynamic(this, &UShopWidget::OnBoost_7_Clicked);
-	}
-	
 }
 
 void UShopWidget::OnBoutique_Clicked()
@@ -123,15 +88,6 @@ void UShopWidget::OnOffers_Clicked()
 	if (BoutiqueSwitcher)
 	{
 		const int32 IndexToSet = 1;
-		BoutiqueSwitcher->SetActiveWidgetIndex(IndexToSet);
-	}
-}
-
-void UShopWidget::OnBoost_Clicked()
-{
-	if (BoutiqueSwitcher)
-	{
-		const int32 IndexToSet = 2;
 		BoutiqueSwitcher->SetActiveWidgetIndex(IndexToSet);
 	}
 }
@@ -209,33 +165,5 @@ void UShopWidget::OnOffer_2_Clicked()
 }
 
 void UShopWidget::OnOffer_3_Clicked()
-{
-}
-
-void UShopWidget::OnBoost_1_Clicked()
-{
-}
-
-void UShopWidget::OnBoost_2_Clicked()
-{
-}
-
-void UShopWidget::OnBoost_3_Clicked()
-{
-}
-
-void UShopWidget::OnBoost_4_Clicked()
-{
-}
-
-void UShopWidget::OnBoost_5_Clicked()
-{
-}
-
-void UShopWidget::OnBoost_6_Clicked()
-{
-}
-
-void UShopWidget::OnBoost_7_Clicked()
 {
 }

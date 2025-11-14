@@ -31,15 +31,11 @@ public:
 	UButton* BTN_Boutique;
 	UPROPERTY(meta = (BindWidget))
 	UButton* BTN_Offers;
-	UPROPERTY(meta = (BindWidget))
-	UButton* BTN_Boost;
 
 	UFUNCTION()
 	void OnBoutique_Clicked();
 	UFUNCTION()
 	void OnOffers_Clicked();
-	UFUNCTION()
-	void OnBoost_Clicked();
 	
 	//---------------LeaveBTN---------------
 	UPROPERTY(meta = (BindWidget))
@@ -93,36 +89,4 @@ public:
 	void OnOffer_2_Clicked();
 	UFUNCTION()
 	void OnOffer_3_Clicked();
-	
-	
-	//---------------BoostPanel---------------
-	UPROPERTY(meta = (BindWidget))
-	UButton* BTN_Boost_1;
-	UPROPERTY(meta = (BindWidget))
-	UButton* BTN_Boost_2;
-	UPROPERTY(meta = (BindWidget))
-	UButton* BTN_Boost_3;
-	UPROPERTY(meta = (BindWidget))
-	UButton* BTN_Boost_4;
-	UPROPERTY(meta = (BindWidget))
-	UButton* BTN_Boost_5;
-	UPROPERTY(meta = (BindWidget))
-	UButton* BTN_Boost_6;
-	UPROPERTY(meta = (BindWidget))
-	UButton* BTN_Boost_7;
-
-	UFUNCTION()
-	void OnBoost_1_Clicked();
-	UFUNCTION()
-	void OnBoost_2_Clicked();
-	UFUNCTION()
-	void OnBoost_3_Clicked();
-	UFUNCTION()
-	void OnBoost_4_Clicked();
-	UFUNCTION()
-	void OnBoost_5_Clicked();
-	UFUNCTION()
-	void OnBoost_6_Clicked();
-	UFUNCTION()
-	void OnBoost_7_Clicked();
 };
