@@ -45,6 +45,8 @@ public:
     UFUNCTION()
     void SetFollower(int Addfollower);
 
+    void ChangeGemToPoolRessource(int HowMany);
+
     UFUNCTION()
     int GetFollower() const {return Follower;}
 

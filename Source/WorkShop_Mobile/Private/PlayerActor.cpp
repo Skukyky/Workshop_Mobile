@@ -68,7 +68,7 @@ void APlayerActor::SetGem(int AddGem)
     Gem = Gem + AddGem;
     if (HUDRef)
     {
-        HUDRef->UpdateMoneyText(GetGem());
+        HUDRef->UpdateGemText(GetGem());
     }
 }
 
@@ -99,6 +99,12 @@ void APlayerActor::SetFollower(int Addfollower)
     }
 }
 
+void APlayerActor::ChangeGemToPoolRessource(int HowMany)
+{
+    SetPoolResource(HowMany);
+    SetGem(-HowMany);
+}
+
 void APlayerActor::BeginPlay()
 {
     Super::BeginPlay();
@@ -126,6 +132,10 @@ void APlayerActor::BeginPlay()
     {
         TutoRef->AddToViewport();
     }
+    SetPoolResource(0);
+    SetMoney(0);
+    SetFollower(0);
+    SetGem(0);
 }
 
 void APlayerActor::Tick(float DeltaTime)
