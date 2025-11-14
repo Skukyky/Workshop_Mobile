@@ -9,13 +9,18 @@ void UShopWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(this->TakeWidget());
+	APlayerController* PC = GetOwningPlayer();
+	if (PC)
 	{
+		PC->SetInputMode(InputMode);
 		if (APlayerActor* Player = Cast<APlayerActor>(PC->GetPawn()))
 		{
 			PlayerActor = Player;
 		}
 	}
+	
 	
 	//---------------ShopTab---------------
 	if (BTN_Boutique)
@@ -94,12 +99,11 @@ void UShopWidget::OnOffers_Clicked()
 
 void UShopWidget::OnLeave_Clicked()
 {
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-	if (PlayerController)
+	FInputModeGameOnly InputMode;
+	APlayerController* PC = GetOwningPlayer();
+	if (PC)
 	{
-		FInputModeGameOnly InputMode;
-		PlayerController->SetInputMode(InputMode);
-		PlayerController->bShowMouseCursor = true;
+		PC->SetInputMode(InputMode);
 	}
 	RemoveFromParent();
 }
