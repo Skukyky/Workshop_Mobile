@@ -48,6 +48,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
     UTexture2D* ButtonPull10Texture = nullptr;
 
+    UPROPERTY()
+    UUserWidget* ConvertionWidgetRef;
+	
+    UPROPERTY(EditDefaultsOnly, Category = Widget)
+    TSubclassOf<UUserWidget> WidgetConvertionReference;
+    
     UPROPERTY(meta = (BindWidget))
     UBTNCustomWidget* BTN_Pull;
 

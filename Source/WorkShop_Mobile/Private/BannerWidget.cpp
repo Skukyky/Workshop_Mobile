@@ -86,11 +86,11 @@ void UBannerWidget::HandlePullClicked()
             ParentGachaWidget->MoneyText->SetVisibility(ESlateVisibility::Collapsed);
         }
     }
-    else
+    else if (bMoneyFollower && ParentGachaWidget->PlayerREF->GetPoolResource() < PriceFollower)
     {
-        
+        ConvertionWidgetRef = CreateWidget<UUserWidget>(GetWorld(), WidgetConvertionReference);
+        if (ConvertionWidgetRef) ConvertionWidgetRef->AddToViewport();
     }
-    
 }
 
 void UBannerWidget::HandlePullMultiClicked()
@@ -167,9 +167,11 @@ void UBannerWidget::HandlePullMultiClicked()
             ParentGachaWidget->FollowerText->SetVisibility(ESlateVisibility::Collapsed);
             ParentGachaWidget->MoneyText->SetVisibility(ESlateVisibility::Collapsed);
         }
-    }else
+    }
+    else if (bMoneyFollower && ParentGachaWidget->PlayerREF->GetPoolResource() < PriceFollower*10)
     {
-       
+        ConvertionWidgetRef = CreateWidget<UUserWidget>(GetWorld(), WidgetConvertionReference);
+        if (ConvertionWidgetRef) ConvertionWidgetRef->AddToViewport();
     }
 }
 
