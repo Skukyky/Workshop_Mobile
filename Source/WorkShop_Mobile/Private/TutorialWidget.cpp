@@ -28,13 +28,30 @@ void UTutorialWidget::HandleClicked()
 	{
 		CharacterShowcaseActor->K2_DestroyActor();
 		CharacterShowcaseActor = nullptr;
+
+		FInputModeGameOnly InputMode;
+		APlayerController* PC = GetOwningPlayer();
+		if (PC)
+		{
+			PC->SetInputMode(InputMode);
+		}
 		RemoveFromParent();
+		
 	}
 }
 
 void UTutorialWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(this->TakeWidget());
+	APlayerController* PC = GetOwningPlayer();
+	if (PC)
+	{
+		PC->SetInputMode(InputMode);
+	}
+
 
 	UWorld* World = GetWorld();
 	if (World && CharacterShowcaseActorClass)

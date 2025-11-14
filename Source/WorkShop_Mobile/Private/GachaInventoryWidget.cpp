@@ -12,8 +12,16 @@
 #include "Kismet/GameplayStatics.h"
 
 void UGachaInventoryWidget::NativeConstruct()
-{
+{   
     Super::NativeConstruct();
+
+    FInputModeUIOnly InputMode;
+    InputMode.SetWidgetToFocus(this->TakeWidget());
+    APlayerController* PC = GetOwningPlayer();
+    if (PC)
+    {
+        PC->SetInputMode(InputMode);
+    }
 
     // Récupérer la référence au PlayerActor
     PlayerActor = Cast<APlayerActor>(GetWorld()->GetFirstPlayerController()->GetPawn());
@@ -36,6 +44,10 @@ void UGachaInventoryWidget::NativeConstruct()
     if (BTN_Assign)
     {
         BTN_Assign->OnCustomButtonClicked.AddDynamic(this, &UGachaInventoryWidget::OnAssignClicked);
+    }
+    if (BTN_Back)
+    {
+        BTN_Back->OnCustomButtonClicked.AddDynamic(this, &UGachaInventoryWidget::OnBackClicked);
     }
 }
 
@@ -204,6 +216,21 @@ void UGachaInventoryWidget::OnItemSelected(UGachaInventoryItemWidget* ClickedIte
     }
 }
 
+void UGachaInventoryWidget::OnBackClicked()
+{
+    if (AssignButtonReturn->WorkRoomSettingWidget)
+    {
+        AssignButtonReturn->WorkRoomSettingWidget->RemoveFromParent();
+    }
+    FInputModeGameOnly InputMode;
+    APlayerController* PC = GetOwningPlayer();
+    if (PC)
+    {
+        PC->SetInputMode(InputMode);
+    }
+    RemoveFromParent();
+}
+
 void UGachaInventoryWidget::OnLostFocusClicked()
 {
     if (CharacterImage)
@@ -253,12 +280,12 @@ void UGachaInventoryWidget::OnAssignClicked()
             }
         }
     }
-    APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-    if (PlayerController)
-    {
-        FInputModeGameOnly InputMode;
-        PlayerController->SetInputMode(InputMode);
-        PlayerController->bShowMouseCursor = true;
-    }
-    RemoveFromParent();
+        FInputModeUIOnly InputMode;
+		APlayerController* PC = GetOwningPlayer();
+        InputMode.SetWidgetToFocus(AssignButtonReturn->WorkRoomSettingWidget->TakeWidget());
+		if (PC)
+		{
+			PC->SetInputMode(InputMode);
+		}
+		RemoveFromParent();
 }

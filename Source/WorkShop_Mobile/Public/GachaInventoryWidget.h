@@ -39,6 +39,9 @@ public:
     UProgressBar* PB_Tiktok;
 
     UPROPERTY(meta = (BindWidget))
+    UBTNCustomWidget* BTN_Back;
+
+    UPROPERTY(meta = (BindWidget))
     UScrollBox* InventoryScrollBox;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
@@ -83,4 +86,7 @@ private:
 
     UFUNCTION()
     void OnItemSelected(UGachaInventoryItemWidget* ClickedItem);
+
+    UFUNCTION()
+    void OnBackClicked();
 };

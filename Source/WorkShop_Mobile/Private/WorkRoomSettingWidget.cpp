@@ -53,12 +53,11 @@ void UWorkRoomSettingWidget::ActualiseMoney()
 void UWorkRoomSettingWidget::OnExitClicked()
 {
 	ActualiseMoney();
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-	if (PlayerController)
+	FInputModeGameOnly InputMode;
+	APlayerController* PC = GetOwningPlayer();
+	if (PC)
 	{
-		FInputModeGameOnly InputMode;
-		PlayerController->SetInputMode(InputMode);
-		PlayerController->bShowMouseCursor = true;
+		PC->SetInputMode(InputMode);
 	}
 	RemoveFromParent();
 }
@@ -127,12 +126,12 @@ void UWorkRoomSettingWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-	if (PlayerController)
+	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(this->TakeWidget());
+	APlayerController* PC = GetOwningPlayer();
+	if (PC)
 	{
-		FInputModeUIOnly InputMode;
-		PlayerController->SetInputMode(InputMode);
-		PlayerController->bShowMouseCursor = true;
+		PC->SetInputMode(InputMode);
 	}
 	SetFocus();
 	
