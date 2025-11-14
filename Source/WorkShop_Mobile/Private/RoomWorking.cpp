@@ -38,7 +38,7 @@ void ARoomWorking::Upgrade()
 	WorkMultiplierOnCurrentLevel = StatPerLevel[LevelRoom].WorkMultiplier;
 	if (PlayerActor && LevelRoom > 0)
 	{
-		PlayerActor->SetPoolResource(1000);
+		PlayerActor->SetPoolResource(StatPerLevel[LevelRoom].AbonnerPerLevel);
 	}
 	for (FWorkerAssigned Worker : Workers)
 	{
