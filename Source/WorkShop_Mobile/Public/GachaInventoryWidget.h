@@ -47,6 +47,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
     UDataTable* CharacterDataTable;
 
+    UPROPERTY(meta = (BindWidget))
+    UBTNCustomWidget* BTN_Unassign;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gacha")
     TSubclassOf<UGachaInventoryItemWidget> ItemWidgetClass;
 
@@ -61,6 +64,9 @@ public:
 
     UPROPERTY()
     bool gotFocused = false;
+
+    UFUNCTION()
+    void OnUnassignClicked();
 
     UPROPERTY()
     AGachaCharacterShowcase* CurrentCharacterShowcase = nullptr;

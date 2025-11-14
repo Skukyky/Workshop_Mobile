@@ -63,6 +63,7 @@ void AWorker::StopWorking()
 	if (TimerHandle.IsValid())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+		RoomWorking->AddMoney(0);
 		ControllerREF->tasked = false;
 		
 	}

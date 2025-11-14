@@ -41,6 +41,18 @@ void UGachaInventoryWidget::NativeConstruct()
         BTN_LostFocus->OnCustomButtonClicked.AddDynamic(this, &UGachaInventoryWidget::OnLostFocusClicked);
     }
 
+    if (BTN_Unassign)
+    {
+        if (AssignButtonReturn)
+        {
+            if (AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->Workers[AssignButtonReturn->Position].Worker)
+            {
+                BTN_Unassign->OnCustomButtonClicked.AddDynamic(this, &UGachaInventoryWidget::OnUnassignClicked);
+                BTN_Unassign->SetVisibility(ESlateVisibility::Visible);
+            }
+        }
+    }
+
     if (BTN_Assign)
     {
         BTN_Assign->OnCustomButtonClicked.AddDynamic(this, &UGachaInventoryWidget::OnAssignClicked);
@@ -289,4 +301,16 @@ void UGachaInventoryWidget::OnAssignClicked()
 			PC->SetInputMode(InputMode);
 		}
 		RemoveFromParent();
+}
+
+void UGachaInventoryWidget::OnUnassignClicked()
+{
+    if (AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->Workers[AssignButtonReturn->Position].Worker)
+    {
+        AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->Workers[AssignButtonReturn->Position].Worker->UnassignWork();
+        AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->Workers[AssignButtonReturn->Position] = {nullptr, FVector2D::ZeroVector};
+        AssignButtonReturn->WorkRoomSettingWidget->RoomWorking->SpawnWidget();
+
+        RemoveFromParent();
+    }
 }
