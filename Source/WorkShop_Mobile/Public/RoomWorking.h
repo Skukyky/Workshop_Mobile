@@ -97,6 +97,7 @@ public:
 
 	UPROPERTY()
 	int LevelRoom = -1;
+	void Upgrading();
 	
 protected:
 	virtual void BeginPlay() override;

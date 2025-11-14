@@ -62,7 +62,6 @@ void AWorker::StopWorking()
 {
 	if (TimerHandle.IsValid())
 	{
-		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, "StopWorking");
 		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 		ControllerREF->tasked = false;
 		

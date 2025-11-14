@@ -91,7 +91,7 @@ public:
     USpringArmComponent* SpringArm;
 
     void ClampCameraWithinBoundary();
-    void OnConstruction(const FTransform& Transform);
+    void OnConstruction(const FTransform& Transform) ;
 
     UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Camera Boundary", meta=(MakeEditWidget=true))
     TArray<FVector> CameraBoundaryPoints;

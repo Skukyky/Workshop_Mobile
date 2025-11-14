@@ -81,10 +81,8 @@ bool ARoomWorking::CanUpgradeWithMoney()
 {
 	if (PlayerActor)
 	{
-		if (StatPerLevel[LevelRoom].RequiredMoneyForUpgrade <= PlayerActor->GetMoney() && StatPerLevel[LevelRoom].RequiredFollowerForNextUpgrade <= PlayerActor->GetFollower() && CanUpgrade && LevelRoom + 1 < StatPerLevel.Num() -1)
+		if (StatPerLevel[LevelRoom].RequiredMoneyForUpgrade <= PlayerActor->GetMoney() && StatPerLevel[LevelRoom].RequiredFollowerForNextUpgrade <= PlayerActor->GetFollower() && CanUpgrade && LevelRoom + 1 <= StatPerLevel.Num() -1)
 		{
-			PlayerActor->SetMoney(-StatPerLevel[LevelRoom].RequiredMoneyForUpgrade);
-			Upgrade();
 			return true;
 		}
 	}
@@ -166,6 +164,15 @@ void ARoomWorking::SpawnWidget()
 	
 }
 
+void ARoomWorking::Upgrading()
+{
+	if (CanUpgradeWithMoney())
+	{
+		PlayerActor->SetMoney(-StatPerLevel[LevelRoom].RequiredMoneyForUpgrade);
+		Upgrade();
+	}
+}
+
 // Called when the game starts or when spawned
 void ARoomWorking::BeginPlay()
 {
@@ -180,18 +187,6 @@ void ARoomWorking::BeginPlay()
 void ARoomWorking::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	for (FWorkerAssigned Worker : Workers)
-	{
-		if (Worker.Worker != nullptr)
-		{
-			FString Message = FString::Format(TEXT("Working Time: {0}"), { Worker.Worker->GetName() });
-			GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, Message);
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, TEXT("Nullptr"));
-		}
-	}
 	
 }
 

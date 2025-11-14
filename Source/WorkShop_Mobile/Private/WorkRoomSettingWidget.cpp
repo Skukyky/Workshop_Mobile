@@ -5,6 +5,7 @@
 #include "BTNCustomWidget.h"
 #include "RoomWorking.h"
 #include "Worker.h"
+
 #include "Kismet/GameplayStatics.h"
 
 void UWorkRoomSettingWidget::OnGoldClicked()
@@ -38,6 +39,14 @@ void UWorkRoomSettingWidget::ActualiseMoney()
 	FString StringFollowerUpgrade = FString::SanitizeFloat(RoomWorking->StatPerLevel[RoomWorking->LevelRoom].RequiredFollowerForNextUpgrade);
 	FText TextUpgrade = FText::Format(NSLOCTEXT("","","Need Money : {0}\n Need Follower : {1}"), FText::FromString(StringMoneyUpgrade), FText::FromString(StringFollowerUpgrade));
 	NeedGold->SetText(TextUpgrade);
+	if (RoomWorking->CanUpgradeWithMoney())
+	{
+		UpgradeGold->BackgroundColor = FLinearColor(0.498264f, 0.498264f, 0.498264f, 1.0f);
+	}
+	else
+	{
+		UpgradeGold->BackgroundColor = FLinearColor(1.000000,1.000000,1.000000,1.000000);
+	}
 }
 
 
@@ -91,7 +100,6 @@ void UWorkRoomSettingWidget::Refresh()
 			else
 			{
 				CustomButtonForWorker[i]->BackgroundTexture = BackgroundTexture;
-				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,"zqdqzzdqzdqzdqzdqzdqzdqdqzdqzdqzdqzd");
 				CustomButtonForWorker[i]->Refresh();
 				RefreshStat();
 			}
@@ -111,13 +119,14 @@ void UWorkRoomSettingWidget::RefreshStat()
 
 void UWorkRoomSettingWidget::OnUpgradeCliqued()
 {
-	RoomWorking->CanUpgradeWithMoney();
+	RoomWorking->Upgrading();
 }
 
 
 void UWorkRoomSettingWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 	if (PlayerController)
 	{
@@ -125,7 +134,6 @@ void UWorkRoomSettingWidget::NativeConstruct()
 		PlayerController->SetInputMode(InputMode);
 		PlayerController->bShowMouseCursor = true;
 	}
-	UE_LOG(LogTemp, Display, TEXT("Work Room"));
 	SetFocus();
 	
 	if (GetGold)
@@ -141,6 +149,8 @@ void UWorkRoomSettingWidget::NativeConstruct()
 		Exit->OnCustomButtonClicked.AddDynamic(this,&UWorkRoomSettingWidget::OnExitClicked);
 	}
 	RefreshStat();
+	
+	
 }
 
 void UWorkRoomSettingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

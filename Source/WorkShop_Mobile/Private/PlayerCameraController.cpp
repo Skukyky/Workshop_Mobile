@@ -237,11 +237,6 @@ void APlayerCameraController::OnTouchSelect(const FInputActionValue& Value)
 						if (Row)
 						{
 							UE_LOG(LogTemp, Log, TEXT("Touched Worker: %s (Index %d)"), *Row->Name, Index);
-							if (GEngine)
-							{
-								GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
-									FString::Printf(TEXT("Touched Worker: %s (Index %d)"), *Row->Name, Index));
-							}
 						}
 					}
 				}
@@ -249,11 +244,6 @@ void APlayerCameraController::OnTouchSelect(const FInputActionValue& Value)
 			if (ARoomWorking* Room = Cast<ARoomWorking>(HitActor))
 			{
 				Room->SpawnWidget();
-			}
-			else if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan,
-					FString::Printf(TEXT("Touched Actor: %s"), *HitActor->GetName()));
 			}
 		}
 		else

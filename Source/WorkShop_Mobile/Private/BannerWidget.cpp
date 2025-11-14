@@ -88,10 +88,7 @@ void UBannerWidget::HandlePullClicked()
     }
     else
     {
-        if (GEngine)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Pas assez de ressources pour effectuer un tirage"));
-        }
+        
     }
     
 }
@@ -172,10 +169,7 @@ void UBannerWidget::HandlePullMultiClicked()
         }
     }else
     {
-        if (GEngine)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Pas assez de ressources pour effectuer un tirage"));
-        }
+       
     }
 }
 

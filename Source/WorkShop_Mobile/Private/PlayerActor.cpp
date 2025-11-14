@@ -131,8 +131,6 @@ void APlayerActor::BeginPlay()
 void APlayerActor::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    FString Message = FString::Printf(TEXT("Valeur : %d"), GetMoney());
-    GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Yellow, Message);
     ClampCameraWithinBoundary();
 }
 
@@ -229,8 +227,6 @@ AWorker* APlayerActor::SpawnWorker(FName CharacterID, int32 WorkerIndex)
         SpawnedWorker->MyDataTable = MyDataTable;
         SpawnedWorker->MyIndex = MyDataTable->GetRowNames().Find(CharacterID);
         SpawnedWorker->SetTable();
-        
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, SpawnedWorker->GetName());
     }
 
     return SpawnedWorker;
