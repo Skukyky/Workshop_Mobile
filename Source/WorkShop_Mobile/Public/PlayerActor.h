@@ -68,7 +68,7 @@ protected:
     virtual void BeginPlay() override;
 
     UPROPERTY()
-    int Money = 100000;
+    int Money = 10000;
 
     UPROPERTY(EditAnywhere)
     USceneComponent* RootComp;
