@@ -5,6 +5,8 @@
 #include "WorkerManager.h"
 #include "WorkerAIController.generated.h"
 
+class AWorker;
+
 UCLASS()
 class WORKSHOP_MOBILE_API AWorkerAIController : public AAIController
 {
@@ -21,7 +23,7 @@ public:
 	int32 CurrentWorkIndex = -1;
 
 	UPROPERTY()
-	APawn* MyPawn;
+	AWorker* MyPawn;
 
 	UPROPERTY(EditAnywhere)
 	AWorkerManager* Manager;

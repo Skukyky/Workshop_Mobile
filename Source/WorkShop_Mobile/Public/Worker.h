@@ -25,6 +25,9 @@ public:
 	UPROPERTY()
 	float MoneyPerWorkWithBonus;
 
+	UPROPERTY(BlueprintReadWrite)
+	ARoomWorking* RoomWorking;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -34,8 +37,7 @@ protected:
 
 	FTimerHandle TimerHandle;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	ARoomWorking* RoomWorking;
+
 
 	UPROPERTY()
 	float WorkingTimeBase;

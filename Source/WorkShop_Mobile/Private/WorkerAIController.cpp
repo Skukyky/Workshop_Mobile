@@ -1,6 +1,8 @@
 #include "WorkerAIController.h"
 #include "GameFramework/Actor.h"
+#include "Worker.h"
 #include "EngineUtils.h"
+#include "RoomWorking.h"
 
 AWorkerAIController::AWorkerAIController()
 {
@@ -21,7 +23,7 @@ void AWorkerAIController::OnPossess(APawn* InPawn)
 		}
 	}
 
-	MyPawn = GetPawn();
+	MyPawn = Cast<AWorker>(GetPawn());
 	
 	// Assigner une place d’attente au spawn
 	AssignWaitPosition();
@@ -67,8 +69,9 @@ void AWorkerAIController::AssignWaitPosition()
 
 void AWorkerAIController::AssignWorkPosition()
 {
-	if (Manager && tasked)
+	if (Manager && tasked && MyPawn)
 	{
+		/*
 		int32 Index = Manager->AcquireWorkPosition();
 		if (Index != -1)
 		{
@@ -76,6 +79,28 @@ void AWorkerAIController::AssignWorkPosition()
 			WorkPosition = Manager->GetActorTransform().TransformPosition(Manager->WorkPosition[Index]);
 			// Teleport or move to WorkPosition
 			MyPawn->SetActorLocation(WorkPosition);
+		}*/
+		int Indexing = 0;
+		CurrentWorkIndex = Indexing;
+		for (int i = 0; i<MyPawn->RoomWorking->Workers.Num(); i++)
+		{
+			if (MyPawn->RoomWorking->Workers[i].Worker == MyPawn)
+			{
+				Indexing = i;
+				break;
+			}
+			else
+			{
+				Indexing = -1;
+			}
+		}
+		CurrentWorkIndex = Indexing;
+		if (Indexing != -1)
+		{
+			FVector Position = MyPawn->RoomWorking->StatPerLevel[MyPawn->RoomWorking->LevelRoom].NewGamingPC[Indexing]->GetActorLocation();
+			FRotator Rotation = MyPawn->RoomWorking->StatPerLevel[MyPawn->RoomWorking->LevelRoom].NewGamingPC[Indexing]->GetActorRotation();
+			MyPawn->SetActorLocation(FVector(Position.X, Position.Y, Position.Z + 50));
+			MyPawn->SetActorRotation(Rotation);
 		}
 	}
 }
@@ -112,9 +137,12 @@ void AWorkerAIController::SwitchToWorkPosition()
 		int32 Index = Manager->AcquireWorkPosition();
 		if (Index != -1)
 		{
+			/*
 			CurrentWorkIndex = Index;
 			WorkPosition = Manager->GetActorTransform().TransformPosition(Manager->WorkPosition[Index]);
-			MyPawn->SetActorLocation(WorkPosition);
+			MyPawn->SetActorLocation(WorkPosition);*/
+
+			AssignWorkPosition();
 		}
 	}
 }
